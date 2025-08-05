@@ -26,6 +26,7 @@ src/cli/
 ├── commands/
 │   ├── create-simulation.ts  # Create YAML/JSON config files
 │   ├── list-simulations.ts   # Show existing simulations
+│   ├── run-simulation.ts     # Execute simulations with terminal output
 │   └── validate.ts           # Validate simulation configs
 ├── config/
 │   ├── schema.ts            # Configuration schema validation
@@ -35,27 +36,51 @@ src/cli/
     ├── name-converter.ts
     └── validation.ts
 
-simulations/                 # Configuration files
-├── ai-investment-roi.yaml
-├── portfolio-risk.yaml
-└── product-launch.yaml
+examples/
+└── simulations/             # Configuration files with scenarios
+    ├── restaurant-profitability/
+    │   ├── restaurant-profitability.yaml    # Base simulation
+    │   ├── conservative.yaml                # Conservative scenario
+    │   ├── neutral.yaml                     # Neutral scenario
+    │   └── aggressive.yaml                  # Aggressive scenario
+    ├── software-project-timeline/
+    │   ├── software-project-timeline.yaml
+    │   ├── conservative.yaml
+    │   ├── neutral.yaml
+    │   └── aggressive.yaml
+    └── marketing-campaign-roi/
+        ├── marketing-campaign-roi.yaml
+        ├── conservative.yaml
+        ├── neutral.yaml
+        └── aggressive.yaml
 ```
 
 ### Command Interface
 ```bash
 # Create new simulation
-npm run create-simulation <name> [options]
+npm run cli create <name> [options]
 
-# Examples
-npm run create-simulation "Portfolio Risk Assessment" --category="Finance"
-npm run create-simulation "Product Launch" --category="Marketing" --template="basic"
-npm run create-simulation "Supply Chain" --category="Operations" --interactive
+# Run existing simulations with terminal output
+npm run cli run <simulation> [options]
 
-# List existing simulations
-npm run list-simulations
+# Examples - Creation
+npm run cli create "Portfolio Risk Assessment" --category="Finance"
+npm run cli create "Product Launch" --category="Marketing" --template="basic"
+npm run cli create "Supply Chain" --category="Operations" --interactive
+
+# Examples - Execution with scenarios
+npm run cli run restaurant-profitability --scenario conservative
+npm run cli run restaurant-profitability --scenario aggressive
+npm run cli run restaurant-profitability --iterations 5000
+npm run cli run restaurant-profitability --params custom-params.yaml
+npm run cli run software-project-timeline --teamSize 8 --projectComplexity high
+
+# List existing simulations and scenarios
+npm run cli list
+npm run cli list restaurant-profitability --scenarios
 
 # Validate simulation definition
-npm run validate-simulation ./src/simulations/MySimulation.ts
+npm run cli validate ./examples/simulations/restaurant-profitability/conservative.yaml
 ```
 
 ### Configuration File Format
@@ -134,6 +159,102 @@ simulation:
     const var95 = portfolioValue * actualRisk * timeAdjustment * -1.645
     
     return { var95, expectedReturn }
+```
+
+### CLI Run Command Design
+
+The `run` command executes simulations directly in the terminal with rich output formatting:
+
+#### Terminal Output Format
+```bash
+$ npm run cli run restaurant-profitability --scenario conservative
+
+🍽️  Restaurant Profitability Analysis (Conservative Scenario)
+📊 Running 1,000 iterations...
+
+▓▓▓▓▓▓▓▓▓▓ 100% | 1,000/1,000 | 2.3s
+
+📈 RESULTS SUMMARY
+══════════════════════════════════════════
+Monthly Revenue:     $42,300  (±$6,800)
+Operating Costs:     $35,900  (±$2,800)  
+Net Profit:          $6,400   (±$5,200)
+Break-even:          20.8 months
+Annual ROI:          19.2%    (±9.4%)
+
+📊 STATISTICAL DISTRIBUTION
+                P10      P50      P90
+Revenue     $32,100  $41,800  $54,200
+Profit       $  900   $6,100  $13,700
+ROI           4.3%    18.8%    32.9%
+
+⚠️  RISK ANALYSIS
+• 87% probability of positive ROI
+• 13% chance of loss
+• 22% chance break-even > 24 months
+
+✅ Simulation completed successfully
+```
+
+#### Scenario Parameter Files
+```yaml
+# examples/simulations/restaurant-profitability/conservative.yaml
+name: Conservative Restaurant Strategy
+description: Lower risk approach with realistic market assumptions
+baseSimulation: restaurant-profitability.yaml
+
+parameters:
+  startupCosts: 200000        # 20% below market average
+  monthlyRent: 8000          # Affordable location tier
+  averageTicket: 35.00       # Competitive pricing
+  seatingCapacity: 60        # Smaller, manageable size
+  locationQuality: fair      # Not premium location
+  cuisineType: fast-casual   # Lower operational complexity
+  hasDelivery: false         # Focus on dine-in initially
+
+simulation:
+  iterations: 1000
+  description: "Conservative scenario with lower startup costs and realistic market assumptions"
+```
+
+```yaml
+# examples/simulations/restaurant-profitability/aggressive.yaml  
+name: Aggressive Restaurant Strategy
+description: High-growth strategy with premium positioning
+baseSimulation: restaurant-profitability.yaml
+
+parameters:
+  startupCosts: 400000        # Premium buildout
+  monthlyRent: 18000         # Prime location
+  averageTicket: 65.00       # Premium pricing
+  seatingCapacity: 120       # Large capacity
+  locationQuality: prime     # Best locations
+  cuisineType: fine-dining   # High-margin concept
+  hasDelivery: true          # Multiple revenue streams
+
+simulation:
+  iterations: 1000
+  description: "Aggressive growth scenario with premium positioning and higher investment"
+```
+
+#### CLI Run Options
+```bash
+# Scenario-based execution
+npm run cli run <simulation> --scenario <conservative|neutral|aggressive>
+
+# Parameter overrides
+npm run cli run <simulation> --scenario conservative --iterations 5000 --startupCosts 250000
+
+# Custom parameter files
+npm run cli run <simulation> --params path/to/custom-params.yaml
+
+# Output formatting
+npm run cli run <simulation> --format json --output results.json
+npm run cli run <simulation> --quiet  # Minimal output
+npm run cli run <simulation> --verbose  # Detailed statistics
+
+# Comparison mode
+npm run cli run <simulation> --compare conservative,neutral,aggressive
 ```
 
 ### Interactive Mode
