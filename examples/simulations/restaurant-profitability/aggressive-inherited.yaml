@@ -1,0 +1,144 @@
+name: Restaurant Profitability Analysis (Aggressive Strategy)
+category: Business
+description: High-growth strategy with premium positioning and maximum investment for rapid scaling
+version: 1.0.0
+tags: [restaurant, business-planning, aggressive, high-growth]
+
+baseSimulation: ./base-restaurant.yaml
+
+parameters:
+  # Override aggressive ARR-based parameters for high-growth strategy
+  - key: annualRecurringRevenue
+    label: Annual Recurring Revenue (ARR)
+    type: number
+    default: 5000000     # $5M ARR for aggressive restaurant investment
+    min: 100000
+    max: 50000000
+    step: 50000
+    description: High-growth company ARR for aggressive restaurant investment
+    
+  - key: restaurantInvestmentPercent
+    label: Restaurant Investment (% of ARR)
+    type: number
+    default: 18          # Aggressive 18% of ARR for restaurant investment
+    min: 5
+    max: 25
+    step: 0.5
+    description: Aggressive restaurant investment budget as percentage of ARR
+    
+  - key: startupCostsPercent
+    label: Startup Costs (% of Restaurant Budget)
+    type: number
+    default: 80          # Aggressive 80% of restaurant budget for premium startup
+    min: 50
+    max: 90
+    step: 5
+    description: Aggressive percentage for premium buildout and equipment
+
+  - key: monthlyRentPercent
+    label: Monthly Rent (% of Restaurant Budget)
+    type: number
+    default: 8           # Aggressive 8% for prime location rent
+    min: 2
+    max: 15
+    step: 0.5
+    description: Aggressive rent percentage for prime location
+
+  - key: seatingCapacity
+    label: Seating Capacity
+    type: number
+    default: 120         # Large capacity for revenue maximization
+    min: 20
+    max: 300
+    step: 5
+    description: Large capacity to maximize revenue potential
+
+  - key: averageTicket
+    label: Average Ticket Size
+    type: number
+    default: 65.00       # Premium pricing strategy
+    min: 10.00
+    max: 200.00
+    step: 1.00
+    description: Premium pricing with upscale positioning
+
+  - key: staffCount
+    label: Staff Count
+    type: number
+    default: 18          # Full staffing for premium service
+    min: 3
+    max: 50
+    step: 1
+    description: Full staffing to ensure premium service quality
+
+  - key: avgWage
+    label: Average Hourly Wage
+    type: number
+    default: 22.00       # Premium wages for top talent
+    min: 12.00
+    max: 35.00
+    step: 0.50
+    description: Premium wages to attract and retain top talent
+
+  - key: cuisineType
+    label: Cuisine Type
+    type: select
+    default: fine-dining
+    options: [fast-casual, casual-dining, fine-dining, ethnic-specialty]
+    description: Upscale fine dining concept with higher margins
+
+  - key: locationQuality
+    label: Location Quality
+    type: select
+    default: prime
+    options: [poor, fair, good, excellent, prime]
+    description: Prime location with maximum foot traffic and visibility
+
+  - key: targetFoodCostPercent
+    label: Target Food Cost (% of Revenue)
+    type: number
+    default: 32          # Aggressive food cost for premium ingredients
+    min: 20
+    max: 40
+    step: 1
+    description: Aggressive food cost management for premium quality ingredients
+
+  - key: customerAcquisitionPercent
+    label: Customer Acquisition (% of Restaurant Budget)
+    type: number
+    default: 3           # Aggressive 3% of monthly restaurant budget
+    min: 0.5
+    max: 8
+    step: 0.25
+    description: Aggressive customer acquisition budget for rapid growth
+
+  - key: tableTurnoverTarget
+    label: Target Table Turns per Day
+    type: number
+    default: 3.0         # Aggressive turnover rate
+    min: 1.0
+    max: 5.0
+    step: 0.1
+    description: Aggressive target for table turnover to maximize revenue
+
+  - key: seasonalVariation
+    label: Seasonal Revenue Variation (%)
+    type: number
+    default: 25          # Aggressive seasonal swings
+    min: 5
+    max: 40
+    step: 5
+    description: Expected seasonal variation with aggressive marketing campaigns
+
+groups:
+  - name: Aggressive ARR Investment
+    description: Maximum ARR-based investment for competitive advantage
+    parameters: [annualRecurringRevenue, restaurantInvestmentPercent, startupCostsPercent, monthlyRentPercent]
+    
+  - name: High-End Operations
+    description: Large scale operations with premium positioning and premium staffing
+    parameters: [seatingCapacity, averageTicket, cuisineType, hasDelivery, staffCount, avgWage]
+    
+  - name: Aggressive Market Strategy
+    description: Prime positioning with aggressive growth and customer acquisition
+    parameters: [locationQuality, targetFoodCostPercent, customerAcquisitionPercent, tableTurnoverTarget, seasonalVariation]

@@ -36,16 +36,17 @@ export async function runSimulation(simulationName: string, options: RunOptions 
       console.log(chalk.gray(`${config.description}\n`))
     }
     
-    // 2. Resolve parameters (scenario -> custom file -> CLI overrides)
-    const parameters = await resolveParameters(config, options)
+    // 2. Create simulation first to get ARR-enhanced parameters
+    const simulation = new ConfigurableSimulation(config)
+    const enhancedConfig = simulation.getConfiguration()
     
-    // 3. Display configuration if verbose
+    // 3. Resolve parameters using enhanced config (scenario -> custom file -> CLI overrides)
+    const parameters = await resolveParameters(enhancedConfig, options)
+    
+    // 4. Display configuration if verbose
     if (options.verbose && !options.quiet) {
       displayConfiguration(parameters, options.iterations || 1000)
     }
-    
-    // 4. Create and run simulation
-    const simulation = new ConfigurableSimulation(config)
     const iterations = options.iterations || 1000
     
     if (!options.quiet) {
@@ -180,7 +181,7 @@ async function resolveParameters(config: any, options: RunOptions): Promise<Reco
   // 3. Apply command line parameter overrides
   for (const [key, value] of Object.entries(options)) {
     // Skip known CLI options
-    if (['scenario', 'params', 'iterations', 'output', 'format', 'verbose', 'quiet'].includes(key)) {
+    if (['scenario', 'params', 'iterations', 'output', 'format', 'verbose', 'quiet', 'compare'].includes(key)) {
       continue
     }
     
@@ -314,8 +315,9 @@ async function runComparisonMode(simulationName: string, options: RunOptions): P
       const loader = new ConfigurationLoader()
       const config = await loader.loadConfig(configPath)
       
-      const parameters = await resolveParameters(config, { ...options, scenario })
       const simulation = new ConfigurableSimulation(config)
+      const enhancedConfig = simulation.getConfiguration()
+      const parameters = await resolveParameters(enhancedConfig, { ...options, scenario })
       
       const startTime = Date.now()
       const result = await simulation.runSimulation(parameters, iterations)

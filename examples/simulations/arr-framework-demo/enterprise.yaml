@@ -1,0 +1,68 @@
+name: Product Launch - Enterprise ($10M ARR)
+category: Business
+description: Product launch analysis for enterprise company with $10M ARR
+version: 1.0.0
+tags: [product, launch, enterprise, arr-demo]
+
+parameters:
+  - key: annualRecurringRevenue
+    label: Annual Recurring Revenue (ARR)
+    type: number
+    default: 10000000    # Enterprise ARR
+    min: 100000
+    max: 50000000
+    step: 50000
+    description: Enterprise company's annual recurring revenue
+
+  - key: developmentTimeMonths
+    label: Development Time (Months)
+    type: number
+    default: 18          # Longer development for enterprise features
+    min: 3
+    max: 36
+    step: 1
+    description: Time required for product development
+
+  - key: marketingIntensity
+    label: Marketing Intensity (% of Marketing Budget)
+    type: number
+    default: 30          # Lower percentage but larger absolute amount
+    min: 10
+    max: 50
+    step: 5
+    description: Percentage of total marketing budget allocated to this product
+
+outputs:
+  - key: totalDevelopmentCost
+    label: Total Development Cost
+    description: Total cost for product development
+
+  - key: marketingSpend
+    label: Marketing Spend
+    description: Total marketing budget for product launch
+
+  - key: projectedRevenue
+    label: Projected Revenue
+    description: Expected revenue from product launch
+
+simulation:
+  logic: |
+    // Enterprise product launch analysis
+    
+    // Development costs (6% of ARR per year - enterprise efficiency)
+    const yearlyDevelopmentBudget = businessContext.getProductBudget(6)
+    const totalDevelopmentCost = yearlyDevelopmentBudget * (developmentTimeMonths / 12)
+    
+    // Marketing spend using business context (12% of ARR for marketing)
+    const totalMarketingBudget = businessContext.getMarketingBudget(12)
+    const marketingSpend = totalMarketingBudget * (marketingIntensity / 100)
+    
+    // Projected revenue (enterprise scale)
+    const marketSize = businessContext.annualRecurringRevenue * 3
+    const projectedRevenue = marketSize * 0.10 * (0.8 + random() * 0.4) // 10% adoption, higher variance
+    
+    return {
+      totalDevelopmentCost: round(totalDevelopmentCost),
+      marketingSpend: round(marketingSpend),
+      projectedRevenue: round(projectedRevenue)
+    }

@@ -1,0 +1,68 @@
+name: Product Launch - Small Company ($500K ARR)
+category: Business
+description: Product launch analysis for small company with $500K ARR
+version: 1.0.0
+tags: [product, launch, small-company, arr-demo]
+
+parameters:
+  - key: annualRecurringRevenue
+    label: Annual Recurring Revenue (ARR)
+    type: number
+    default: 500000      # Small company ARR
+    min: 100000
+    max: 50000000
+    step: 50000
+    description: Small company's annual recurring revenue
+
+  - key: developmentTimeMonths
+    label: Development Time (Months)
+    type: number
+    default: 6           # Faster development for small company
+    min: 3
+    max: 36
+    step: 1
+    description: Time required for product development
+
+  - key: marketingIntensity
+    label: Marketing Intensity (% of Marketing Budget)
+    type: number
+    default: 50          # Higher percentage but smaller absolute amount
+    min: 10
+    max: 50
+    step: 5
+    description: Percentage of total marketing budget allocated to this product
+
+outputs:
+  - key: totalDevelopmentCost
+    label: Total Development Cost
+    description: Total cost for product development
+
+  - key: marketingSpend
+    label: Marketing Spend
+    description: Total marketing budget for product launch
+
+  - key: projectedRevenue
+    label: Projected Revenue
+    description: Expected revenue from product launch
+
+simulation:
+  logic: |
+    // Small company product launch analysis
+    
+    // Development costs (8% of ARR per year - higher percentage for small company)
+    const yearlyDevelopmentBudget = businessContext.getProductBudget(8)
+    const totalDevelopmentCost = yearlyDevelopmentBudget * (developmentTimeMonths / 12)
+    
+    // Marketing spend using business context (15% of ARR for marketing)
+    const totalMarketingBudget = businessContext.getMarketingBudget(15)
+    const marketingSpend = totalMarketingBudget * (marketingIntensity / 100)
+    
+    // Projected revenue (small company, niche focus)
+    const marketSize = businessContext.annualRecurringRevenue * 1.5
+    const projectedRevenue = marketSize * 0.20 * (0.9 + random() * 0.2) // 20% adoption
+    
+    return {
+      totalDevelopmentCost: round(totalDevelopmentCost),
+      marketingSpend: round(marketingSpend),
+      projectedRevenue: round(projectedRevenue)
+    }

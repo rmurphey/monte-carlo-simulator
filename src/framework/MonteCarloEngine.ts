@@ -63,7 +63,8 @@ export abstract class MonteCarloEngine {
     }
     
     if (results.length === 0) {
-      throw new Error('All simulation iterations failed')
+      const firstError = errors.length > 0 ? errors[0].error : 'Unknown error'
+      throw new Error(`All simulation iterations failed. First error: ${firstError}`)
     }
     
     const endTime = new Date()

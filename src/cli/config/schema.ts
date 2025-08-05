@@ -6,10 +6,11 @@ export interface SimulationConfig {
   description: string
   version: string
   tags: string[]
+  baseSimulation?: string  // Path to base simulation file to inherit from
   parameters: ParameterConfig[]
   groups?: ParameterGroupConfig[]
-  outputs: OutputConfig[]
-  simulation: {
+  outputs?: OutputConfig[]  // Optional if inheriting from base
+  simulation?: {            // Optional if inheriting from base
     logic: string
   }
 }
@@ -100,6 +101,7 @@ const simulationConfigSchema: JSONSchemaType<SimulationConfig> = {
       minItems: 1,
       maxItems: 10
     },
+    baseSimulation: { type: 'string', nullable: true },
     parameters: {
       type: 'array',
       items: parameterSchema,
@@ -115,7 +117,8 @@ const simulationConfigSchema: JSONSchemaType<SimulationConfig> = {
       type: 'array',
       items: outputSchema,
       minItems: 1,
-      maxItems: 10
+      maxItems: 10,
+      nullable: true
     },
     simulation: {
       type: 'object',
@@ -123,10 +126,11 @@ const simulationConfigSchema: JSONSchemaType<SimulationConfig> = {
         logic: { type: 'string', minLength: 10 }
       },
       required: ['logic'],
-      additionalProperties: false
+      additionalProperties: false,
+      nullable: true
     }
   },
-  required: ['name', 'category', 'description', 'version', 'tags', 'parameters', 'outputs', 'simulation'],
+  required: ['name', 'category', 'description', 'version', 'tags', 'parameters'],
   additionalProperties: false
 }
 
@@ -135,7 +139,7 @@ export class ConfigurationValidator {
   private validate: (data: unknown) => data is SimulationConfig
   
   constructor() {
-    this.ajv = new Ajv()
+    this.ajv = new Ajv({ allowUnionTypes: true })
     this.validate = this.ajv.compile(simulationConfigSchema)
   }
   
@@ -144,7 +148,7 @@ export class ConfigurationValidator {
     
     if (isValid) {
       // Additional business logic validation
-      return this.validateBusinessRules(config)
+      return this.validateBusinessRules(config as SimulationConfig)
     }
     
     const errors = this.ajv.errorsText(this.ajv.errors || []).split(', ')
@@ -161,11 +165,13 @@ export class ConfigurationValidator {
       errors.push(`Duplicate parameter keys: ${duplicateKeys.join(', ')}`)
     }
     
-    // Check for duplicate output keys
-    const outputKeys = config.outputs.map(o => o.key)
-    const duplicateOutputs = outputKeys.filter((key, index) => outputKeys.indexOf(key) !== index)
-    if (duplicateOutputs.length > 0) {
-      errors.push(`Duplicate output keys: ${duplicateOutputs.join(', ')}`)
+    // Check for duplicate output keys (only if outputs exist)
+    if (config.outputs) {
+      const outputKeys = config.outputs.map(o => o.key)
+      const duplicateOutputs = outputKeys.filter((key, index) => outputKeys.indexOf(key) !== index)
+      if (duplicateOutputs.length > 0) {
+        errors.push(`Duplicate output keys: ${duplicateOutputs.join(', ')}`)
+      }
     }
     
     // Validate select parameters have options
@@ -203,17 +209,19 @@ export class ConfigurationValidator {
       })
     }
     
-    // Validate simulation logic contains return statement
-    if (!config.simulation.logic.includes('return')) {
+    // Validate simulation logic contains return statement (only if simulation logic exists)
+    if (config.simulation && !config.simulation.logic.includes('return')) {
       errors.push('Simulation logic must contain a return statement')
     }
     
-    // Validate simulation logic references output keys
-    const logicReferencesOutputs = config.outputs.some(output => 
-      config.simulation.logic.includes(output.key)
-    )
-    if (!logicReferencesOutputs) {
-      errors.push('Simulation logic should return at least one of the defined outputs')
+    // Validate simulation logic references output keys (only if both exist)
+    if (config.simulation && config.outputs) {
+      const logicReferencesOutputs = config.outputs.some(output => 
+        config.simulation!.logic.includes(output.key)
+      )
+      if (!logicReferencesOutputs) {
+        errors.push('Simulation logic should return at least one of the defined outputs')
+      }
     }
     
     return { valid: errors.length === 0, errors }

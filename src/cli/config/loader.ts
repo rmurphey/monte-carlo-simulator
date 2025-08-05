@@ -1,28 +1,133 @@
 import { promises as fs } from 'fs'
-import { dirname, join, extname } from 'path'
+import { dirname, join, extname, resolve, isAbsolute } from 'path'
 import * as yaml from 'js-yaml'
-import { SimulationConfig, ConfigurationValidator } from './schema'
+import { SimulationConfig, ConfigurationValidator, ParameterConfig, ParameterGroupConfig, OutputConfig } from './schema'
 
 export class ConfigurationLoader {
   private validator = new ConfigurationValidator()
+  private loadedConfigs = new Map<string, SimulationConfig>() // Cache to prevent circular references
   
   async loadConfig(filePath: string): Promise<SimulationConfig> {
     try {
+      // Normalize path to prevent circular reference issues
+      const normalizedPath = resolve(filePath)
+      
+      // Check cache first
+      if (this.loadedConfigs.has(normalizedPath)) {
+        return this.loadedConfigs.get(normalizedPath)!
+      }
+      
       const content = await fs.readFile(filePath, 'utf8')
-      const config = this.parseContent(content, filePath)
+      let config = this.parseContent(content, filePath) as SimulationConfig
+      
+      // Handle base simulation inheritance
+      if (config.baseSimulation) {
+        config = await this.mergeWithBase(config, filePath)
+      }
       
       const validation = this.validator.validateConfig(config)
       if (!validation.valid) {
         throw new Error(`Invalid configuration in ${filePath}:\n${validation.errors.join('\n')}`)
       }
       
-      return config as SimulationConfig
+      // Cache the resolved config
+      this.loadedConfigs.set(normalizedPath, config)
+      
+      return config
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to load configuration from ${filePath}: ${error.message}`)
       }
       throw error
     }
+  }
+  
+  private async mergeWithBase(config: SimulationConfig, configPath: string): Promise<SimulationConfig> {
+    const basePath = this.resolveBasePath(config.baseSimulation!, configPath)
+    const baseConfig = await this.loadConfig(basePath)
+    
+    // Create merged configuration
+    const merged: SimulationConfig = {
+      // Base simulation properties as defaults
+      name: config.name,
+      category: config.category,
+      description: config.description,
+      version: config.version,
+      tags: config.tags,
+      
+      // Parameters: merge arrays, child overrides base
+      parameters: this.mergeParameters(baseConfig.parameters, config.parameters),
+      
+      // Groups: merge arrays, child overrides base  
+      groups: this.mergeGroups(baseConfig.groups, config.groups),
+      
+      // Outputs: merge arrays, child overrides base (child can add or override outputs)
+      outputs: this.mergeOutputs(baseConfig.outputs, config.outputs || []),
+      
+      // Simulation logic: child overrides base completely
+      simulation: {
+        logic: config.simulation?.logic || baseConfig.simulation.logic
+      }
+    }
+    
+    return merged
+  }
+  
+  private resolveBasePath(basePath: string, configPath: string): string {
+    if (isAbsolute(basePath)) {
+      return basePath
+    }
+    
+    // Resolve relative to the config file's directory
+    return resolve(dirname(configPath), basePath)
+  }
+  
+  private mergeParameters(baseParams: ParameterConfig[], childParams: ParameterConfig[]): ParameterConfig[] {
+    const merged = new Map<string, ParameterConfig>()
+    
+    // Add all base parameters
+    for (const param of baseParams) {
+      merged.set(param.key, { ...param })
+    }
+    
+    // Override with child parameters
+    for (const param of childParams) {
+      merged.set(param.key, { ...param })
+    }
+    
+    return Array.from(merged.values())
+  }
+  
+  private mergeGroups(baseGroups: ParameterGroupConfig[] = [], childGroups: ParameterGroupConfig[] = []): ParameterGroupConfig[] {
+    const merged = new Map<string, ParameterGroupConfig>()
+    
+    // Add all base groups
+    for (const group of baseGroups) {
+      merged.set(group.name, { ...group, parameters: [...group.parameters] })
+    }
+    
+    // Override with child groups
+    for (const group of childGroups) {
+      merged.set(group.name, { ...group, parameters: [...group.parameters] })
+    }
+    
+    return Array.from(merged.values())
+  }
+  
+  private mergeOutputs(baseOutputs: OutputConfig[], childOutputs: OutputConfig[]): OutputConfig[] {
+    const merged = new Map<string, OutputConfig>()
+    
+    // Add all base outputs
+    for (const output of baseOutputs) {
+      merged.set(output.key, { ...output })
+    }
+    
+    // Override with child outputs
+    for (const output of childOutputs) {
+      merged.set(output.key, { ...output })
+    }
+    
+    return Array.from(merged.values())
   }
   
   async loadMultipleConfigs(directory: string): Promise<SimulationConfig[]> {

@@ -1,11 +1,61 @@
 import { MonteCarloEngine } from './MonteCarloEngine'
 import { SimulationMetadata, ParameterDefinition } from './types'
-import { SimulationConfig } from '../cli/config/schema'
+import { SimulationConfig, ParameterConfig } from '../cli/config/schema'
 import { toId } from '../cli/utils/name-converter'
+import { globalARRInjector, ARRBusinessContextInjector } from './ARRBusinessContext'
 
 export class ConfigurableSimulation extends MonteCarloEngine {
+  private arrInjector: ARRBusinessContextInjector
+  private enhancedConfig: SimulationConfig
+  
   constructor(private config: SimulationConfig) {
     super()
+    this.arrInjector = globalARRInjector
+    this.enhancedConfig = this.enhanceConfigWithARR(config)
+  }
+  
+  /**
+   * Enhances simulation config with automatic ARR injection
+   */
+  private enhanceConfigWithARR(config: SimulationConfig): SimulationConfig {
+    const parameterKeys = config.parameters.map(p => p.key)
+    
+    // Check if ARR is already present
+    if (this.arrInjector.hasARRParameter(parameterKeys)) {
+      // ARR already exists, just enhance simulation logic
+      return {
+        ...config,
+        simulation: {
+          logic: this.injectARRBusinessContext(config.simulation?.logic || '', parameterKeys)
+        }
+      }
+    }
+    
+    // Inject ARR parameter and business context
+    const arrParam = this.arrInjector.getARRParameterDefinition()
+    const arrGroup = this.arrInjector.getARRParameterGroup()
+    const allParameterKeys = [arrParam.key, ...parameterKeys]
+    
+    return {
+      ...config,
+      parameters: [arrParam, ...config.parameters],
+      groups: [arrGroup, ...(config.groups || [])],
+      simulation: {
+        logic: this.injectARRBusinessContext(config.simulation?.logic || '', allParameterKeys)
+      }
+    }
+  }
+  
+  /**
+   * Injects ARR business context into simulation logic
+   */
+  private injectARRBusinessContext(originalLogic: string, parameterKeys: string[] = []): string {
+    const contextInjection = this.arrInjector.getBusinessContextInjectionCode(parameterKeys)
+    
+    return `${contextInjection}
+    
+    // Original simulation logic:
+    ${originalLogic}`
   }
   
   getMetadata(): SimulationMetadata {
@@ -19,7 +69,7 @@ export class ConfigurableSimulation extends MonteCarloEngine {
   }
   
   getParameterDefinitions(): ParameterDefinition[] {
-    return this.config.parameters.map(param => ({
+    return this.enhancedConfig.parameters.map(param => ({
       key: param.key,
       label: param.label,
       type: param.type,
@@ -56,7 +106,7 @@ export class ConfigurableSimulation extends MonteCarloEngine {
       // Create the function with parameter names and logic
       const functionBody = `
         const { random, sqrt, pow, log, exp, abs, min, max, floor, ceil, round } = mathUtils;
-        ${this.config.simulation.logic}
+        ${this.enhancedConfig.simulation?.logic || ''}
       `
       
       const simulationFunction = new Function(
@@ -84,7 +134,7 @@ export class ConfigurableSimulation extends MonteCarloEngine {
       }
       
       // Validate that returned keys match expected outputs
-      const expectedOutputs = this.config.outputs.map(o => o.key)
+      const expectedOutputs = (this.enhancedConfig.outputs || this.config.outputs || []).map(o => o.key)
       const actualOutputs = Object.keys(numericResult)
       
       const missingOutputs = expectedOutputs.filter(key => !actualOutputs.includes(key))
@@ -103,11 +153,11 @@ export class ConfigurableSimulation extends MonteCarloEngine {
   }
   
   setupParameterGroups(): void {
-    if (!this.config.groups) return
+    if (!this.enhancedConfig.groups) return
     
     const schema = this.getParameterSchema()
     
-    this.config.groups.forEach(group => {
+    this.enhancedConfig.groups.forEach(group => {
       schema.addGroup({
         name: group.name,
         description: group.description,
@@ -117,11 +167,11 @@ export class ConfigurableSimulation extends MonteCarloEngine {
   }
   
   getOutputDefinitions() {
-    return this.config.outputs
+    return this.enhancedConfig.outputs || this.config.outputs || []
   }
   
   getConfiguration(): SimulationConfig {
-    return { ...this.config } // Return a copy to prevent mutations
+    return { ...this.enhancedConfig } // Return enhanced config with ARR injection
   }
   
   validateConfiguration(): { valid: boolean; errors: string[] } {
@@ -137,7 +187,7 @@ export class ConfigurableSimulation extends MonteCarloEngine {
       const result = this.simulateScenario(defaultParams)
       
       // Verify all expected outputs are present
-      const expectedOutputs = this.config.outputs.map(o => o.key)
+      const expectedOutputs = (this.enhancedConfig.outputs || this.config.outputs || []).map(o => o.key)
       const actualOutputs = Object.keys(result)
       
       const missingOutputs = expectedOutputs.filter(key => !actualOutputs.includes(key))

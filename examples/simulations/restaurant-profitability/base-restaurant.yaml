@@ -1,132 +1,150 @@
-name: Restaurant Profitability Analysis (Neutral Strategy)
+name: Restaurant Profitability Analysis (Base)
 category: Business
-description: Market-average approach with industry benchmark assumptions
+description: Base restaurant profitability simulation with industry-standard parameters and KPIs
 version: 1.0.0
-tags: [restaurant, business-planning, neutral, market-average]
+tags: [restaurant, business-planning, base, industry-kpis]
 
 parameters:
-  - key: startupCosts
-    label: Initial Startup Costs
+  - key: annualRecurringRevenue
+    label: Annual Recurring Revenue (ARR)
     type: number
-    default: 250000      # Market average
-    min: 50000
-    max: 1000000
-    step: 5000
-    description: Standard market investment for casual dining setup
+    default: 2000000     # $2M ARR baseline for restaurant investment
+    min: 100000
+    max: 50000000
+    step: 50000
+    description: Company's annual recurring revenue for restaurant investment planning
+    
+  - key: restaurantInvestmentPercent
+    label: Restaurant Investment (% of ARR)
+    type: number
+    default: 12          # Standard 12% of ARR for restaurant investment
+    min: 5
+    max: 25
+    step: 0.5
+    description: Restaurant investment budget as percentage of ARR
+    
+  - key: startupCostsPercent
+    label: Startup Costs (% of Restaurant Budget)
+    type: number
+    default: 75          # 75% of restaurant budget for initial investment
+    min: 50
+    max: 90
+    step: 5
+    description: Percentage of restaurant budget allocated to startup costs
 
-  - key: monthlyRent
-    label: Monthly Rent
+  - key: monthlyRentPercent
+    label: Monthly Rent (% of Restaurant Budget)
     type: number
-    default: 12000       # Market rate location
-    min: 2000
-    max: 50000
-    step: 500
-    description: Market-rate rent in good commercial area
+    default: 5           # 5% of monthly restaurant budget for rent
+    min: 2
+    max: 15
+    step: 0.5
+    description: Monthly rent as percentage of monthly restaurant budget
 
   - key: seatingCapacity
     label: Seating Capacity
     type: number
-    default: 80          # Industry standard size
+    default: 80
     min: 20
     max: 300
     step: 5
-    description: Standard capacity for casual dining restaurant
+    description: Total seating capacity of the restaurant
 
   - key: averageTicket
     label: Average Ticket Size
     type: number
-    default: 45.00       # Market average pricing
+    default: 45.00
     min: 10.00
     max: 200.00
     step: 1.00
-    description: Industry average ticket size for casual dining
+    description: Average customer spend per visit
 
   - key: staffCount
     label: Staff Count
     type: number
-    default: 12          # Standard staffing levels
+    default: 12
     min: 3
     max: 50
     step: 1
-    description: Industry-standard staffing for 80-seat restaurant
+    description: Total number of restaurant staff
 
   - key: avgWage
     label: Average Hourly Wage
     type: number
-    default: 18.50       # Market-competitive wages
+    default: 18.50
     min: 12.00
     max: 35.00
     step: 0.50
-    description: Competitive wages to attract quality staff
+    description: Average hourly wage for restaurant staff
 
   - key: cuisineType
     label: Cuisine Type
     type: select
     default: casual-dining
     options: [fast-casual, casual-dining, fine-dining, ethnic-specialty]
-    description: Standard casual dining concept
+    description: Type of cuisine and service model
 
   - key: locationQuality
     label: Location Quality
     type: select
     default: good
     options: [poor, fair, good, excellent, prime]
-    description: Good location with decent foot traffic
+    description: Quality of restaurant location for foot traffic
 
   - key: hasDelivery
     label: Offers Delivery Service
     type: boolean
-    default: true        # Modern expectation
-    description: Delivery service to capture additional revenue
+    default: true
+    description: Whether restaurant offers delivery service
 
   - key: targetFoodCostPercent
     label: Target Food Cost (% of Revenue)
     type: number
-    default: 30          # Standard food cost control
+    default: 30
     min: 20
     max: 40
     step: 1
-    description: Standard food cost management as percentage of revenue
+    description: Target food cost management as percentage of revenue
 
-  - key: customerAcquisitionBudget
-    label: Monthly Marketing Budget
+  - key: customerAcquisitionPercent
+    label: Customer Acquisition (% of Restaurant Budget)
     type: number
-    default: 3000        # Standard marketing spend
-    min: 500
-    max: 10000
-    step: 250
-    description: Monthly budget for customer acquisition and marketing
+    default: 2           # 2% of monthly restaurant budget for customer acquisition
+    min: 0.5
+    max: 8
+    step: 0.25
+    description: Customer acquisition budget as percentage of monthly restaurant budget
 
   - key: tableTurnoverTarget
     label: Target Table Turns per Day
     type: number
-    default: 2.5         # Standard turnover rate
+    default: 2.5
     min: 1.0
     max: 5.0
     step: 0.1
-    description: Standard industry target for table turnover per day
+    description: Target table turnover rate per day
 
   - key: seasonalVariation
     label: Seasonal Revenue Variation (%)
     type: number
-    default: 20          # Standard seasonal impact
+    default: 20
     min: 5
     max: 40
     step: 5
     description: Expected seasonal variation in revenue
 
 groups:
-  - name: Market Investment
-    description: Industry-standard initial investment and ongoing costs
-    parameters: [startupCosts, monthlyRent, staffCount, avgWage]
+  - name: ARR-Based Investment
+    description: Restaurant investment budget based on company ARR
+    parameters: [annualRecurringRevenue, restaurantInvestmentPercent, startupCostsPercent, monthlyRentPercent]
     
-  - name: Standard Operations
-    description: Typical capacity and pricing for casual dining with efficiency targets
-    parameters: [seatingCapacity, averageTicket, cuisineType, hasDelivery, tableTurnoverTarget]
+  - name: Operations & Staffing
+    description: Restaurant capacity, service model, and staffing costs
+    parameters: [seatingCapacity, averageTicket, cuisineType, hasDelivery, staffCount, avgWage]
     
-  - name: Market Strategy
-    description: Standard market positioning with operational targets
-    parameters: [locationQuality, targetFoodCostPercent, customerAcquisitionBudget, seasonalVariation]
+  - name: Market Strategy & Targets
+    description: Location strategy, operational targets, and customer acquisition
+    parameters: [locationQuality, targetFoodCostPercent, customerAcquisitionPercent, tableTurnoverTarget, seasonalVariation]
 
 outputs:
   - key: monthlyRevenue
@@ -171,44 +189,51 @@ outputs:
 
 simulation:
   logic: |
-    // Location quality factors - market standard
+    // Calculate ARR-based restaurant budget
+    const totalRestaurantBudget = annualRecurringRevenue * (restaurantInvestmentPercent / 100)
+    const startupCosts = totalRestaurantBudget * (startupCostsPercent / 100)
+    const monthlyRestaurantBudget = totalRestaurantBudget / 12
+    const monthlyRent = monthlyRestaurantBudget * (monthlyRentPercent / 100)
+    const customerAcquisitionBudget = monthlyRestaurantBudget * (customerAcquisitionPercent / 100)
+    
+    // Location quality factors
     const locationMultipliers = {
       poor: 0.6,
       fair: 0.8,
-      good: 1.0,        // Neutral scenario uses good location
+      good: 1.0,
       excellent: 1.3,
       prime: 1.6
     }
     
-    // Cuisine type factors with market averages
+    // Cuisine type factors
     const cuisineFactors = {
       'fast-casual': { frequency: 1.4, ticketVariation: 0.8 },
-      'casual-dining': { frequency: 1.0, ticketVariation: 1.0 },  // Market standard
+      'casual-dining': { frequency: 1.0, ticketVariation: 1.0 },
       'fine-dining': { frequency: 0.6, ticketVariation: 1.5 },
       'ethnic-specialty': { frequency: 0.9, ticketVariation: 1.1 }
     }
     
-    // Standard base utilization with seasonal variation
+    // Base utilization with seasonal variation
     const seasonalFactor = 1.0 + (random() - 0.5) * (seasonalVariation / 100)
     const baseUtilization = (0.35 + random() * 0.25) * seasonalFactor  // 35-60% with seasonal impact
     const locationFactor = locationMultipliers[locationQuality]
     const cuisineFactor = cuisineFactors[cuisineType]
     
-    // Calculate actual table turns (standard approach to target)
+    // Calculate actual table turns
     const actualTableTurns = tableTurnoverTarget * (0.85 + random() * 0.30)  // 85-115% of target
     
-    // Calculate daily customers with realistic table management
+    // Calculate daily customers
     const actualUtilization = min(baseUtilization * locationFactor * cuisineFactor.frequency, 0.95)
     const dailyCustomers = seatingCapacity * actualUtilization * actualTableTurns
     
-    // Revenue calculations with normal market volatility
+    // Revenue calculations
     const actualTicket = averageTicket * (0.8 + random() * 0.4) * cuisineFactor.ticketVariation
     const dineInRevenue = dailyCustomers * actualTicket * 30  // Monthly
     
-    // Delivery revenue with market-average uptake
+    // Delivery revenue
     let deliveryRevenue = 0
     if (hasDelivery) {
-      const deliveryCustomers = dailyCustomers * 0.30 * (0.8 + random() * 0.4)  // 30% delivery uptake
+      const deliveryCustomers = dailyCustomers * 0.25 * (0.8 + random() * 0.4)  // 25% delivery uptake
       deliveryRevenue = deliveryCustomers * actualTicket * 0.85 * 30  // 15% delivery fee impact
     }
     
@@ -217,17 +242,17 @@ simulation:
     // Operating cost calculations with target-based food costs
     const laborCosts = staffCount * avgWage * 40 * 4.33  // Monthly labor
     
-    // Food costs with target management (standard control)
+    // Food costs with target management
     const targetFoodCostVariation = (targetFoodCostPercent / 100) * (0.90 + random() * 0.20)  // 90-110% of target
     const foodCosts = monthlyRevenue * targetFoodCostVariation
     
-    const utilitiesInsurance = 3500 + random() * 1500  // Market average utilities
+    const utilitiesInsurance = 3500 + random() * 1500  // Utilities and insurance
     
-    // Marketing costs from dedicated budget plus revenue-based
-    const totalMarketingCosts = customerAcquisitionBudget + (monthlyRevenue * 0.02)  // Fixed + variable marketing
+    // Marketing costs from ARR-based budget plus revenue-based
+    const totalMarketingCosts = customerAcquisitionBudget + (monthlyRevenue * 0.01)  // ARR-based + variable marketing
     
-    const maintenanceRepairs = 1200 + random() * 800  // Normal maintenance costs
-    const miscOperating = 2000 + random() * 1000  // Standard miscellaneous costs
+    const maintenanceRepairs = 1200 + random() * 800  // Maintenance costs
+    const miscOperating = 2000 + random() * 1000  // Miscellaneous costs
     
     const monthlyOperatingCosts = monthlyRent + laborCosts + foodCosts + 
                                  utilitiesInsurance + totalMarketingCosts + 
