@@ -18,34 +18,12 @@ The Monte Carlo Simulation Framework has evolved into a **professional business 
 - ✅ Comprehensive documentation for AI tools like Claude Code
 - ✅ 58 passing tests with strict TypeScript compliance
 
-## Current Priority: Complete Business Intelligence Enhancement
+## Recently Completed and Archived ✅
 
-### ✅ **Recently Completed: Professional Business Intelligence**
-
-**CLI Run Command Framework:**
-- ✅ Professional colorized terminal output with chalk
-- ✅ Real-time progress bars and statistical displays
-- ✅ Scenario comparison mode with detailed analysis
-- ✅ Multiple output formats (table, JSON, CSV, quiet)
-- ✅ Parameter override system and custom YAML file support
-
-**Marketing Campaign ROI Intelligence:**
-- ✅ ARR-based budgeting ($1M→$5M ARR with 8%→18% marketing spend)
-- ✅ Comprehensive CAC modeling including sales costs and organic growth
-- ✅ CAC:CLV ratio analysis for sustainability metrics (0.04→0.26 across scenarios)
-- ✅ Viral/referral growth modeling (15%→25% organic conversion rates)
-
-**Restaurant Profitability Intelligence:**
-- ✅ Industry-standard KPIs: food cost %, labor cost %, table turnover rates
-- ✅ Target-based management (28% food cost target vs actual achievement)
-- ✅ Customer acquisition cost and operational efficiency tracking
-- ✅ Seasonal variation modeling for realistic business cycles
-- ✅ Revenue per seat and capacity utilization benchmarks
-
-**Software Project Timeline Intelligence:**
-- ✅ Business-friendly feature counts (replacing academic story points)
-- ✅ Realistic team coordination overhead and scaling factors
-- ✅ Velocity tracking with business-meaningful metrics
+**Major achievements have been archived for reference:**
+- 📁 [Business Intelligence Transformation](archive/business-intelligence-transformation.md) - Complete ARR framework and professional CLI
+- 📁 [CLI Simulation Generator](archive/cli-simulation-generator-completed.md) - YAML-based simulation creation system
+- 📁 [Original Framework Foundation](archive/COMPLETED_WORK.md) - Core infrastructure and web interface
 
 ### 🎯 **Current Phase: Framework Maturity & Scale**
 
