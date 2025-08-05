@@ -79,5 +79,41 @@ Monte Carlo Simulation Framework Development
 ✅ **Simulation Migration** - AI ROI simulation fully integrated
 ✅ **Testing & Quality** - Comprehensive test suite with TypeScript strict mode
 
+### Next Phase: Developer Experience Enhancement
+
+**CLI Simulation Generator** (Priority: High)
+- [ ] **Phase 1**: Core CLI Infrastructure
+  - [ ] Set up CLI entry point and command parsing
+  - [ ] Create basic template engine
+  - [ ] Implement file generation utilities
+  - [ ] Add name conversion utilities (camelCase, kebab-case, etc.)
+
+- [ ] **Phase 2**: Template System
+  - [ ] Create simulation class template
+  - [ ] Create test file template
+  - [ ] Implement parameter definition generation
+  - [ ] Add registry update functionality
+
+- [ ] **Phase 3**: Interactive Mode
+  - [ ] Add inquirer.js for interactive prompts
+  - [ ] Implement parameter builder prompts
+  - [ ] Create output metrics configuration
+  - [ ] Add tag and category selection
+
+- [ ] **Phase 4**: Advanced Features
+  - [ ] Add template validation
+  - [ ] Implement custom templates support
+  - [ ] Create list-simulations command
+  - [ ] Add simulation validation command
+
+- [ ] **Phase 5**: Integration & Polish
+  - [ ] Add comprehensive CLI tests
+  - [ ] Create documentation and examples
+  - [ ] Integrate with package.json scripts
+  - [ ] Add error handling and user feedback
+
+**Design Document**: [designs/cli-simulation-generator.md](designs/cli-simulation-generator.md)  
+**Success Metrics**: Reduce simulation creation time by 80%, ensure generated code quality
+
 ---
 *This file tracks active development sessions and progress*
