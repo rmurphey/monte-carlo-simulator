@@ -105,6 +105,6 @@ The existing simulation models AI tool investment ROI with sophisticated uncerta
 ## Completion criteria
 
 - index.js in the root is no longer just a single simulator.
-- Simulators can be defined in a single directory using limited JavaScript.``
+- Simulators can be defined in a single directory using limited JavaScript.
 - Simulators can be accessed via a localhost port.
 

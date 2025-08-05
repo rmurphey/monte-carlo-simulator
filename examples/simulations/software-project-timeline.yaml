@@ -1,0 +1,178 @@
+name: Software Project Timeline Estimation
+category: Technology
+description: Predicts software development project duration considering team size, complexity, and common risk factors like scope creep and technical debt
+version: 1.0.0
+tags: [software-development, project-management, agile, timeline-estimation]
+
+parameters:
+  - key: storyPoints
+    label: Total Story Points
+    type: number
+    default: 500
+    min: 50
+    max: 5000
+    step: 10
+    description: Total estimated story points for the project backlog
+
+  - key: teamSize
+    label: Development Team Size
+    type: number
+    default: 6
+    min: 2
+    max: 20
+    step: 1
+    description: Number of developers working on the project
+
+  - key: teamExperience
+    label: Team Experience Level
+    type: select
+    default: mixed
+    options: [junior, mixed, senior, expert]
+    description: Overall experience level of the development team
+
+  - key: projectComplexity
+    label: Project Complexity
+    type: select
+    default: medium
+    options: [low, medium, high, very-high]
+    description: Technical complexity of the project requirements
+
+  - key: requirementsStability
+    label: Requirements Stability
+    type: select
+    default: moderate
+    options: [stable, moderate, changing, volatile]
+    description: How likely requirements are to change during development
+
+  - key: hasLegacyIntegration
+    label: Legacy System Integration
+    type: boolean
+    default: false
+    description: Whether the project requires integration with legacy systems
+
+  - key: testingStrategy
+    label: Testing Strategy
+    type: select
+    default: automated
+    options: [manual, mixed, automated, comprehensive]
+    description: Level of test automation and quality assurance
+
+  - key: deploymentComplexity
+    label: Deployment Complexity
+    type: select
+    default: moderate
+    options: [simple, moderate, complex, enterprise]
+    description: Complexity of the deployment and infrastructure setup
+
+groups:
+  - name: Team & Scope
+    description: Project team and workload parameters
+    parameters: [storyPoints, teamSize, teamExperience]
+    
+  - name: Project Characteristics
+    description: Technical and business complexity factors
+    parameters: [projectComplexity, requirementsStability, hasLegacyIntegration]
+    
+  - name: Quality & Deployment
+    description: Testing and deployment considerations
+    parameters: [testingStrategy, deploymentComplexity]
+
+outputs:
+  - key: estimatedWeeks
+    label: Estimated Duration (Weeks)
+    description: Total project duration in weeks from start to deployment
+
+  - key: confidenceInterval
+    label: Confidence Range (Weeks)
+    description: Range representing 80% confidence interval around the estimate
+
+  - key: riskAdjustment
+    label: Risk Adjustment Factor
+    description: Multiplier applied to base estimate due to risk factors
+
+  - key: teamVelocity
+    label: Weekly Team Velocity
+    description: Estimated story points completed per week by the team
+
+simulation:
+  logic: |
+    // Base velocity calculations by team experience
+    const baseVelocityPerDev = {
+      junior: 8,
+      mixed: 12,
+      senior: 16,
+      expert: 20
+    }
+    
+    // Team size efficiency factor (larger teams have coordination overhead)
+    const teamEfficiency = teamSize <= 4 ? 1.0 : 
+                          teamSize <= 8 ? 0.9 : 
+                          teamSize <= 12 ? 0.8 : 0.7
+    
+    // Calculate base weekly velocity
+    const baseVelocity = baseVelocityPerDev[teamExperience] * teamSize * teamEfficiency
+    
+    // Complexity multipliers
+    const complexityFactors = {
+      low: 0.8,
+      medium: 1.0,
+      high: 1.3,
+      'very-high': 1.7
+    }
+    
+    // Requirements stability impact
+    const stabilityFactors = {
+      stable: 1.0,
+      moderate: 1.15,
+      changing: 1.35,
+      volatile: 1.6
+    }
+    
+    // Testing strategy impact on timeline
+    const testingFactors = {
+      manual: 1.4,
+      mixed: 1.2,
+      automated: 1.0,
+      comprehensive: 1.1
+    }
+    
+    // Deployment complexity impact
+    const deploymentFactors = {
+      simple: 1.0,
+      moderate: 1.1,
+      complex: 1.25,
+      enterprise: 1.4
+    }
+    
+    // Legacy integration penalty
+    const legacyFactor = hasLegacyIntegration ? 1.3 : 1.0
+    
+    // Calculate risk adjustment factor
+    const riskAdjustment = complexityFactors[projectComplexity] * 
+                          stabilityFactors[requirementsStability] *
+                          testingFactors[testingStrategy] *
+                          deploymentFactors[deploymentComplexity] *
+                          legacyFactor
+    
+    // Add random variation for Monte Carlo simulation
+    const randomVariation = 0.8 + random() * 0.4  // ±20% variation
+    
+    // Calculate adjusted velocity
+    const adjustedVelocity = (baseVelocity / riskAdjustment) * randomVariation
+    
+    // Calculate timeline
+    const estimatedWeeks = storyPoints / adjustedVelocity
+    
+    // Calculate confidence interval (±30% for 80% confidence)
+    const confidenceRange = estimatedWeeks * 0.3
+    
+    // Add buffer for planning and deployment (10-20%)
+    const bufferFactor = 1.1 + random() * 0.1
+    const finalEstimateWeeks = estimatedWeeks * bufferFactor
+    
+    return {
+      estimatedWeeks: round(finalEstimateWeeks * 10) / 10,
+      confidenceInterval: round(confidenceRange * 10) / 10,
+      riskAdjustment: round(riskAdjustment * 100) / 100,
+      teamVelocity: round(adjustedVelocity * 10) / 10
+    }

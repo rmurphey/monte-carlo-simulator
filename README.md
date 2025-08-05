@@ -2,12 +2,35 @@
 
 A comprehensive TypeScript/React framework for building and running Monte Carlo simulations with dynamic parameter interfaces and interactive visualizations.
 
+## ⚡ Quick Start for AI Tools
+
+**For AI assistants like Claude Code:** This framework supports creating Monte Carlo simulations through YAML configuration files. 
+
+📚 **[Complete YAML Schema Guide](docs/YAML_SCHEMA_GUIDE.md)** - Comprehensive documentation for AI-assisted simulation creation
+📁 **[Example Configurations](examples/simulations/)** - Ready-to-use simulation templates for common business scenarios
+
+### Available Examples
+- **[Restaurant Profitability Analysis](examples/simulations/restaurant-profitability.yaml)** - Business planning for restaurant locations
+- **[Software Project Timeline](examples/simulations/software-project-timeline.yaml)** - Development project estimation with risk factors  
+- **[Marketing Campaign ROI](examples/simulations/marketing-campaign-roi.yaml)** - Digital marketing performance prediction
+
+### Create New Simulations
+```bash
+# Interactive configuration builder
+npm run cli create --interactive "Your Simulation Name"
+
+# Generate from template
+npm run cli create "Your Simulation Name" --template
+```
+
 ## Features
 
+- **Configuration-Driven**: Create simulations using YAML files - no TypeScript required
+- **Interactive CLI**: Step-by-step wizard for building simulations
 - **Modular Framework**: Extensible architecture for building multiple simulation types
 - **Dynamic Parameter Forms**: Auto-generated UI from parameter schemas with validation
 - **Interactive Visualizations**: Statistical summaries, distributions, time series, and scatter plots  
-- **Comprehensive Testing**: 34+ tests covering all framework components
+- **Comprehensive Testing**: 58+ tests covering all framework components
 - **Type Safety**: Full TypeScript implementation with strict mode
 - **Real-time Progress**: Live updates during long-running simulations
 - **Advanced Search**: Registry system with filtering, tagging, and categorization
@@ -52,7 +75,24 @@ npm run dev
 
 ### Usage
 
-#### Running the Application
+#### CLI Commands
+
+**Create New Simulations:**
+```bash
+# Interactive configuration builder (recommended for AI tools)
+npm run cli create --interactive "Simulation Name"
+
+# Generate template configuration
+npm run cli create "Simulation Name" --category Finance --description "Custom description"
+
+# List available configuration files
+npm run cli list
+
+# Validate a configuration file
+npm run cli validate path/to/simulation.yaml --verbose
+```
+
+#### Running the Web Application
 1. Open your browser to http://localhost:3000 
 2. Browse available simulations in the grid view
 3. Click on a simulation to open the parameter interface

@@ -12,7 +12,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "cli": "tsx src/cli/index.ts"
   },
   "dependencies": {
     "ajv": "^8.17.1",

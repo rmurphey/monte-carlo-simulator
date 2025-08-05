@@ -1,0 +1,185 @@
+name: Restaurant Profitability Analysis
+category: Business
+description: Evaluates the financial viability of opening a new restaurant location by modeling revenue streams, operating costs, and market uncertainties
+version: 1.0.0
+tags: [restaurant, hospitality, business-planning, profitability]
+
+parameters:
+  - key: startupCosts
+    label: Initial Startup Costs
+    type: number
+    default: 250000
+    min: 50000
+    max: 1000000
+    step: 5000
+    description: One-time costs for equipment, renovation, permits, and initial inventory
+
+  - key: monthlyRent
+    label: Monthly Rent
+    type: number
+    default: 12000
+    min: 2000
+    max: 50000
+    step: 500
+    description: Monthly lease cost for the restaurant space
+
+  - key: seatingCapacity
+    label: Seating Capacity
+    type: number
+    default: 80
+    min: 20
+    max: 300
+    step: 5
+    description: Maximum number of customers that can be seated simultaneously
+
+  - key: averageTicket
+    label: Average Ticket Size
+    type: number
+    default: 45.00
+    min: 10.00
+    max: 200.00
+    step: 1.00
+    description: Average amount spent per customer visit
+
+  - key: staffCount
+    label: Staff Count
+    type: number
+    default: 12
+    min: 3
+    max: 50
+    step: 1
+    description: Total number of employees (full-time equivalent)
+
+  - key: avgWage
+    label: Average Hourly Wage
+    type: number
+    default: 18.50
+    min: 12.00
+    max: 35.00
+    step: 0.50
+    description: Average hourly wage across all staff positions
+
+  - key: cuisineType
+    label: Cuisine Type
+    type: select
+    default: casual-dining
+    options: [fast-casual, casual-dining, fine-dining, ethnic-specialty]
+    description: Restaurant category affecting customer patterns and pricing
+
+  - key: locationQuality
+    label: Location Quality
+    type: select
+    default: good
+    options: [poor, fair, good, excellent, prime]
+    description: Quality of the restaurant location affecting foot traffic
+
+  - key: hasDelivery
+    label: Offers Delivery Service
+    type: boolean
+    default: true
+    description: Whether the restaurant offers delivery service
+
+groups:
+  - name: Financial Investment
+    description: Initial and ongoing financial commitments
+    parameters: [startupCosts, monthlyRent, staffCount, avgWage]
+    
+  - name: Operations
+    description: Restaurant capacity and service model
+    parameters: [seatingCapacity, averageTicket, cuisineType, hasDelivery]
+    
+  - name: Market Factors
+    description: External factors affecting performance
+    parameters: [locationQuality]
+
+outputs:
+  - key: monthlyRevenue
+    label: Monthly Revenue
+    description: Gross monthly revenue from all sources
+
+  - key: monthlyOperatingCosts
+    label: Monthly Operating Costs
+    description: Total monthly expenses excluding startup costs
+
+  - key: monthlyNetProfit
+    label: Monthly Net Profit
+    description: Monthly profit after all operating expenses
+
+  - key: breakEvenMonths
+    label: Break-even Period
+    description: Number of months to recover initial startup investment
+
+  - key: annualROI
+    label: Annual ROI Percentage
+    description: Return on investment percentage based on first year performance
+
+simulation:
+  logic: |
+    // Location quality factors affect customer traffic
+    const locationMultipliers = {
+      poor: 0.6,
+      fair: 0.8,
+      good: 1.0,
+      excellent: 1.3,
+      prime: 1.6
+    }
+    
+    // Cuisine type affects customer frequency and ticket variation
+    const cuisineFactors = {
+      'fast-casual': { frequency: 1.4, ticketVariation: 0.8 },
+      'casual-dining': { frequency: 1.0, ticketVariation: 1.0 },
+      'fine-dining': { frequency: 0.6, ticketVariation: 1.5 },
+      'ethnic-specialty': { frequency: 0.9, ticketVariation: 1.1 }
+    }
+    
+    // Base utilization assumptions
+    const baseUtilization = 0.35 + random() * 0.25  // 35-60% capacity utilization
+    const locationFactor = locationMultipliers[locationQuality]
+    const cuisineFactor = cuisineFactors[cuisineType]
+    
+    // Calculate daily customers
+    const actualUtilization = min(baseUtilization * locationFactor * cuisineFactor.frequency, 0.95)
+    const dailyCustomers = seatingCapacity * actualUtilization * 2.5  // Assume 2.5 table turns per day
+    
+    // Revenue calculations
+    const actualTicket = averageTicket * (0.8 + random() * 0.4) * cuisineFactor.ticketVariation
+    const dineInRevenue = dailyCustomers * actualTicket * 30  // Monthly
+    
+    // Delivery revenue (if applicable)
+    let deliveryRevenue = 0
+    if (hasDelivery) {
+      const deliveryCustomers = dailyCustomers * 0.3 * (0.8 + random() * 0.4)
+      deliveryRevenue = deliveryCustomers * actualTicket * 0.85 * 30  // 15% delivery fee impact
+    }
+    
+    const monthlyRevenue = dineInRevenue + deliveryRevenue
+    
+    // Operating cost calculations
+    const laborCosts = staffCount * avgWage * 40 * 4.33  // Monthly labor
+    const foodCosts = monthlyRevenue * (0.28 + random() * 0.08)  // 28-36% food cost
+    const utilitiesInsurance = 3500 + random() * 1500  // Utilities, insurance, etc.
+    const marketingCosts = monthlyRevenue * 0.03  // 3% of revenue
+    const maintenanceRepairs = 1200 + random() * 800
+    const miscOperating = 2000 + random() * 1000
+    
+    const monthlyOperatingCosts = monthlyRent + laborCosts + foodCosts + 
+                                 utilitiesInsurance + marketingCosts + 
+                                 maintenanceRepairs + miscOperating
+    
+    // Profit calculations
+    const monthlyNetProfit = monthlyRevenue - monthlyOperatingCosts
+    
+    // Break-even and ROI calculations
+    const breakEvenMonths = monthlyNetProfit > 0 ? 
+                           startupCosts / monthlyNetProfit : 999
+    
+    const annualNetProfit = monthlyNetProfit * 12
+    const annualROI = (annualNetProfit / startupCosts) * 100
+    
+    return {
+      monthlyRevenue: round(monthlyRevenue),
+      monthlyOperatingCosts: round(monthlyOperatingCosts),
+      monthlyNetProfit: round(monthlyNetProfit),
+      breakEvenMonths: min(round(breakEvenMonths * 10) / 10, 999),
+      annualROI: round(annualROI * 10) / 10
+    }
