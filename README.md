@@ -1,15 +1,20 @@
-# Monte Carlo Business Intelligence Platform
+# Monte Carlo Simulation Framework
 
-A professional TypeScript/React framework for building and running Monte Carlo simulations with industry-standard KPIs, ARR-based budgeting, and actionable business intelligence.
+A practical tool for running business scenario analysis with Monte Carlo simulations. Built for personal use but designed to be useful for anyone who needs to model business uncertainty with realistic parameters.
 
-## ⚡ Quick Start for AI Tools
+## ⚡ Quick Start
 
-**For AI assistants like Claude Code:** This framework supports creating Monte Carlo simulations through YAML configuration files. 
+**Run simulations directly:**
+```bash
+npx monte-carlo-simulator run restaurant-profitability --scenario conservative
+npx monte-carlo-simulator run marketing-campaign-roi --compare conservative,aggressive
+```
 
-📚 **[Complete YAML Schema Guide](docs/YAML_SCHEMA_GUIDE.md)** - Comprehensive documentation for AI-assisted simulation creation
-📁 **[Example Configurations](examples/simulations/)** - Ready-to-use simulation templates for common business scenarios
+**For AI tools:** Create new simulations through YAML configuration files.
+📚 **[YAML Schema Guide](docs/YAML_SCHEMA_GUIDE.md)** - Documentation for creating custom simulations
+📁 **[Example Configurations](examples/simulations/)** - Ready-to-use templates
 
-### Available Business Intelligence Simulations
+### Available Simulations
 - **[Restaurant Profitability Analysis](examples/simulations/restaurant-profitability/)** - Industry KPIs: food cost %, labor cost %, table turnover, CAC analysis
 - **[Marketing Campaign ROI](examples/simulations/marketing-campaign-roi/)** - ARR-based budgeting, CAC:CLV ratios, viral growth modeling
 - **[Software Project Timeline](examples/simulations/software-project-timeline/)** - Feature velocity, team scaling, business-friendly metrics
@@ -24,91 +29,81 @@ npm run cli create --interactive "Your Simulation Name"
 npm run cli create "Your Simulation Name" --template
 ```
 
-## Professional Business Intelligence Features
+## Features
 
-- **ARR-Based Business Context**: Universal Annual Recurring Revenue framework for realistic budgeting
-- **Industry-Standard KPIs**: Food cost %, CAC:CLV ratios, table turnover, feature velocity metrics
-- **Professional CLI**: Colorized terminal output with scenario comparison and progress visualization
-- **Scenario Risk Analysis**: Conservative/Neutral/Aggressive business planning with statistical confidence
-- **Configuration-Driven**: Create simulations using YAML files - no TypeScript required
-- **Business Intelligence Outputs**: Actionable strategic insights for C-suite decision making
-- **Comprehensive Testing**: 58+ tests covering all framework components
-- **Type Safety**: Full TypeScript implementation with strict mode
+- **Business-Realistic Parameters**: ARR-based budgeting that scales with company size
+- **Industry Metrics**: Food cost %, CAC:CLV ratios, table turnover, feature velocity
+- **Scenario Comparison**: Conservative/Neutral/Aggressive risk analysis
+- **Colorized CLI**: Terminal output with progress bars and statistical summaries
+- **YAML Configuration**: Create new simulations without writing code
+- **Export Options**: JSON, CSV, and table formats for further analysis
 
-## Business Intelligence Platform Capabilities
+## Current Simulations
 
-### 🎯 **Strategic Planning & Risk Analysis**
-- **Restaurant Operations**: 28.9% food cost management, $2.04 CAC optimization, 1.98 table turn efficiency
-- **Marketing Intelligence**: ARR-scaled budgets ($80K→$900K), 0.255 CAC:CLV sustainability ratios
-- **Software Development**: 3.3 features/week velocity, team scaling efficiency modeling
-- **Financial Planning**: ARR-based business context from $500K startup to $10M+ professional scale
+**Restaurant Profitability**: Models restaurant operations with industry metrics like food cost %, labor cost %, and table turnover rates.
 
-### 📊 **Professional Terminal Interface**
-- **Colorized Output**: Rich terminal UI with progress bars and statistical visualization
-- **Scenario Comparison**: Conservative/Neutral/Aggressive risk analysis with confidence intervals
-- **Business Reporting**: JSON, CSV, and table formats for strategic presentations
-- **Parameter Override**: Real-time what-if analysis for executive decision making
+**Marketing Campaign ROI**: ARR-based marketing budget allocation with CAC analysis and viral growth factors.
 
-### 🏢 **Industry-Grade Business Context**
-- **Universal ARR Framework**: Automatic budget scaling based on company Annual Recurring Revenue
-- **Department Budget Functions**: Marketing, Sales, Operations, Product, R&D budget allocation
-- **Business Intelligence Validation**: Industry benchmark compliance and realistic KPI modeling
+**Software Project Timeline**: Feature-based development estimation with team scaling and velocity tracking.
+
+**ARR Framework**: Demonstrates automatic business context injection that scales budgets based on company size.
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js (version 16 or higher)
-- Modern web browser with JavaScript enabled
 
 ### Installation
 
+**As a global tool:**
 ```bash
-# Clone the repository
+npm install -g monte-carlo-simulator
+monte-carlo-simulator run restaurant-profitability --scenario conservative
+```
+
+**Or use directly with npx:**
+```bash
+npx monte-carlo-simulator run marketing-campaign-roi --compare conservative,aggressive
+```
+
+**For development:**
+```bash
 git clone <repository-url>
 cd monte-carlo-simulation
-
-# Install dependencies
 npm install
-
-# Start the development server
-npm run dev
+npm run dev  # Start web interface
 ```
 
 ### Usage
 
-#### Professional CLI Commands
+#### Command Line Usage
 
-**Run Business Intelligence Simulations:**
+**Run simulations:**
 ```bash
-# Run individual scenarios with industry KPIs
-npm run cli run restaurant-profitability --scenario conservative --iterations 1000
-npm run cli run marketing-campaign-roi --scenario aggressive --verbose
+# Single scenario
+monte-carlo-simulator run restaurant-profitability --scenario conservative --iterations 1000
 
-# Compare business scenarios with colorized output  
-npm run cli run restaurant-profitability --compare conservative,neutral,aggressive
-npm run cli run marketing-campaign-roi --compare conservative,aggressive --output analysis.json
+# Compare scenarios
+monte-carlo-simulator run marketing-campaign-roi --compare conservative,aggressive
 
-# Override parameters for what-if analysis
-npm run cli run restaurant-profitability --scenario conservative --seatingCapacity 80 --averageTicket 40
+# Override parameters
+monte-carlo-simulator run restaurant-profitability --scenario conservative --seatingCapacity 80
 
-# Export results for business reporting
-npm run cli run marketing-campaign-roi --scenario neutral --format csv --output marketing-analysis.csv
+# Export results
+monte-carlo-simulator run marketing-campaign-roi --format csv --output analysis.csv
 ```
 
-**Create New Simulations:**
+**Create and manage simulations:**
 ```bash
-# Interactive configuration builder (recommended for AI tools)
-npm run cli create --interactive "Simulation Name"
+# Interactive builder
+monte-carlo-simulator create --interactive "Simulation Name"
 
-# Generate template configuration
-npm run cli create "Simulation Name" --category Finance --description "Custom description"
+# List available simulations
+monte-carlo-simulator list
 
-# List available configuration files
-npm run cli list
-
-# Validate a configuration file
-npm run cli validate path/to/simulation.yaml --verbose
+# Validate configuration
+monte-carlo-simulator validate path/to/simulation.yaml
 ```
 
 #### Running the Web Application
@@ -319,14 +314,14 @@ tests/
 
 See [ACTIVE_WORK.md](ACTIVE_WORK.md) for current development progress and recent achievements.
 
-### Platform Status: ✅ Professional Business Intelligence Ready
+### Framework Status: ✅ Complete
 
-The Monte Carlo Business Intelligence Platform is production-ready with:
+The Monte Carlo Simulation Framework includes:
 
-- ✅ **ARR Business Intelligence Framework**: Universal ARR-based budgeting with automatic business context injection
-- ✅ **Professional CLI**: Colorized terminal output with scenario comparison and progress visualization
-- ✅ **Industry-Standard KPIs**: Restaurant profitability, marketing CAC analysis, software development velocity
-- ✅ **Business Scenario Coverage**: Conservative/Neutral/Aggressive risk analysis across all simulation types
+- ✅ **ARR Framework**: Universal ARR-based budgeting with automatic business context injection
+- ✅ **CLI Interface**: Colorized terminal output with scenario comparison
+- ✅ **Business Metrics**: Restaurant profitability, marketing CAC analysis, software development velocity
+- ✅ **Scenario Coverage**: Conservative/Neutral/Aggressive risk analysis across simulation types
 - ✅ **Core Framework**: Complete with all components (MonteCarloEngine, ParameterSchema, SimulationRegistry, StatisticalAnalyzer)
 - ✅ **Web Interface**: Full React application with simulation browser and dynamic parameter forms
 - ✅ **Comprehensive Testing**: 58+ tests covering all framework components with ARR validation
