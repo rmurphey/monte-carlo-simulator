@@ -17,24 +17,28 @@ Developers need a streamlined way to create new Monte Carlo simulations without 
 4. **Type Safety**: Generated TypeScript code with proper interfaces
 5. **Documentation**: Auto-generated parameter descriptions and examples
 
-## Proposed Architecture
+## Revised Architecture: Configuration-Based Approach
 
 ### CLI Tool Structure
 ```
 src/cli/
 ├── index.ts                 # Main CLI entry point
 ├── commands/
-│   ├── create-simulation.ts  # Core creation logic  
+│   ├── create-simulation.ts  # Create YAML/JSON config files
 │   ├── list-simulations.ts   # Show existing simulations
-│   └── validate.ts           # Validate simulation definitions
-├── templates/
-│   ├── simulation.template.ts
-│   ├── test.template.ts
-│   └── registry.template.ts
+│   └── validate.ts           # Validate simulation configs
+├── config/
+│   ├── schema.ts            # Configuration schema validation
+│   └── loader.ts            # Load and parse simulation configs
 └── utils/
     ├── file-generator.ts
     ├── name-converter.ts
     └── validation.ts
+
+simulations/                 # Configuration files
+├── ai-investment-roi.yaml
+├── portfolio-risk.yaml
+└── product-launch.yaml
 ```
 
 ### Command Interface
@@ -54,74 +58,198 @@ npm run list-simulations
 npm run validate-simulation ./src/simulations/MySimulation.ts
 ```
 
+### Configuration File Format
+```yaml
+# simulations/portfolio-risk-assessment.yaml
+name: Portfolio Risk Assessment
+category: Finance
+description: Analyze portfolio risk metrics using Monte Carlo methods
+version: 1.0.0
+tags:
+  - finance
+  - risk
+  - portfolio
+
+parameters:
+  - key: portfolioValue
+    label: Portfolio Value ($)
+    type: number
+    default: 500000
+    min: 10000
+    max: 10000000
+    description: Total value of the investment portfolio
+    
+  - key: riskFactor
+    label: Risk Factor
+    type: number
+    default: 0.2
+    min: 0.05
+    max: 0.5
+    step: 0.01
+    description: Portfolio volatility factor
+    
+  - key: timeHorizon
+    label: Time Horizon
+    type: select
+    default: "1-year"
+    options: ["1-month", "3-month", "6-month", "1-year", "2-year"]
+    description: Investment time horizon
+
+groups:
+  - name: Portfolio Settings
+    description: Core portfolio configuration
+    parameters: [portfolioValue, timeHorizon]
+    
+  - name: Risk Parameters
+    description: Risk modeling parameters
+    parameters: [riskFactor]
+
+outputs:
+  - key: var95
+    label: Value at Risk (95%)
+    description: Maximum expected loss with 95% confidence
+    
+  - key: expectedReturn
+    label: Expected Return
+    description: Expected portfolio return over time horizon
+
+simulation:
+  logic: |
+    // Convert time horizon to months
+    const monthsMap = { "1-month": 1, "3-month": 3, "6-month": 6, "1-year": 12, "2-year": 24 }
+    const months = monthsMap[timeHorizon] || 12
+    
+    // Add uncertainty to risk factor
+    const actualRisk = riskFactor * (0.8 + Math.random() * 0.4)
+    
+    // Calculate time-adjusted returns
+    const timeAdjustment = Math.sqrt(months / 12)
+    const dailyVolatility = actualRisk / Math.sqrt(252)
+    
+    // Simulate return
+    const randomReturn = (Math.random() - 0.5) * 2 * dailyVolatility * timeAdjustment
+    const expectedReturn = portfolioValue * randomReturn
+    
+    // Calculate VaR (95th percentile loss)
+    const var95 = portfolioValue * actualRisk * timeAdjustment * -1.645
+    
+    return { var95, expectedReturn }
+```
+
 ### Interactive Mode
 ```
 ? Simulation name: Portfolio Risk Assessment
 ? Category: (Finance/Marketing/Operations/Other) Finance
 ? Description: Analyze portfolio risk metrics using Monte Carlo methods
-? Parameters to include:
-  ✓ Portfolio Value (number)
-  ✓ Risk Factor (number) 
-  ✓ Time Horizon (select)
-  ✓ Add custom parameter
-? Generate test file? Yes
-? Add to registry automatically? Yes
+? Add parameter: Portfolio Value
+  ? Type: number
+  ? Default: 500000
+  ? Min: 10000
+  ? Max: 10000000
+? Add another parameter? Yes
+? Add parameter: Risk Factor
+  ? Type: number
+  ? Default: 0.2
+  ? Min: 0.05
+  ? Max: 0.5
+? Add simulation logic interactively? No (will open editor)
 
 ✨ Generated:
-  - src/simulations/PortfolioRiskAssessment.ts
-  - src/test/PortfolioRiskAssessment.test.ts
-  - Updated src/simulations/index.ts
+  - simulations/portfolio-risk-assessment.yaml
+  - Validation passed ✓
+  - Ready to use in framework
 ```
 
 ## Technical Implementation
 
-### 1. Parameter Definition Builder
+### 1. Configuration Schema
 ```typescript
-interface ParameterPrompt {
+interface SimulationConfig {
   name: string
-  type: 'number' | 'boolean' | 'select'
-  label?: string
-  defaultValue?: unknown
-  constraints?: {
-    min?: number
-    max?: number
-    step?: number
-    options?: string[]
+  category: string
+  description: string
+  version: string
+  tags: string[]
+  parameters: ParameterDefinition[]
+  groups?: ParameterGroup[]
+  outputs: OutputDefinition[]
+  simulation: {
+    logic: string
   }
-  description?: string
 }
 
-class ParameterBuilder {
-  static async promptForParameter(): Promise<ParameterPrompt> {
-    // Interactive prompts for parameter definition
+interface OutputDefinition {
+  key: string
+  label: string
+  description?: string
+}
+```
+
+### 2. Configuration Loader & Validator
+```typescript
+import yaml from 'js-yaml'
+import Ajv from 'ajv'
+
+class ConfigurationLoader {
+  private ajv = new Ajv()
+  private schema = { /* JSON schema for validation */ }
+  
+  async loadConfig(filePath: string): Promise<SimulationConfig> {
+    const content = await fs.readFile(filePath, 'utf8')
+    const config = yaml.load(content) as SimulationConfig
+    
+    if (!this.ajv.validate(this.schema, config)) {
+      throw new Error(`Invalid configuration: ${this.ajv.errorsText()}`)
+    }
+    
+    return config
   }
   
-  static generateParameterCode(params: ParameterPrompt[]): string {
-    // Generate TypeScript parameter definitions
+  async saveConfig(filePath: string, config: SimulationConfig): Promise<void> {
+    const yamlContent = yaml.dump(config, { indent: 2 })
+    await fs.writeFile(filePath, yamlContent, 'utf8')
   }
 }
 ```
 
-### 2. Simulation Template Generator
+### 3. Runtime Simulation Engine
 ```typescript
-interface SimulationConfig {
-  name: string
-  className: string
-  id: string
-  category: string
-  description: string
-  parameters: ParameterPrompt[]
-  outputMetrics: string[]
-  tags: string[]
-}
-
-class SimulationGenerator {
-  static async create(config: SimulationConfig): Promise<void> {
-    const simulationCode = this.generateSimulationClass(config)
-    const testCode = this.generateTestFile(config)
+class ConfigurableSimulation extends MonteCarloEngine {
+  constructor(private config: SimulationConfig) {
+    super()
+  }
+  
+  getMetadata(): SimulationMetadata {
+    return {
+      id: toId(this.config.name),
+      name: this.config.name,
+      description: this.config.description,
+      category: this.config.category,
+      version: this.config.version
+    }
+  }
+  
+  getParameterDefinitions(): ParameterDefinition[] {
+    return this.config.parameters
+  }
+  
+  simulateScenario(parameters: Record<string, unknown>): Record<string, number> {
+    // Execute the JavaScript logic from config.simulation.logic
+    const func = new Function(...Object.keys(parameters), this.config.simulation.logic)
+    return func(...Object.values(parameters))
+  }
+  
+  setupParameterGroups(): void {
+    if (!this.config.groups) return
     
-    await this.writeFiles(config, simulationCode, testCode)
-    await this.updateRegistry(config)
+    const schema = this.getParameterSchema()
+    this.config.groups.forEach(group => {
+      schema.addGroup({
+        name: group.name,
+        description: group.description,
+        parameters: group.parameters
+      })
+    })
   }
 }
 ```

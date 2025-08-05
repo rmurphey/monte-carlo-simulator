@@ -81,36 +81,36 @@ Monte Carlo Simulation Framework Development
 
 ### Next Phase: Developer Experience Enhancement
 
-**CLI Simulation Generator** (Priority: High)
-- [ ] **Phase 1**: Core CLI Infrastructure
-  - [ ] Set up CLI entry point and command parsing
-  - [ ] Create basic template engine
-  - [ ] Implement file generation utilities
-  - [ ] Add name conversion utilities (camelCase, kebab-case, etc.)
+**CLI Simulation Generator** (Priority: High) - **REVISED: Configuration-Based Approach**
+- [x] **Phase 1**: Core CLI Infrastructure ✅
+  - [x] Set up CLI entry point and command parsing
+  - [x] Create basic template engine
+  - [x] Implement file generation utilities
+  - [x] Add name conversion utilities (camelCase, kebab-case, etc.)
 
-- [ ] **Phase 2**: Template System
-  - [ ] Create simulation class template
-  - [ ] Create test file template
-  - [ ] Implement parameter definition generation
-  - [ ] Add registry update functionality
+- [ ] **Phase 2**: Configuration System (REVISED)
+  - [ ] Install YAML parsing dependencies (js-yaml, ajv)
+  - [ ] Create configuration schema validation
+  - [ ] Implement configuration file loader/saver
+  - [ ] Create ConfigurableSimulation class for runtime execution
 
-- [ ] **Phase 3**: Interactive Mode
-  - [ ] Add inquirer.js for interactive prompts
+- [ ] **Phase 3**: Interactive Configuration Builder
+  - [ ] Add inquirer.js for interactive YAML generation
   - [ ] Implement parameter builder prompts
   - [ ] Create output metrics configuration
-  - [ ] Add tag and category selection
+  - [ ] Add simulation logic editor integration
 
-- [ ] **Phase 4**: Advanced Features
-  - [ ] Add template validation
-  - [ ] Implement custom templates support
-  - [ ] Create list-simulations command
-  - [ ] Add simulation validation command
+- [ ] **Phase 4**: Advanced Configuration Features
+  - [ ] Add YAML validation and error reporting
+  - [ ] Implement configuration templates/presets
+  - [ ] Create list-simulations command for YAML files
+  - [ ] Add hot-reload for configuration changes
 
 - [ ] **Phase 5**: Integration & Polish
   - [ ] Add comprehensive CLI tests
-  - [ ] Create documentation and examples
+  - [ ] Create example configuration files
   - [ ] Integrate with package.json scripts
-  - [ ] Add error handling and user feedback
+  - [ ] Add configuration migration tools
 
 **Design Document**: [designs/cli-simulation-generator.md](designs/cli-simulation-generator.md)  
 **Success Metrics**: Reduce simulation creation time by 80%, ensure generated code quality
