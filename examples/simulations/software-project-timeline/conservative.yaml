@@ -67,7 +67,7 @@ parameters:
 groups:
   - name: Conservative Scope
     description: Well-defined scope with experienced team
-    parameters: [storyPoints, teamSize, teamExperience]
+    parameters: [featureCount, teamSize, teamExperience]
     
   - name: Risk Mitigation
     description: Low-risk project characteristics
