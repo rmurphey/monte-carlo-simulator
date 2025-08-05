@@ -1,6 +1,6 @@
-# Monte Carlo Simulation Framework
+# Monte Carlo Business Intelligence Platform
 
-A comprehensive TypeScript/React framework for building and running Monte Carlo simulations with dynamic parameter interfaces and interactive visualizations.
+A professional TypeScript/React framework for building and running Monte Carlo simulations with industry-standard KPIs, ARR-based budgeting, and actionable business intelligence.
 
 ## ⚡ Quick Start for AI Tools
 
@@ -9,10 +9,11 @@ A comprehensive TypeScript/React framework for building and running Monte Carlo 
 📚 **[Complete YAML Schema Guide](docs/YAML_SCHEMA_GUIDE.md)** - Comprehensive documentation for AI-assisted simulation creation
 📁 **[Example Configurations](examples/simulations/)** - Ready-to-use simulation templates for common business scenarios
 
-### Available Examples
-- **[Restaurant Profitability Analysis](examples/simulations/restaurant-profitability.yaml)** - Business planning for restaurant locations
-- **[Software Project Timeline](examples/simulations/software-project-timeline.yaml)** - Development project estimation with risk factors  
-- **[Marketing Campaign ROI](examples/simulations/marketing-campaign-roi.yaml)** - Digital marketing performance prediction
+### Available Business Intelligence Simulations
+- **[Restaurant Profitability Analysis](examples/simulations/restaurant-profitability/)** - Industry KPIs: food cost %, labor cost %, table turnover, CAC analysis
+- **[Marketing Campaign ROI](examples/simulations/marketing-campaign-roi/)** - ARR-based budgeting, CAC:CLV ratios, viral growth modeling
+- **[Software Project Timeline](examples/simulations/software-project-timeline/)** - Feature velocity, team scaling, business-friendly metrics
+- **[ARR Framework Demo](examples/simulations/arr-framework-demo/)** - Universal business context scaling from startup to professional
 
 ### Create New Simulations
 ```bash
@@ -23,34 +24,35 @@ npm run cli create --interactive "Your Simulation Name"
 npm run cli create "Your Simulation Name" --template
 ```
 
-## Features
+## Professional Business Intelligence Features
 
+- **ARR-Based Business Context**: Universal Annual Recurring Revenue framework for realistic budgeting
+- **Industry-Standard KPIs**: Food cost %, CAC:CLV ratios, table turnover, feature velocity metrics
+- **Professional CLI**: Colorized terminal output with scenario comparison and progress visualization
+- **Scenario Risk Analysis**: Conservative/Neutral/Aggressive business planning with statistical confidence
 - **Configuration-Driven**: Create simulations using YAML files - no TypeScript required
-- **Interactive CLI**: Step-by-step wizard for building simulations
-- **Modular Framework**: Extensible architecture for building multiple simulation types
-- **Dynamic Parameter Forms**: Auto-generated UI from parameter schemas with validation
-- **Interactive Visualizations**: Statistical summaries, distributions, time series, and scatter plots  
+- **Business Intelligence Outputs**: Actionable strategic insights for C-suite decision making
 - **Comprehensive Testing**: 58+ tests covering all framework components
 - **Type Safety**: Full TypeScript implementation with strict mode
-- **Real-time Progress**: Live updates during long-running simulations
-- **Advanced Search**: Registry system with filtering, tagging, and categorization
 
-## Current Simulation: AI Tool Investment ROI
+## Business Intelligence Platform Capabilities
 
-Models the financial uncertainty around AI tool investments, incorporating:
+### 🎯 **Strategic Planning & Risk Analysis**
+- **Restaurant Operations**: 28.9% food cost management, $2.04 CAC optimization, 1.98 table turn efficiency
+- **Marketing Intelligence**: ARR-scaled budgets ($80K→$900K), 0.255 CAC:CLV sustainability ratios
+- **Software Development**: 3.3 features/week velocity, team scaling efficiency modeling
+- **Financial Planning**: ARR-based business context from $500K startup to $10M+ professional scale
 
-- **Implementation Variables**: Setup costs, subscription fees, implementation timelines
-- **Adoption Factors**: Success rates, user adoption, organizational change management
-- **Market Dynamics**: Price increases, competitive responses, economic conditions
-- **Financial Impact**: Revenue improvements, cost savings, operational benefits
+### 📊 **Professional Terminal Interface**
+- **Colorized Output**: Rich terminal UI with progress bars and statistical visualization
+- **Scenario Comparison**: Conservative/Neutral/Aggressive risk analysis with confidence intervals
+- **Business Reporting**: JSON, CSV, and table formats for strategic presentations
+- **Parameter Override**: Real-time what-if analysis for executive decision making
 
-### Key Metrics Analyzed
-
-- Mean and median ROI across all scenarios
-- 10th and 90th percentile outcomes
-- Probability of negative ROI
-- Cost vs benefit distribution analysis
-- Implementation delay impact modeling
+### 🏢 **Industry-Grade Business Context**
+- **Universal ARR Framework**: Automatic budget scaling based on company Annual Recurring Revenue
+- **Department Budget Functions**: Marketing, Sales, Operations, Product, R&D budget allocation
+- **Business Intelligence Validation**: Industry benchmark compliance and realistic KPI modeling
 
 ## Getting Started
 
@@ -75,7 +77,24 @@ npm run dev
 
 ### Usage
 
-#### CLI Commands
+#### Professional CLI Commands
+
+**Run Business Intelligence Simulations:**
+```bash
+# Run individual scenarios with industry KPIs
+npm run cli run restaurant-profitability --scenario conservative --iterations 1000
+npm run cli run marketing-campaign-roi --scenario aggressive --verbose
+
+# Compare business scenarios with colorized output  
+npm run cli run restaurant-profitability --compare conservative,neutral,aggressive
+npm run cli run marketing-campaign-roi --compare conservative,aggressive --output analysis.json
+
+# Override parameters for what-if analysis
+npm run cli run restaurant-profitability --scenario conservative --seatingCapacity 80 --averageTicket 40
+
+# Export results for business reporting
+npm run cli run marketing-campaign-roi --scenario neutral --format csv --output marketing-analysis.csv
+```
 
 **Create New Simulations:**
 ```bash
@@ -300,14 +319,17 @@ tests/
 
 See [ACTIVE_WORK.md](ACTIVE_WORK.md) for current development progress and recent achievements.
 
-### Framework Status: ✅ Complete
+### Platform Status: ✅ Professional Business Intelligence Ready
 
-The Monte Carlo Simulation Framework is production-ready with:
+The Monte Carlo Business Intelligence Platform is production-ready with:
 
+- ✅ **ARR Business Intelligence Framework**: Universal ARR-based budgeting with automatic business context injection
+- ✅ **Professional CLI**: Colorized terminal output with scenario comparison and progress visualization
+- ✅ **Industry-Standard KPIs**: Restaurant profitability, marketing CAC analysis, software development velocity
+- ✅ **Business Scenario Coverage**: Conservative/Neutral/Aggressive risk analysis across all simulation types
 - ✅ **Core Framework**: Complete with all components (MonteCarloEngine, ParameterSchema, SimulationRegistry, StatisticalAnalyzer)
-- ✅ **Web Interface**: Full React application with simulation browser and dynamic parameter forms  
-- ✅ **AI Investment ROI**: Comprehensive simulation with enhanced NPV calculations
-- ✅ **Testing**: 34+ comprehensive tests across all components
+- ✅ **Web Interface**: Full React application with simulation browser and dynamic parameter forms
+- ✅ **Comprehensive Testing**: 58+ tests covering all framework components with ARR validation
 - ✅ **TypeScript**: Strict mode throughout for type safety
 
 ## Contributing
@@ -331,6 +353,8 @@ This project follows conventional commit standards and requires comprehensive te
 ### Production Technologies
 
 - **TypeScript**: Type safety across the entire codebase ✅
+- **Commander.js**: Professional CLI with parameter handling ✅
+- **Chalk**: Colorized terminal output for business reporting ✅
 - **Vite**: Fast build system and development server ✅
 - **Vitest**: Testing framework for unit and integration tests ✅
 - **React 18**: Modern UI with concurrent features ✅
