@@ -1,7 +1,7 @@
 export interface ParameterDefinition {
   key: string
   label: string
-  type: 'number' | 'boolean' | 'select'
+  type: 'number' | 'boolean' | 'string' | 'select'
   defaultValue: number | boolean | string
   min?: number
   max?: number

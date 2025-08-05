@@ -14,10 +14,12 @@ export interface SimulationConfig {
   }
 }
 
+export type ParameterType = 'number' | 'boolean' | 'string' | 'select'
+
 export interface ParameterConfig {
   key: string
   label: string
-  type: 'number' | 'boolean' | 'select'
+  type: ParameterType
   default: number | boolean | string
   min?: number
   max?: number
@@ -43,7 +45,7 @@ const parameterSchema: JSONSchemaType<ParameterConfig> = {
   properties: {
     key: { type: 'string', minLength: 1 },
     label: { type: 'string', minLength: 1 },
-    type: { type: 'string', enum: ['number', 'boolean', 'select'] },
+    type: { type: 'string', enum: ['number', 'boolean', 'string', 'select'] },
     default: { type: ['number', 'boolean', 'string'] },
     min: { type: 'number', nullable: true },
     max: { type: 'number', nullable: true },
