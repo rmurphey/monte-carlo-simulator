@@ -1,6 +1,6 @@
 export { MonteCarloEngine } from './MonteCarloEngine'
-export { SimulationRegistry } from './SimulationRegistry'
+export { SimulationRegistry, type SimulationRegistryEntry, type SearchOptions } from './SimulationRegistry'
 export { StatisticalAnalyzer } from './StatisticalAnalyzer'
-export { ParameterSchema } from './ParameterSchema'
+export { ParameterSchema, type ValidationResult, type ParameterGroup } from './ParameterSchema'
 export * from './types'
 export * from './VisualizationEngine'
