@@ -56,11 +56,11 @@ The Monte Carlo Simulation Framework has evolved into a **professional business 
 
 **Next Strategic Priorities:**
 
-1. **Comprehensive Validation (High Priority)**
-   - [ ] Test ARR framework across all simulation types
-   - [ ] Validate business intelligence outputs against industry benchmarks
-   - [ ] Ensure scenario comparisons provide actionable strategic insights
-   - [ ] Create automated test suite for business logic validation
+1. **Interactive CLI Enhancement (High Priority)** - [Design Doc](designs/interactive-cli-enhancement.md)
+   - [ ] **Phase 1: Industry Templates** - Create 5-6 production-ready business scenario templates
+   - [ ] **Phase 1: Business Guidance** - Add contextual help and parameter suggestions
+   - [ ] **Phase 2: Enhanced Logic** - Pattern-based simulation logic generation with business formulas
+   - [ ] **Phase 2: ARR Integration** - Automatic business scenario detection and ARR injection prompts
 
 2. **Framework Architecture (High Priority)**
    - [ ] Implement BaseSimulation inheritance system
@@ -68,7 +68,13 @@ The Monte Carlo Simulation Framework has evolved into a **professional business 
    - [ ] Reduce code duplication (~57% reduction potential)
    - [ ] Enable rapid creation of new business scenarios
 
-3. **Documentation & Scalability (Medium Priority)**
+3. **Comprehensive Validation (Medium Priority)**
+   - [x] Test ARR framework across all simulation types
+   - [ ] Validate business intelligence outputs against industry benchmarks
+   - [ ] Ensure scenario comparisons provide actionable strategic insights
+   - [ ] Create automated test suite for business logic validation
+
+4. **Documentation & Scalability (Medium Priority)**
    - [ ] Document ARR business context system
    - [ ] Create framework extension guide for new simulation types
    - [ ] Establish patterns for industry-specific KPI modeling
