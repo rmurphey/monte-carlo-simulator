@@ -2,7 +2,8 @@
  * ARR Business Context - Core framework module for automatic ARR-based budgeting
  * 
  * This module provides automatic injection of business context variables into all simulations,
- * ensuring consistent ARR-based budgeting across the entire Monte Carlo platform.
+ * ensuring consistent ARR-based budgeting across the entire Monte Carlo platform for companies
+ * of any size from startup to large business.
  */
 
 export interface ARRBusinessContext {
