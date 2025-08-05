@@ -1,43 +1,28 @@
 import { ParameterDefinition, SimulationMetadata, SimulationResult, SimulationResults } from './types'
 import { StatisticalAnalyzer } from './StatisticalAnalyzer'
+import { ParameterSchema } from './ParameterSchema'
 
 export abstract class MonteCarloEngine {
   protected analyzer = new StatisticalAnalyzer()
+  private _parameterSchema?: ParameterSchema
 
   abstract getMetadata(): SimulationMetadata
   abstract getParameterDefinitions(): ParameterDefinition[]
   abstract simulateScenario(parameters: Record<string, unknown>): Record<string, number>
 
+  getParameterSchema(): ParameterSchema {
+    if (!this._parameterSchema) {
+      this._parameterSchema = new ParameterSchema(this.getParameterDefinitions())
+    }
+    return this._parameterSchema
+  }
+
   validateParameters(parameters: Record<string, unknown>): void {
-    const definitions = this.getParameterDefinitions()
+    const schema = this.getParameterSchema()
+    const result = schema.validateParameters(parameters)
     
-    for (const def of definitions) {
-      const value = parameters[def.key]
-      
-      if (value === undefined || value === null) {
-        throw new Error(`Missing required parameter: ${def.key}`)
-      }
-
-      if (def.type === 'number') {
-        const numValue = Number(value)
-        if (isNaN(numValue)) {
-          throw new Error(`Parameter ${def.key} must be a number`)
-        }
-        if (def.min !== undefined && numValue < def.min) {
-          throw new Error(`Parameter ${def.key} must be >= ${def.min}`)
-        }
-        if (def.max !== undefined && numValue > def.max) {
-          throw new Error(`Parameter ${def.key} must be <= ${def.max}`)
-        }
-      }
-
-      if (def.type === 'boolean' && typeof value !== 'boolean') {
-        throw new Error(`Parameter ${def.key} must be a boolean`)
-      }
-
-      if (def.type === 'select' && def.options && !def.options.includes(String(value))) {
-        throw new Error(`Parameter ${def.key} must be one of: ${def.options.join(', ')}`)
-      }
+    if (!result.isValid) {
+      throw new Error(`Parameter validation failed: ${result.errors.join('; ')}`)
     }
   }
 
