@@ -1,0 +1,11 @@
+{
+  "name": "simulator",
+  "version": "1.0.0",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "update-readme": "node -e \"import('./lib/readme-updater.js').then(m => m.updateReadme().then(r => console.log('README updated:', r)))\"",
+    "test": "jest"
+  }
+}

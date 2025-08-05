@@ -1,0 +1,26 @@
+name: Quality Check
+on: [push, pull_request]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        if: contains('js', 'js')
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        if: contains('js', 'js')
+        run: npm ci
+        
+      - name: Run linting
+        if: contains('js', 'js')
+        run: npm run lint
+        
+      - name: Run tests
+        if: contains('js', 'js')
+        run: npm test
