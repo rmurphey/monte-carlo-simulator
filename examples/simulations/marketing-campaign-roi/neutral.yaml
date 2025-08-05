@@ -1,8 +1,8 @@
-name: Digital Marketing Campaign ROI
+name: Digital Marketing Campaign ROI (Neutral Strategy)
 category: Marketing
-description: Evaluates the return on investment for digital marketing campaigns across multiple channels, considering conversion rates, customer lifetime value, and market dynamics
+description: Balanced marketing approach with standard industry expectations and mixed channel strategy
 version: 1.0.0
-tags: [marketing, digital-marketing, roi, conversion-optimization, customer-acquisition]
+tags: [marketing, digital-marketing, neutral, balanced]
 
 parameters:
   - key: annualRecurringRevenue
@@ -21,95 +21,113 @@ parameters:
     min: 2
     max: 25
     step: 0.5
-    description: Marketing spend as percentage of ARR
+    description: Standard marketing spend as percentage of ARR
 
   - key: ppcBudgetPercent
     label: PPC Budget Allocation (%)
     type: number
-    default: 40
+    default: 40          # Balanced PPC allocation
     min: 0
     max: 100
     step: 5
-    description: Percentage of budget allocated to pay-per-click advertising
+    description: Balanced pay-per-click advertising investment
 
   - key: socialBudgetPercent
     label: Social Media Budget (%)
     type: number
-    default: 30
+    default: 30          # Standard social spend
     min: 0
     max: 100
     step: 5
-    description: Percentage of budget allocated to social media advertising
+    description: Standard social media advertising across platforms
 
   - key: contentBudgetPercent
     label: Content Marketing Budget (%)
     type: number
-    default: 20
+    default: 20          # Moderate content investment
     min: 0
     max: 100
     step: 5
-    description: Percentage of budget allocated to content marketing
+    description: Moderate content marketing for brand building
 
   - key: emailBudgetPercent
     label: Email Marketing Budget (%)
     type: number
-    default: 10
+    default: 10          # Standard email allocation
     min: 0
     max: 100
     step: 5
-    description: Percentage of budget allocated to email marketing
+    description: Standard email marketing to nurture leads
 
   - key: targetAudience
     label: Target Audience
     type: select
-    default: b2c-general
+    default: b2c-general # Neutral: broad general market
     options: [b2c-general, b2c-niche, b2b-smb, b2b-enterprise, e-commerce]
-    description: Primary target audience for the marketing campaign
+    description: General consumer market with standard targeting
 
   - key: seasonality
     label: Campaign Seasonality
     type: select
-    default: normal
+    default: normal      # Neutral timing
     options: [off-season, normal, peak-season, holiday]
-    description: Seasonal timing of the campaign affecting performance
+    description: Standard timing without seasonal optimization
 
   - key: competitionLevel
     label: Market Competition
     type: select
-    default: moderate
+    default: moderate    # Standard competition level
     options: [low, moderate, high, saturated]
-    description: Level of competition in the target market
+    description: Typical market competition with standard challenges
 
   - key: avgOrderValue
     label: Average Order Value
     type: number
-    default: 150
+    default: 150         # Standard order value
     min: 10
     max: 10000
     step: 10
-    description: Average value of each customer purchase or conversion
+    description: Standard customer purchase value expectations
 
   - key: customerLifetimeValue
     label: Customer Lifetime Value
     type: number
-    default: 450
+    default: 450         # Standard CLV
     min: 50
     max: 50000
     step: 50
-    description: Expected total value from each acquired customer
+    description: Standard customer lifetime value expectations
+
+  - key: targetCACRatio
+    label: Target CAC:CLV Ratio
+    type: number
+    default: 0.30        # Standard 1:3.3 CAC to CLV ratio
+    min: 0.1
+    max: 0.8
+    step: 0.05
+    description: Target ratio of Customer Acquisition Cost to Customer Lifetime Value
+
+  - key: organicConversionRate
+    label: Organic Conversion Rate (%)
+    type: number
+    default: 20          # Standard organic traffic conversion
+    min: 5
+    max: 40
+    step: 1
+    description: Percentage of conversions from organic/unpaid channels
 
 groups:
-  - name: Budget Allocation
-    description: ARR-based budget distribution across channels
+  - name: Balanced Budget
+    description: Standard budget distribution based on ARR
     parameters: [annualRecurringRevenue, marketingBudgetPercent, ppcBudgetPercent, socialBudgetPercent, contentBudgetPercent, emailBudgetPercent]
     
-  - name: Market Context
-    description: External factors affecting campaign performance
+  - name: Standard Market Approach
+    description: Typical market conditions and targeting strategy
     parameters: [targetAudience, seasonality, competitionLevel]
     
-  - name: Customer Economics
-    description: Revenue and value metrics per customer
-    parameters: [avgOrderValue, customerLifetimeValue]
+  - name: Standard Economics
+    description: Industry-standard customer value and acquisition cost metrics
+    parameters: [avgOrderValue, customerLifetimeValue, targetCACRatio, organicConversionRate]
 
 outputs:
   - key: totalLeads
@@ -132,12 +150,24 @@ outputs:
     label: Lifetime Value ROI (%)
     description: ROI considering customer lifetime value
 
+  - key: actualCAC
+    label: Actual Customer Acquisition Cost
+    description: Real CAC including all marketing and sales costs
+
+  - key: cacToClvRatio
+    label: Actual CAC:CLV Ratio
+    description: Ratio of actual CAC to customer lifetime value
+
+  - key: organicConversions
+    label: Organic Conversions
+    description: Number of conversions from organic channels
+
 simulation:
   logic: |
     // Calculate total marketing budget from ARR
     const totalBudget = annualRecurringRevenue * (marketingBudgetPercent / 100)
     
-    // Validate budget allocation doesn't exceed 100%
+    // Standard budget validation
     const totalBudgetPercent = ppcBudgetPercent + socialBudgetPercent + 
                               contentBudgetPercent + emailBudgetPercent
     
@@ -157,7 +187,7 @@ simulation:
     const contentBudget = totalBudget * normalizedContent / 100
     const emailBudget = totalBudget * normalizedEmail / 100
     
-    // Base performance metrics by audience type
+    // Standard performance metrics by audience type (same as base)
     const audienceMetrics = {
       'b2c-general': { cpcRange: [0.5, 2.0], conversionRate: 0.02 },
       'b2c-niche': { cpcRange: [1.0, 4.0], conversionRate: 0.035 },
@@ -166,18 +196,18 @@ simulation:
       'e-commerce': { cpcRange: [0.3, 1.5], conversionRate: 0.025 }
     }
     
-    // Seasonality multipliers
+    // Standard seasonality multipliers (same as base)
     const seasonalityMultipliers = {
       'off-season': 0.7,
-      normal: 1.0,
+      normal: 1.0,        // Neutral uses normal season
       'peak-season': 1.4,
       holiday: 1.8
     }
     
-    // Competition impact
+    // Standard competition impact (same as base)
     const competitionFactors = {
       low: 1.3,
-      moderate: 1.0,
+      moderate: 1.0,      // Neutral uses moderate competition
       high: 0.8,
       saturated: 0.6
     }
@@ -186,7 +216,7 @@ simulation:
     const seasonMultiplier = seasonalityMultipliers[seasonality]
     const compMultiplier = competitionFactors[competitionLevel]
     
-    // Channel-specific performance modeling
+    // Standard channel-specific performance modeling (same as base)
     // PPC Performance
     const ppcCPC = metrics.cpcRange[0] + random() * (metrics.cpcRange[1] - metrics.cpcRange[0])
     const ppcClicks = ppcBudget / ppcCPC
@@ -216,12 +246,23 @@ simulation:
     const emailConversionRate = metrics.conversionRate * 1.5 * (0.9 + random() * 0.2)
     const emailConversions = emailClicks * emailConversionRate
     
-    // Aggregate results
+    // Standard aggregation with organic conversions
     const totalLeads = round(ppcClicks + socialClicks + contentLeads + emailClicks)
-    const totalConversions = round(ppcConversions + socialConversions + contentConversions + emailConversions)
+    const paidConversions = round(ppcConversions + socialConversions + contentConversions + emailConversions)
     
-    // Calculate ROI metrics
-    const costPerAcquisition = totalConversions > 0 ? totalBudget / totalConversions : 0
+    // Calculate organic conversions (standard estimate)
+    const organicConversions = round(paidConversions * (organicConversionRate / 100) / (1 - organicConversionRate / 100))
+    const totalConversions = paidConversions + organicConversions
+    
+    // CAC calculations (only paid channels contribute to CAC)
+    const costPerAcquisition = paidConversions > 0 ? totalBudget / paidConversions : 0
+    
+    // Standard CAC includes additional sales costs (25% of marketing budget)
+    const salesCosts = totalBudget * 0.25  
+    const actualCAC = paidConversions > 0 ? (totalBudget + salesCosts) / paidConversions : 0
+    const cacToClvRatio = actualCAC > 0 ? actualCAC / customerLifetimeValue : 0
+    
+    // ROI calculations based on total conversions (paid + organic)
     const immediateRevenue = totalConversions * avgOrderValue
     const lifetimeRevenue = totalConversions * customerLifetimeValue
     
@@ -233,5 +274,8 @@ simulation:
       totalConversions: totalConversions,
       costPerAcquisition: round(costPerAcquisition * 100) / 100,
       campaignROI: round(campaignROI * 10) / 10,
-      lifetimeROI: round(lifetimeROI * 10) / 10
+      lifetimeROI: round(lifetimeROI * 10) / 10,
+      actualCAC: round(actualCAC * 100) / 100,
+      cacToClvRatio: round(cacToClvRatio * 1000) / 1000,
+      organicConversions: organicConversions
     }

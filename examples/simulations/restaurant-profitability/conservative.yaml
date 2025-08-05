@@ -79,18 +79,54 @@ parameters:
     default: false       # Focus on dine-in initially
     description: Start with dine-in only to minimize complexity
 
+  - key: targetFoodCostPercent
+    label: Target Food Cost (% of Revenue)
+    type: number
+    default: 28          # Conservative food cost control
+    min: 20
+    max: 40
+    step: 1
+    description: Conservative food cost management as percentage of revenue
+
+  - key: customerAcquisitionBudget
+    label: Monthly Marketing Budget
+    type: number
+    default: 2000        # Conservative marketing spend
+    min: 500
+    max: 10000
+    step: 250
+    description: Monthly budget for customer acquisition and marketing
+
+  - key: tableTurnoverTarget
+    label: Target Table Turns per Day
+    type: number
+    default: 2.0         # Conservative turnover rate
+    min: 1.0
+    max: 5.0
+    step: 0.1
+    description: Conservative target for table turnover per day
+
+  - key: seasonalVariation
+    label: Seasonal Revenue Variation (%)
+    type: number
+    default: 15          # Conservative seasonal impact
+    min: 5
+    max: 40
+    step: 5
+    description: Expected seasonal variation in revenue
+
 groups:
   - name: Conservative Investment
     description: Lower initial investment with essential equipment
     parameters: [startupCosts, monthlyRent, staffCount, avgWage]
     
   - name: Accessible Operations
-    description: Smaller scale, affordable positioning
-    parameters: [seatingCapacity, averageTicket, cuisineType, hasDelivery]
+    description: Smaller scale, affordable positioning with operational efficiency
+    parameters: [seatingCapacity, averageTicket, cuisineType, hasDelivery, tableTurnoverTarget]
     
-  - name: Realistic Market
-    description: Moderate expectations for location and customer base
-    parameters: [locationQuality]
+  - name: Conservative Market Strategy
+    description: Controlled costs and conservative marketing approach
+    parameters: [locationQuality, targetFoodCostPercent, customerAcquisitionBudget, seasonalVariation]
 
 outputs:
   - key: monthlyRevenue
@@ -113,6 +149,26 @@ outputs:
     label: Annual ROI Percentage
     description: Return on investment percentage based on first year performance
 
+  - key: actualFoodCostPercent
+    label: Actual Food Cost (% of Revenue)
+    description: Actual food cost percentage achieved vs target
+
+  - key: customerAcquisitionCost
+    label: Customer Acquisition Cost
+    description: Cost to acquire each new customer through marketing
+
+  - key: averageTableTurns
+    label: Average Daily Table Turns
+    description: Actual table turnover rate achieved
+
+  - key: revenuePerSeat
+    label: Revenue per Seat per Month
+    description: Monthly revenue generated per available seat
+
+  - key: laborCostPercent
+    label: Labor Cost (% of Revenue)
+    description: Labor costs as percentage of total revenue
+
 simulation:
   logic: |
     // Location quality factors - conservative multipliers
@@ -132,14 +188,18 @@ simulation:
       'ethnic-specialty': { frequency: 0.9, ticketVariation: 1.1 }
     }
     
-    // Conservative base utilization - more realistic assumptions
-    const baseUtilization = 0.25 + random() * 0.20  // 25-45% capacity utilization
+    // Conservative base utilization with seasonal variation
+    const seasonalFactor = 1.0 + (random() - 0.5) * (seasonalVariation / 100)
+    const baseUtilization = (0.25 + random() * 0.20) * seasonalFactor  // 25-45% with seasonal impact
     const locationFactor = locationMultipliers[locationQuality]
     const cuisineFactor = cuisineFactors[cuisineType]
     
-    // Calculate daily customers with conservative estimates
+    // Calculate actual table turns (conservative approach to target)
+    const actualTableTurns = tableTurnoverTarget * (0.85 + random() * 0.25)  // 85-110% of target
+    
+    // Calculate daily customers with realistic table management
     const actualUtilization = min(baseUtilization * locationFactor * cuisineFactor.frequency, 0.80)
-    const dailyCustomers = seatingCapacity * actualUtilization * 2.0  // Conservative 2.0 table turns
+    const dailyCustomers = seatingCapacity * actualUtilization * actualTableTurns
     
     // Revenue calculations with reduced volatility
     const actualTicket = averageTicket * (0.9 + random() * 0.2) * cuisineFactor.ticketVariation  // Less volatility
@@ -154,16 +214,23 @@ simulation:
     
     const monthlyRevenue = dineInRevenue + deliveryRevenue
     
-    // Operating cost calculations with conservative estimates
+    // Operating cost calculations with target-based food costs
     const laborCosts = staffCount * avgWage * 40 * 4.33  // Monthly labor
-    const foodCosts = monthlyRevenue * (0.32 + random() * 0.06)  // Higher food cost % (32-38%)
+    
+    // Food costs with target management (conservative control)
+    const targetFoodCostVariation = (targetFoodCostPercent / 100) * (0.95 + random() * 0.15)  // 95-110% of target
+    const foodCosts = monthlyRevenue * targetFoodCostVariation
+    
     const utilitiesInsurance = 2800 + random() * 800  // Lower utilities for smaller space
-    const marketingCosts = monthlyRevenue * 0.025  // Conservative marketing spend
+    
+    // Marketing costs from dedicated budget plus revenue-based
+    const totalMarketingCosts = customerAcquisitionBudget + (monthlyRevenue * 0.015)  // Fixed + variable marketing
+    
     const maintenanceRepairs = 800 + random() * 400  // Lower maintenance for newer equipment
     const miscOperating = 1500 + random() * 500  // Lower misc costs
     
     const monthlyOperatingCosts = monthlyRent + laborCosts + foodCosts + 
-                                 utilitiesInsurance + marketingCosts + 
+                                 utilitiesInsurance + totalMarketingCosts + 
                                  maintenanceRepairs + miscOperating
     
     // Profit calculations
@@ -176,10 +243,21 @@ simulation:
     const annualNetProfit = monthlyNetProfit * 12
     const annualROI = (annualNetProfit / startupCosts) * 100
     
+    // Calculate restaurant industry KPIs
+    const actualFoodCostPercent = monthlyRevenue > 0 ? (foodCosts / monthlyRevenue) * 100 : 0
+    const customerAcquisitionCost = dailyCustomers > 0 ? (totalMarketingCosts / (dailyCustomers * 30)) : 0
+    const revenuePerSeat = seatingCapacity > 0 ? monthlyRevenue / seatingCapacity : 0
+    const laborCostPercent = monthlyRevenue > 0 ? (laborCosts / monthlyRevenue) * 100 : 0
+    
     return {
       monthlyRevenue: round(monthlyRevenue),
       monthlyOperatingCosts: round(monthlyOperatingCosts),
       monthlyNetProfit: round(monthlyNetProfit),
       breakEvenMonths: min(round(breakEvenMonths * 10) / 10, 999),
-      annualROI: round(annualROI * 10) / 10
+      annualROI: round(annualROI * 10) / 10,
+      actualFoodCostPercent: round(actualFoodCostPercent * 10) / 10,
+      customerAcquisitionCost: round(customerAcquisitionCost * 100) / 100,
+      averageTableTurns: round(actualTableTurns * 10) / 10,
+      revenuePerSeat: round(revenuePerSeat),
+      laborCostPercent: round(laborCostPercent * 10) / 10
     }

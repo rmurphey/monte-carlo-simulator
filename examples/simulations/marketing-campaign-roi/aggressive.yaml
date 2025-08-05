@@ -1,0 +1,281 @@
+name: Digital Marketing Campaign ROI (Aggressive Strategy)
+category: Marketing
+description: High-risk, high-reward marketing strategy with maximum investment and optimistic targeting
+version: 1.0.0
+tags: [marketing, digital-marketing, aggressive, high-growth]
+
+parameters:
+  - key: annualRecurringRevenue
+    label: Annual Recurring Revenue (ARR)
+    type: number
+    default: 5000000     # $5M ARR for high-growth company
+    min: 100000
+    max: 50000000
+    step: 50000
+    description: High-growth company's annual recurring revenue
+    
+  - key: marketingBudgetPercent
+    label: Marketing Budget (% of ARR)
+    type: number
+    default: 18          # Aggressive 18% of ARR
+    min: 2
+    max: 25
+    step: 0.5
+    description: Aggressive marketing spend for rapid growth
+
+  - key: ppcBudgetPercent
+    label: PPC Budget Allocation (%)
+    type: number
+    default: 35          # Diversified aggressive approach
+    min: 0
+    max: 100
+    step: 5
+    description: Aggressive PPC investment across multiple platforms
+
+  - key: socialBudgetPercent
+    label: Social Media Budget (%)
+    type: number
+    default: 35          # Heavy social investment
+    min: 0
+    max: 100
+    step: 5
+    description: Maximum social media spend for viral potential
+
+  - key: contentBudgetPercent
+    label: Content Marketing Budget (%)
+    type: number
+    default: 20          # Premium content creation
+    min: 0
+    max: 100
+    step: 5
+    description: Premium content marketing for brand authority
+
+  - key: emailBudgetPercent
+    label: Email Marketing Budget (%)
+    type: number
+    default: 10          # Standard email with premium tools
+    min: 0
+    max: 100
+    step: 5
+    description: Advanced email marketing with automation
+
+  - key: targetAudience
+    label: Target Audience
+    type: select
+    default: b2c-niche   # Aggressive: target high-value niche
+    options: [b2c-general, b2c-niche, b2b-smb, b2b-enterprise, e-commerce]
+    description: High-value niche market with premium positioning
+
+  - key: seasonality
+    label: Campaign Seasonality
+    type: select
+    default: peak-season # Aggressive: capitalize on peak timing
+    options: [off-season, normal, peak-season, holiday]
+    description: Peak season timing for maximum market impact
+
+  - key: competitionLevel
+    label: Market Competition
+    type: select
+    default: high        # Aggressive: compete in high-value markets
+    options: [low, moderate, high, saturated]
+    description: High competition market with premium opportunities
+
+  - key: avgOrderValue
+    label: Average Order Value
+    type: number
+    default: 220         # Higher order value expectations
+    min: 10
+    max: 10000
+    step: 10
+    description: Premium pricing strategy with higher order values
+
+  - key: customerLifetimeValue
+    label: Customer Lifetime Value
+    type: number
+    default: 800         # Aggressive CLV expectations
+    min: 50
+    max: 50000
+    step: 50
+    description: High customer lifetime value from premium positioning
+
+  - key: targetCACRatio
+    label: Target CAC:CLV Ratio
+    type: number
+    default: 0.40        # Aggressive 1:2.5 CAC to CLV ratio (higher investment)
+    min: 0.1
+    max: 0.8
+    step: 0.05
+    description: Target ratio of Customer Acquisition Cost to Customer Lifetime Value
+
+  - key: organicConversionRate
+    label: Organic Conversion Rate (%)
+    type: number
+    default: 25          # Aggressive organic growth from viral/referral effects
+    min: 5
+    max: 40
+    step: 1
+    description: Percentage of conversions from organic/unpaid channels
+
+groups:
+  - name: Aggressive Investment
+    description: Maximum ARR-based budget allocation for growth
+    parameters: [annualRecurringRevenue, marketingBudgetPercent, ppcBudgetPercent, socialBudgetPercent, contentBudgetPercent, emailBudgetPercent]
+    
+  - name: High-Risk Market Strategy
+    description: Premium market positioning with peak timing
+    parameters: [targetAudience, seasonality, competitionLevel]
+    
+  - name: Premium Economics
+    description: High-value customer expectations with aggressive CAC investment
+    parameters: [avgOrderValue, customerLifetimeValue, targetCACRatio, organicConversionRate]
+
+outputs:
+  - key: totalLeads
+    label: Total Leads Generated
+    description: Total number of qualified leads generated across all channels
+
+  - key: totalConversions
+    label: Total Conversions
+    description: Total number of customers acquired from the campaign
+
+  - key: costPerAcquisition
+    label: Cost Per Acquisition
+    description: Average cost to acquire each new customer
+
+  - key: campaignROI
+    label: Campaign ROI (%)
+    description: Return on investment percentage for the entire campaign
+
+  - key: lifetimeROI
+    label: Lifetime Value ROI (%)
+    description: ROI considering customer lifetime value
+
+  - key: actualCAC
+    label: Actual Customer Acquisition Cost
+    description: Real CAC including all marketing and sales costs
+
+  - key: cacToClvRatio
+    label: Actual CAC:CLV Ratio
+    description: Ratio of actual CAC to customer lifetime value
+
+  - key: organicConversions
+    label: Organic Conversions
+    description: Number of conversions from organic channels
+
+simulation:
+  logic: |
+    // Calculate total marketing budget from ARR (aggressive spending)
+    const totalBudget = annualRecurringRevenue * (marketingBudgetPercent / 100)
+    
+    // Aggressive budget validation
+    const totalBudgetPercent = ppcBudgetPercent + socialBudgetPercent + 
+                              contentBudgetPercent + emailBudgetPercent
+    
+    // Normalize if over 100%
+    const normalizedPPC = totalBudgetPercent > 100 ? 
+                         (ppcBudgetPercent / totalBudgetPercent) * 100 : ppcBudgetPercent
+    const normalizedSocial = totalBudgetPercent > 100 ? 
+                            (socialBudgetPercent / totalBudgetPercent) * 100 : socialBudgetPercent
+    const normalizedContent = totalBudgetPercent > 100 ? 
+                             (contentBudgetPercent / totalBudgetPercent) * 100 : contentBudgetPercent
+    const normalizedEmail = totalBudgetPercent > 100 ? 
+                           (emailBudgetPercent / totalBudgetPercent) * 100 : emailBudgetPercent
+    
+    // Calculate channel budgets
+    const ppcBudget = totalBudget * normalizedPPC / 100
+    const socialBudget = totalBudget * normalizedSocial / 100
+    const contentBudget = totalBudget * normalizedContent / 100
+    const emailBudget = totalBudget * normalizedEmail / 100
+    
+    // Aggressive performance metrics by audience type
+    const audienceMetrics = {
+      'b2c-general': { cpcRange: [0.4, 2.2], conversionRate: 0.022 },  // Optimistic ranges
+      'b2c-niche': { cpcRange: [0.8, 4.5], conversionRate: 0.04 },    // Aggressive uses niche
+      'b2b-smb': { cpcRange: [1.5, 9.0], conversionRate: 0.018 },
+      'b2b-enterprise': { cpcRange: [4.0, 28.0], conversionRate: 0.01 },
+      'e-commerce': { cpcRange: [0.25, 1.7], conversionRate: 0.03 }
+    }
+    
+    // Aggressive seasonality multipliers
+    const seasonalityMultipliers = {
+      'off-season': 0.65,
+      normal: 1.0,
+      'peak-season': 1.5,  // Aggressive uses peak season
+      holiday: 2.0
+    }
+    
+    // Aggressive competition factors (willing to compete in tough markets)
+    const competitionFactors = {
+      low: 1.4,
+      moderate: 1.0,
+      high: 0.75,          // Aggressive competes in high competition
+      saturated: 0.55
+    }
+    
+    const metrics = audienceMetrics[targetAudience]
+    const seasonMultiplier = seasonalityMultipliers[seasonality]
+    const compMultiplier = competitionFactors[competitionLevel]
+    
+    // Aggressive channel-specific performance modeling
+    // PPC Performance - Aggressive optimization
+    const ppcCPC = metrics.cpcRange[0] + random() * (metrics.cpcRange[1] - metrics.cpcRange[0])
+    const ppcClicks = ppcBudget / ppcCPC
+    const ppcConversionRate = metrics.conversionRate * 1.3 * seasonMultiplier * compMultiplier * (0.7 + random() * 0.6)  // Higher variation, higher potential
+    const ppcConversions = ppcClicks * ppcConversionRate
+    
+    // Social Media Performance - Aggressive viral potential
+    const socialCPM = 4 + random() * 12  // Wider range, potential for viral low costs
+    const socialImpressions = (socialBudget / socialCPM) * 1000
+    const socialCTR = 0.008 + random() * 0.025  // Higher potential CTR
+    const socialClicks = socialImpressions * socialCTR
+    const socialConversionRate = metrics.conversionRate * 0.9 * seasonMultiplier * compMultiplier * (0.6 + random() * 0.8)  // High variation
+    const socialConversions = socialClicks * socialConversionRate
+    
+    // Content Marketing Performance - Premium content impact
+    const contentLeadsPerDollar = 0.12 + random() * 0.20  // Higher lead generation potential
+    const contentLeads = contentBudget * contentLeadsPerDollar
+    const contentConversionRate = metrics.conversionRate * 2.2 * compMultiplier * (0.7 + random() * 0.6)  // Premium content impact
+    const contentConversions = contentLeads * contentConversionRate
+    
+    // Email Marketing Performance - Advanced automation
+    const emailCostPerSend = 0.015 + random() * 0.035  // Premium tools, variable cost
+    const emailsSent = emailBudget / emailCostPerSend
+    const emailOpenRate = 0.12 + random() * 0.18  // Aggressive targeting, variable results
+    const emailCTR = 0.015 + random() * 0.04  // Advanced segmentation potential
+    const emailClicks = emailsSent * emailOpenRate * emailCTR
+    const emailConversionRate = metrics.conversionRate * 1.6 * (0.85 + random() * 0.3)  // Advanced automation impact
+    const emailConversions = emailClicks * emailConversionRate
+    
+    // Aggressive aggregation with organic conversions and higher variance
+    const totalLeads = round(ppcClicks + socialClicks + contentLeads + emailClicks)
+    const paidConversions = round(ppcConversions + socialConversions + contentConversions + emailConversions)
+    
+    // Calculate organic conversions (aggressive viral/referral growth)
+    const organicConversions = round(paidConversions * (organicConversionRate / 100) / (1 - organicConversionRate / 100))
+    const totalConversions = paidConversions + organicConversions
+    
+    // CAC calculations (only paid channels contribute to CAC)
+    const costPerAcquisition = paidConversions > 0 ? totalBudget / paidConversions : 0
+    
+    // Aggressive CAC includes higher sales costs (35% of marketing budget for premium sales process)
+    const salesCosts = totalBudget * 0.35  
+    const actualCAC = paidConversions > 0 ? (totalBudget + salesCosts) / paidConversions : 0
+    const cacToClvRatio = actualCAC > 0 ? actualCAC / customerLifetimeValue : 0
+    
+    // ROI calculations based on total conversions (paid + organic)
+    const immediateRevenue = totalConversions * avgOrderValue
+    const lifetimeRevenue = totalConversions * customerLifetimeValue
+    
+    const campaignROI = totalBudget > 0 ? ((immediateRevenue - totalBudget) / totalBudget) * 100 : 0
+    const lifetimeROI = totalBudget > 0 ? ((lifetimeRevenue - totalBudget) / totalBudget) * 100 : 0
+    
+    return {
+      totalLeads: totalLeads,
+      totalConversions: totalConversions,
+      costPerAcquisition: round(costPerAcquisition * 100) / 100,
+      campaignROI: round(campaignROI * 10) / 10,
+      lifetimeROI: round(lifetimeROI * 10) / 10,
+      actualCAC: round(actualCAC * 100) / 100,
+      cacToClvRatio: round(cacToClvRatio * 1000) / 1000,
+      organicConversions: organicConversions
+    }

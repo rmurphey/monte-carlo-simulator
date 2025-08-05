@@ -1,80 +1,80 @@
-name: Software Project Timeline (Conservative Estimate)
+name: Software Project Timeline (Neutral Estimate)
 category: Technology
-description: Conservative timeline estimation with experienced team and buffer time
+description: Balanced timeline estimation with typical team composition and moderate risk factors
 version: 1.0.0
-tags: [software-development, project-management, conservative, buffer-time]
+tags: [software-development, project-management, neutral, baseline]
 
 parameters:
   - key: featureCount
     label: Total Features to Deliver
     type: number
-    default: 20          # Smaller, well-defined scope
+    default: 25          # Standard project scope
     min: 5
     max: 200
     step: 1
-    description: Conservative scope with well-defined feature requirements
+    description: Typical project scope with standard feature set
 
   - key: teamSize
     label: Development Team Size
     type: number
-    default: 5           # Optimal team size for coordination
+    default: 6           # Standard team size
     min: 2
     max: 20
     step: 1
-    description: Experienced team with good coordination
+    description: Standard development team size
 
   - key: teamExperience
     label: Team Experience Level
     type: select
-    default: senior      # Experienced team reduces risk
+    default: mixed       # Typical mixed experience team
     options: [junior, mixed, senior, expert]
-    description: Senior team with domain expertise
+    description: Mixed team with junior and senior developers
 
   - key: projectComplexity
     label: Project Complexity
     type: select
-    default: medium      # Moderate complexity, well-understood domain
+    default: medium      # Standard medium complexity
     options: [low, medium, high, very-high]
-    description: Medium complexity with established patterns
+    description: Medium complexity project with standard technical challenges
 
   - key: requirementsStability
     label: Requirements Stability
     type: select
-    default: stable      # Stable requirements reduce scope creep
+    default: moderate    # Some changes expected
     options: [stable, moderate, changing, volatile]
-    description: Well-defined, stable requirements with minimal changes
+    description: Moderate requirement changes expected during development
 
   - key: hasLegacyIntegration
     label: Legacy System Integration
     type: boolean
-    default: false       # Avoid legacy complexity
-    description: Minimal legacy integration to reduce risk
+    default: false       # No legacy complexity
+    description: Clean greenfield project without legacy constraints
 
   - key: testingStrategy
     label: Testing Strategy
     type: select
-    default: comprehensive  # Thorough testing prevents delays
+    default: automated   # Standard automated testing
     options: [manual, mixed, automated, comprehensive]
-    description: Comprehensive testing to catch issues early
+    description: Automated testing with standard coverage
 
   - key: deploymentComplexity
     label: Deployment Complexity
     type: select
-    default: simple      # Simple deployment reduces risk
+    default: moderate    # Standard deployment process
     options: [simple, moderate, complex, enterprise]
-    description: Simple deployment process with minimal dependencies
+    description: Standard deployment with CI/CD pipeline
 
 groups:
-  - name: Conservative Scope
-    description: Well-defined scope with experienced team
+  - name: Balanced Scope
+    description: Standard project scope and team composition
     parameters: [storyPoints, teamSize, teamExperience]
     
-  - name: Risk Mitigation
-    description: Low-risk project characteristics
+  - name: Moderate Risk
+    description: Typical project risk factors
     parameters: [projectComplexity, requirementsStability, hasLegacyIntegration]
     
-  - name: Quality Assurance
-    description: Comprehensive testing and simple deployment
+  - name: Standard Process
+    description: Standard testing and deployment practices
     parameters: [testingStrategy, deploymentComplexity]
 
 outputs:
@@ -96,78 +96,78 @@ outputs:
 
 simulation:
   logic: |
-    // Conservative base feature velocity by team experience
+    // Neutral base feature velocity by team experience
     const baseFeaturesPerDevPerWeek = {
       junior: 0.4,
-      mixed: 0.6,
-      senior: 0.8,   // Conservative scenario uses senior team
+      mixed: 0.6,       // Neutral scenario uses mixed team
+      senior: 0.8,
       expert: 1.1
     }
     
-    // Team efficiency with conservative estimates
+    // Standard team efficiency
     const teamEfficiency = teamSize <= 4 ? 1.0 : 
-                          teamSize <= 8 ? 0.95 : // Conservative efficiency
-                          teamSize <= 12 ? 0.85 : 0.75
+                          teamSize <= 8 ? 0.9 :   // Standard efficiency curve
+                          teamSize <= 12 ? 0.8 : 0.7
     
     // Calculate base weekly feature velocity
     const baseVelocity = baseFeaturesPerDevPerWeek[teamExperience] * teamSize * teamEfficiency
     
-    // Conservative complexity multipliers
+    // Neutral complexity multipliers
     const complexityFactors = {
       low: 0.8,
-      medium: 1.0,      // Conservative uses medium complexity
+      medium: 1.0,      // Neutral uses medium complexity
       high: 1.3,
       'very-high': 1.7
     }
     
-    // Conservative stability factors
+    // Neutral stability factors
     const stabilityFactors = {
-      stable: 1.0,      // Conservative uses stable requirements
-      moderate: 1.15,
+      stable: 1.0,
+      moderate: 1.15,   // Neutral uses moderate stability
       changing: 1.35,
       volatile: 1.6
     }
     
-    // Conservative testing factors
+    // Neutral testing factors
     const testingFactors = {
       manual: 1.4,
       mixed: 1.2,
-      automated: 1.0,
-      comprehensive: 1.15  // Slightly more time but better quality
+      automated: 1.0,   // Neutral uses automated testing
+      comprehensive: 1.1
     }
     
-    // Conservative deployment factors
+    // Neutral deployment factors
     const deploymentFactors = {
-      simple: 1.0,      // Conservative uses simple deployment
-      moderate: 1.1,
+      simple: 1.0,
+      moderate: 1.1,    // Neutral uses moderate deployment
       complex: 1.25,
       enterprise: 1.4
     }
     
-    // Conservative legacy factor
-    const legacyFactor = hasLegacyIntegration ? 1.3 : 1.0  // No legacy in conservative
+    // No legacy factor in neutral scenario
+    const legacyFactor = hasLegacyIntegration ? 1.3 : 1.0
     
-    // Calculate risk adjustment with conservative multipliers
+    // Calculate risk adjustment with neutral multipliers
     const riskAdjustment = complexityFactors[projectComplexity] * 
                           stabilityFactors[requirementsStability] *
                           testingFactors[testingStrategy] *
                           deploymentFactors[deploymentComplexity] *
                           legacyFactor
     
-    // Conservative random variation (less uncertainty)
-    const randomVariation = 0.9 + random() * 0.2  // ±10% variation
+    // Standard random variation
+    const randomVariation = 0.8 + random() * 0.4  // ±20% variation
     
     // Calculate adjusted velocity
     const adjustedVelocity = (baseVelocity / riskAdjustment) * randomVariation
     
-    // Calculate timeline with conservative buffer
+    // Calculate timeline
     const estimatedWeeks = featureCount / adjustedVelocity
     
-    // Conservative confidence interval (±20%)
-    const confidenceRange = estimatedWeeks * 0.2
+    // Standard confidence interval (±30% for 80% confidence)
+    const confidenceRange = estimatedWeeks * 0.3
     
-    // Add conservative buffer (15-25%)
-    const bufferFactor = 1.15 + random() * 0.1
+    // Standard buffer for planning and deployment (10-20%)
+    const bufferFactor = 1.1 + random() * 0.1
     const finalEstimateWeeks = estimatedWeeks * bufferFactor
     
     return {
