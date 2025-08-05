@@ -2,9 +2,11 @@ import { ConfigurationLoader } from '../config/loader'
 import { ConfigurableSimulation } from '../../framework/ConfigurableSimulation'
 import { promises as fs } from 'fs'
 import { join, basename } from 'path'
+import chalk from 'chalk'
 
 interface RunOptions {
   scenario?: string
+  compare?: string
   params?: string
   iterations?: number
   output?: string
@@ -16,16 +18,22 @@ interface RunOptions {
 
 export async function runSimulation(simulationName: string, options: RunOptions = {}): Promise<void> {
   try {
-    console.log(`🎯 Monte Carlo Simulation Runner\n`)
+    console.log(chalk.cyan.bold(`🎯 Monte Carlo Simulation Runner\n`))
+    
+    // Handle comparison mode
+    if (options.compare) {
+      await runComparisonMode(simulationName, options)
+      return
+    }
     
     // 1. Discover and load simulation configuration
     const configPath = await discoverSimulation(simulationName, options.scenario)
     const loader = new ConfigurationLoader()
     const config = await loader.loadConfig(configPath)
     
-    console.log(`📊 ${config.name}`)
+    console.log(chalk.blue.bold(`📊 ${config.name}`))
     if (config.description) {
-      console.log(`${config.description}\n`)
+      console.log(chalk.gray(`${config.description}\n`))
     }
     
     // 2. Resolve parameters (scenario -> custom file -> CLI overrides)
@@ -41,7 +49,7 @@ export async function runSimulation(simulationName: string, options: RunOptions 
     const iterations = options.iterations || 1000
     
     if (!options.quiet) {
-      console.log(`🚀 Running ${iterations.toLocaleString()} iterations...`)
+      console.log(chalk.yellow(`🚀 Running ${iterations.toLocaleString()} iterations...`))
     }
     
     const startTime = Date.now()
@@ -49,18 +57,21 @@ export async function runSimulation(simulationName: string, options: RunOptions 
       parameters, 
       iterations,
       options.quiet ? undefined : (progress: number) => {
-        // Simple progress indicator
+        // Colorful progress indicator
         if (progress % 0.1 < 0.01) { // Update every 10%
           const percent = Math.round(progress * 100)
-          const bar = '▓'.repeat(Math.floor(percent / 10)) + '░'.repeat(10 - Math.floor(percent / 10))
-          process.stdout.write(`\r${bar} ${percent}%`)
+          const completed = Math.floor(percent / 10)
+          const remaining = 10 - completed
+          const bar = chalk.green('▓'.repeat(completed)) + chalk.gray('░'.repeat(remaining))
+          process.stdout.write(`\r${bar} ${chalk.cyan(`${percent}%`)}`)
         }
       }
     )
     const executionTime = ((Date.now() - startTime) / 1000).toFixed(1)
     
     if (!options.quiet) {
-      console.log(`\r${'▓'.repeat(10)} 100% | ${iterations.toLocaleString()}/${iterations.toLocaleString()} | ${executionTime}s\n`)
+      const bar = chalk.green('▓'.repeat(10))
+      console.log(`\r${bar} ${chalk.cyan('100%')} | ${chalk.white(iterations.toLocaleString())}/${chalk.white(iterations.toLocaleString())} | ${chalk.magenta(executionTime + 's')}\n`)
     }
     
     // 5. Display results
@@ -72,11 +83,11 @@ export async function runSimulation(simulationName: string, options: RunOptions 
     }
     
     if (!options.quiet) {
-      console.log('✅ Simulation completed successfully')
+      console.log(chalk.green.bold('✅ Simulation completed successfully'))
     }
     
   } catch (error) {
-    console.error('❌ Simulation failed:', error instanceof Error ? error.message : String(error))
+    console.error(chalk.red.bold('❌ Simulation failed:'), chalk.red(error instanceof Error ? error.message : String(error)))
     process.exit(1)
   }
 }
@@ -89,12 +100,14 @@ async function discoverSimulation(simulationName: string, scenario?: string): Pr
     // Direct file path
     simulationName,
     
-    // In examples directory
-    join(examplesDir, `${simulationName}/${simulationName}.yaml`),
-    join(examplesDir, `${simulationName}.yaml`),
-    
-    // Scenario-specific
+    // Scenario-specific (try this first for scenario-based structure)
     scenario ? join(examplesDir, `${simulationName}/${scenario}.yaml`) : null,
+    
+    // In examples directory (scenario-based structure)
+    join(examplesDir, `${simulationName}/${simulationName}.yaml`),
+    
+    // Legacy single file structure
+    join(examplesDir, `${simulationName}.yaml`),
   ].filter(Boolean) as string[]
   
   for (const path of possiblePaths) {
@@ -193,15 +206,15 @@ async function resolveParameters(config: any, options: RunOptions): Promise<Reco
 }
 
 function displayConfiguration(parameters: Record<string, any>, iterations: number): void {
-  console.log('📋 CONFIGURATION')
-  console.log('━'.repeat(50))
+  console.log(chalk.blue.bold('📋 CONFIGURATION'))
+  console.log(chalk.gray('━'.repeat(50)))
   
   Object.entries(parameters).forEach(([key, value]) => {
     const displayValue = typeof value === 'number' ? value.toLocaleString() : String(value)
-    console.log(`${key.padEnd(20)}: ${displayValue}`)
+    console.log(`${chalk.cyan(key.padEnd(20))}: ${chalk.white(displayValue)}`)
   })
   
-  console.log(`${'iterations'.padEnd(20)}: ${iterations.toLocaleString()}`)
+  console.log(`${chalk.cyan('iterations'.padEnd(20))}: ${chalk.white(iterations.toLocaleString())}`)
   console.log('')
 }
 
@@ -226,8 +239,8 @@ async function displayResults(results: any, config: any, options: RunOptions): P
   }
   
   // Default table format
-  console.log('📈 RESULTS SUMMARY')
-  console.log('═'.repeat(50))
+  console.log(chalk.green.bold('📈 RESULTS SUMMARY'))
+  console.log(chalk.gray('═'.repeat(50)))
   
   Object.entries(results.summary).forEach(([key, stats]: [string, any]) => {
     const output = config.outputs.find((o: any) => o.key === key)
@@ -235,12 +248,12 @@ async function displayResults(results: any, config: any, options: RunOptions): P
     const mean = stats.mean?.toLocaleString() || 'N/A'
     const stdDev = stats.standardDeviation?.toLocaleString() || 'N/A'
     
-    console.log(`${label.padEnd(25)}: ${mean} (±${stdDev})`)
+    console.log(`${chalk.cyan(label.padEnd(25))}: ${chalk.white(mean)} ${chalk.gray(`(±${stdDev})`)}`)
   })
   
   if (options.verbose) {
-    console.log('\n📊 STATISTICAL DISTRIBUTION')
-    console.log(' '.repeat(16) + 'P10'.padStart(10) + 'P50'.padStart(10) + 'P90'.padStart(10))
+    console.log(chalk.blue.bold('\n📊 STATISTICAL DISTRIBUTION'))
+    console.log(' '.repeat(16) + chalk.yellow('P10'.padStart(10)) + chalk.yellow('P50'.padStart(10)) + chalk.yellow('P90'.padStart(10)))
     
     Object.entries(results.summary).forEach(([key, stats]: [string, any]) => {
       const output = config.outputs.find((o: any) => o.key === key)
@@ -249,7 +262,7 @@ async function displayResults(results: any, config: any, options: RunOptions): P
       const p50 = stats.median?.toLocaleString() || 'N/A'
       const p90 = stats.percentile90?.toLocaleString() || 'N/A'
       
-      console.log(`${label.padEnd(15)} ${p10.padStart(10)} ${p50.padStart(10)} ${p90.padStart(10)}`)
+      console.log(`${chalk.cyan(label.padEnd(15))} ${chalk.white(p10.padStart(10))} ${chalk.white(p50.padStart(10))} ${chalk.white(p90.padStart(10))}`)
     })
   }
 }
@@ -269,7 +282,7 @@ async function saveResults(results: any, config: any, parameters: Record<string,
     JSON.stringify(outputData, null, 2)
   
   await fs.writeFile(options.output!, content, 'utf8')
-  console.log(`💾 Results saved to ${options.output}`)
+  console.log(chalk.green(`💾 Results saved to ${chalk.white(options.output)}`))
 }
 
 function convertToCSV(results: any[]): string {
@@ -282,4 +295,165 @@ function convertToCSV(results: any[]): string {
   ].join('\n')
   
   return csvContent
+}
+
+async function runComparisonMode(simulationName: string, options: RunOptions): Promise<void> {
+  const scenarios = options.compare!.split(',').map(s => s.trim())
+  const iterations = options.iterations || 1000
+  const results: Array<{ scenario: string; config: any; results: any }> = []
+  
+  console.log(chalk.magenta.bold(`🔬 Scenario Comparison: ${chalk.white(simulationName)}`))
+  console.log(chalk.gray(`Comparing scenarios: ${chalk.white(scenarios.join(', '))}\n`))
+  
+  // Run each scenario
+  for (const scenario of scenarios) {
+    try {
+      console.log(chalk.yellow(`🚀 Running ${chalk.white(scenario)} scenario (${chalk.white(iterations.toLocaleString())} iterations)...`))
+      
+      const configPath = await discoverSimulation(simulationName, scenario)
+      const loader = new ConfigurationLoader()
+      const config = await loader.loadConfig(configPath)
+      
+      const parameters = await resolveParameters(config, { ...options, scenario })
+      const simulation = new ConfigurableSimulation(config)
+      
+      const startTime = Date.now()
+      const result = await simulation.runSimulation(parameters, iterations)
+      const executionTime = ((Date.now() - startTime) / 1000).toFixed(1)
+      
+      results.push({ scenario, config, results: result })
+      console.log(chalk.green(`✅ ${chalk.white(scenario)} completed (${chalk.gray(executionTime + 's')})\n`))
+      
+    } catch (error) {
+      console.error(chalk.red(`❌ ${chalk.white(scenario)} failed: ${chalk.red(error instanceof Error ? error.message : String(error))}\n`))
+    }
+  }
+  
+  if (results.length === 0) {
+    console.error(chalk.red.bold('❌ No scenarios completed successfully'))
+    return
+  }
+  
+  // Display comparison results
+  await displayComparisonResults(results, options)
+  
+  // Save comparison results if requested
+  if (options.output) {
+    await saveComparisonResults(results, simulationName, options)
+  }
+  
+  console.log(chalk.green.bold('✅ Scenario comparison completed successfully'))
+}
+
+async function displayComparisonResults(results: Array<{ scenario: string; config: any; results: any }>, options: RunOptions): Promise<void> {
+  if (options.quiet) return
+  
+  const format = options.format || 'table'
+  
+  if (format === 'json') {
+    const comparisonData = {
+      comparison: results.map(r => ({
+        scenario: r.scenario,
+        simulation: r.config.name,
+        summary: r.results.summary
+      }))
+    }
+    console.log(JSON.stringify(comparisonData, null, 2))
+    return
+  }
+  
+  // Table format comparison
+  console.log(chalk.magenta.bold('📊 SCENARIO COMPARISON RESULTS'))
+  console.log(chalk.gray('═'.repeat(80)))
+  
+  // Get all output keys from first result
+  const outputKeys = Object.keys(results[0].results.summary)
+  
+  // Display comparison table for each output metric
+  for (const outputKey of outputKeys) {
+    const output = results[0].config.outputs.find((o: any) => o.key === outputKey)
+    const label = output?.label || outputKey
+    
+    console.log(chalk.blue.bold(`\n${label}:`))
+    console.log(chalk.gray('─'.repeat(60)))
+    console.log(chalk.yellow('Scenario'.padEnd(15)) + chalk.yellow('Mean'.padStart(15)) + chalk.yellow('P10'.padStart(12)) + chalk.yellow('P90'.padStart(12)))
+    console.log(chalk.gray('─'.repeat(60)))
+    
+    results.forEach(({ scenario, results: scenarioResults }) => {
+      const stats = scenarioResults.summary[outputKey]
+      const mean = stats.mean?.toLocaleString() || 'N/A'
+      const p10 = stats.percentile10?.toLocaleString() || 'N/A'
+      const p90 = stats.percentile90?.toLocaleString() || 'N/A'
+      
+      console.log(
+        chalk.cyan(scenario.padEnd(15)) + 
+        chalk.white(mean.padStart(15)) + 
+        chalk.white(p10.padStart(12)) + 
+        chalk.white(p90.padStart(12))
+      )
+    })
+  }
+  
+  if (options.verbose) {
+    console.log(chalk.blue.bold('\n📈 DETAILED COMPARISON'))
+    console.log(chalk.gray('═'.repeat(80)))
+    
+    results.forEach(({ scenario, config, results: scenarioResults }, index) => {
+      console.log(chalk.magenta.bold(`\n${index + 1}. ${scenario.toUpperCase()} SCENARIO`))
+      console.log(chalk.gray(`   ${config.description}`))
+      console.log(chalk.gray('   ' + '─'.repeat(50)))
+      
+      Object.entries(scenarioResults.summary).forEach(([key, stats]: [string, any]) => {
+        const output = config.outputs.find((o: any) => o.key === key)
+        const label = output?.label || key
+        const mean = stats.mean?.toLocaleString() || 'N/A'
+        const stdDev = stats.standardDeviation?.toLocaleString() || 'N/A'
+        
+        console.log(`   ${chalk.cyan(label.padEnd(25))}: ${chalk.white(mean)} ${chalk.gray(`(±${stdDev})`)}`)
+      })
+    })
+  }
+}
+
+async function saveComparisonResults(results: Array<{ scenario: string; config: any; results: any }>, simulationName: string, options: RunOptions): Promise<void> {
+  const comparisonData = {
+    simulation: simulationName,
+    scenarios: results.map(r => r.scenario),
+    timestamp: new Date().toISOString(),
+    results: results.map(r => ({
+      scenario: r.scenario,
+      name: r.config.name,
+      description: r.config.description,
+      summary: r.results.summary,
+      iterations: r.results.results.length
+    }))
+  }
+  
+  const content = options.format === 'csv' ? 
+    convertComparisonToCSV(results) : 
+    JSON.stringify(comparisonData, null, 2)
+  
+  await fs.writeFile(options.output!, content, 'utf8')
+  console.log(chalk.green(`💾 Comparison results saved to ${chalk.white(options.output)}`))
+}
+
+function convertComparisonToCSV(results: Array<{ scenario: string; config: any; results: any }>): string {
+  const headers = ['scenario', 'metric', 'mean', 'median', 'std_dev', 'p10', 'p90']
+  const rows = [headers.join(',')]
+  
+  results.forEach(({ scenario, results: scenarioResults }) => {
+    Object.entries(scenarioResults.summary).forEach(([key, stats]: [string, any]) => {
+      rows.push([
+        scenario,
+        key,
+        stats.mean || '',
+        stats.median || '',
+        stats.standardDeviation || '',
+        stats.percentile10 || '',
+        stats.percentile90 || ''
+      ].join(','))
+    })
+  })
+  
+  return rows.join('\n')
 }

@@ -1,0 +1,185 @@
+name: Restaurant Profitability Analysis (Conservative Strategy)
+category: Business
+description: Lower risk approach with realistic market assumptions and affordable positioning
+version: 1.0.0
+tags: [restaurant, business-planning, conservative, low-risk]
+
+parameters:
+  - key: startupCosts
+    label: Initial Startup Costs
+    type: number
+    default: 200000      # 20% below market average
+    min: 50000
+    max: 1000000
+    step: 5000
+    description: Conservative startup investment with essential equipment only
+
+  - key: monthlyRent
+    label: Monthly Rent
+    type: number
+    default: 8000        # Affordable location tier
+    min: 2000
+    max: 50000
+    step: 500
+    description: Rent in affordable, established neighborhood
+
+  - key: seatingCapacity
+    label: Seating Capacity
+    type: number
+    default: 60          # Smaller, manageable size
+    min: 20
+    max: 300
+    step: 5
+    description: Smaller capacity for easier management and lower overhead
+
+  - key: averageTicket
+    label: Average Ticket Size
+    type: number
+    default: 35.00       # Competitive pricing
+    min: 10.00
+    max: 200.00
+    step: 1.00
+    description: Competitive pricing to attract price-conscious customers
+
+  - key: staffCount
+    label: Staff Count
+    type: number
+    default: 8           # Lean staffing model
+    min: 3
+    max: 50
+    step: 1
+    description: Minimal staffing to control labor costs
+
+  - key: avgWage
+    label: Average Hourly Wage
+    type: number
+    default: 16.50       # Competitive but not premium wages
+    min: 12.00
+    max: 35.00
+    step: 0.50
+    description: Market-rate wages for reliable staff
+
+  - key: cuisineType
+    label: Cuisine Type
+    type: select
+    default: fast-casual
+    options: [fast-casual, casual-dining, fine-dining, ethnic-specialty]
+    description: Fast-casual concept with lower operational complexity
+
+  - key: locationQuality
+    label: Location Quality
+    type: select
+    default: fair
+    options: [poor, fair, good, excellent, prime]
+    description: Decent location without premium rent
+
+  - key: hasDelivery
+    label: Offers Delivery Service
+    type: boolean
+    default: false       # Focus on dine-in initially
+    description: Start with dine-in only to minimize complexity
+
+groups:
+  - name: Conservative Investment
+    description: Lower initial investment with essential equipment
+    parameters: [startupCosts, monthlyRent, staffCount, avgWage]
+    
+  - name: Accessible Operations
+    description: Smaller scale, affordable positioning
+    parameters: [seatingCapacity, averageTicket, cuisineType, hasDelivery]
+    
+  - name: Realistic Market
+    description: Moderate expectations for location and customer base
+    parameters: [locationQuality]
+
+outputs:
+  - key: monthlyRevenue
+    label: Monthly Revenue
+    description: Gross monthly revenue from all sources
+
+  - key: monthlyOperatingCosts
+    label: Monthly Operating Costs
+    description: Total monthly expenses excluding startup costs
+
+  - key: monthlyNetProfit
+    label: Monthly Net Profit
+    description: Monthly profit after all operating expenses
+
+  - key: breakEvenMonths
+    label: Break-even Period
+    description: Number of months to recover initial startup investment
+
+  - key: annualROI
+    label: Annual ROI Percentage
+    description: Return on investment percentage based on first year performance
+
+simulation:
+  logic: |
+    // Location quality factors - conservative multipliers
+    const locationMultipliers = {
+      poor: 0.6,
+      fair: 0.8,    // Conservative scenario uses fair location
+      good: 1.0,
+      excellent: 1.3,
+      prime: 1.6
+    }
+    
+    // Cuisine type factors with conservative estimates
+    const cuisineFactors = {
+      'fast-casual': { frequency: 1.2, ticketVariation: 0.8 },  // Lower variation for predictability
+      'casual-dining': { frequency: 1.0, ticketVariation: 1.0 },
+      'fine-dining': { frequency: 0.6, ticketVariation: 1.5 },
+      'ethnic-specialty': { frequency: 0.9, ticketVariation: 1.1 }
+    }
+    
+    // Conservative base utilization - more realistic assumptions
+    const baseUtilization = 0.25 + random() * 0.20  // 25-45% capacity utilization
+    const locationFactor = locationMultipliers[locationQuality]
+    const cuisineFactor = cuisineFactors[cuisineType]
+    
+    // Calculate daily customers with conservative estimates
+    const actualUtilization = min(baseUtilization * locationFactor * cuisineFactor.frequency, 0.80)
+    const dailyCustomers = seatingCapacity * actualUtilization * 2.0  // Conservative 2.0 table turns
+    
+    // Revenue calculations with reduced volatility
+    const actualTicket = averageTicket * (0.9 + random() * 0.2) * cuisineFactor.ticketVariation  // Less volatility
+    const dineInRevenue = dailyCustomers * actualTicket * 30  // Monthly
+    
+    // No delivery revenue in conservative scenario
+    let deliveryRevenue = 0
+    if (hasDelivery) {
+      const deliveryCustomers = dailyCustomers * 0.15 * (0.9 + random() * 0.2)  // Conservative delivery uptake
+      deliveryRevenue = deliveryCustomers * actualTicket * 0.85 * 30
+    }
+    
+    const monthlyRevenue = dineInRevenue + deliveryRevenue
+    
+    // Operating cost calculations with conservative estimates
+    const laborCosts = staffCount * avgWage * 40 * 4.33  // Monthly labor
+    const foodCosts = monthlyRevenue * (0.32 + random() * 0.06)  // Higher food cost % (32-38%)
+    const utilitiesInsurance = 2800 + random() * 800  // Lower utilities for smaller space
+    const marketingCosts = monthlyRevenue * 0.025  // Conservative marketing spend
+    const maintenanceRepairs = 800 + random() * 400  // Lower maintenance for newer equipment
+    const miscOperating = 1500 + random() * 500  // Lower misc costs
+    
+    const monthlyOperatingCosts = monthlyRent + laborCosts + foodCosts + 
+                                 utilitiesInsurance + marketingCosts + 
+                                 maintenanceRepairs + miscOperating
+    
+    // Profit calculations
+    const monthlyNetProfit = monthlyRevenue - monthlyOperatingCosts
+    
+    // Break-even and ROI calculations
+    const breakEvenMonths = monthlyNetProfit > 0 ? 
+                           startupCosts / monthlyNetProfit : 999
+    
+    const annualNetProfit = monthlyNetProfit * 12
+    const annualROI = (annualNetProfit / startupCosts) * 100
+    
+    return {
+      monthlyRevenue: round(monthlyRevenue),
+      monthlyOperatingCosts: round(monthlyOperatingCosts),
+      monthlyNetProfit: round(monthlyNetProfit),
+      breakEvenMonths: min(round(breakEvenMonths * 10) / 10, 999),
+      annualROI: round(annualROI * 10) / 10
+    }

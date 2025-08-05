@@ -44,6 +44,7 @@ program
   .description('Run a Monte Carlo simulation')
   .argument('<simulation>', 'simulation name or path')
   .option('-s, --scenario <scenario>', 'scenario to run (conservative, neutral, aggressive)')
+  .option('-c, --compare <scenarios>', 'compare multiple scenarios (comma-separated)')
   .option('-p, --params <file>', 'custom parameter file')
   .option('-i, --iterations <number>', 'number of iterations', '1000')
   .option('-o, --output <file>', 'save results to file')

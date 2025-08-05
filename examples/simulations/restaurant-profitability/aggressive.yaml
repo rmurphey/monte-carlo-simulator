@@ -1,0 +1,185 @@
+name: Restaurant Profitability Analysis (Aggressive Strategy)
+category: Business
+description: High-growth strategy with premium positioning and maximum investment
+version: 1.0.0
+tags: [restaurant, business-planning, aggressive, high-growth]
+
+parameters:
+  - key: startupCosts
+    label: Initial Startup Costs
+    type: number
+    default: 400000      # Premium buildout investment
+    min: 50000
+    max: 1000000
+    step: 5000
+    description: Premium buildout with high-end equipment and design
+
+  - key: monthlyRent
+    label: Monthly Rent
+    type: number
+    default: 18000       # Prime location premium
+    min: 2000
+    max: 50000
+    step: 500
+    description: Prime location rent for maximum visibility and traffic
+
+  - key: seatingCapacity
+    label: Seating Capacity
+    type: number
+    default: 120         # Large capacity for revenue maximization
+    min: 20
+    max: 300
+    step: 5
+    description: Large capacity to maximize revenue potential
+
+  - key: averageTicket
+    label: Average Ticket Size
+    type: number
+    default: 65.00       # Premium pricing strategy
+    min: 10.00
+    max: 200.00
+    step: 1.00
+    description: Premium pricing with upscale positioning
+
+  - key: staffCount
+    label: Staff Count
+    type: number
+    default: 18          # Full staffing for premium service
+    min: 3
+    max: 50
+    step: 1
+    description: Full staffing to ensure premium service quality
+
+  - key: avgWage
+    label: Average Hourly Wage
+    type: number
+    default: 22.00       # Premium wages for top talent
+    min: 12.00
+    max: 35.00
+    step: 0.50
+    description: Premium wages to attract and retain top talent
+
+  - key: cuisineType
+    label: Cuisine Type
+    type: select
+    default: fine-dining
+    options: [fast-casual, casual-dining, fine-dining, ethnic-specialty]
+    description: Upscale fine dining concept with higher margins
+
+  - key: locationQuality
+    label: Location Quality
+    type: select
+    default: prime
+    options: [poor, fair, good, excellent, prime]
+    description: Prime location with maximum foot traffic and visibility
+
+  - key: hasDelivery
+    label: Offers Delivery Service
+    type: boolean
+    default: true        # All revenue channels maximized
+    description: Premium delivery service to capture all market segments
+
+groups:
+  - name: Premium Investment
+    description: Maximum initial investment for competitive advantage
+    parameters: [startupCosts, monthlyRent, staffCount, avgWage]
+    
+  - name: High-End Operations
+    description: Large scale operations with premium positioning
+    parameters: [seatingCapacity, averageTicket, cuisineType, hasDelivery]
+    
+  - name: Prime Market Position
+    description: Best possible location and market presence
+    parameters: [locationQuality]
+
+outputs:
+  - key: monthlyRevenue
+    label: Monthly Revenue
+    description: Gross monthly revenue from all sources
+
+  - key: monthlyOperatingCosts
+    label: Monthly Operating Costs
+    description: Total monthly expenses excluding startup costs
+
+  - key: monthlyNetProfit
+    label: Monthly Net Profit
+    description: Monthly profit after all operating expenses
+
+  - key: breakEvenMonths
+    label: Break-even Period
+    description: Number of months to recover initial startup investment
+
+  - key: annualROI
+    label: Annual ROI Percentage
+    description: Return on investment percentage based on first year performance
+
+simulation:
+  logic: |
+    // Location quality factors - aggressive scenario uses prime location
+    const locationMultipliers = {
+      poor: 0.6,
+      fair: 0.8,
+      good: 1.0,
+      excellent: 1.3,
+      prime: 1.6        // Aggressive scenario leverages prime location
+    }
+    
+    // Cuisine type factors with aggressive assumptions
+    const cuisineFactors = {
+      'fast-casual': { frequency: 1.4, ticketVariation: 0.8 },
+      'casual-dining': { frequency: 1.0, ticketVariation: 1.0 },
+      'fine-dining': { frequency: 0.6, ticketVariation: 1.5 },  // Higher margins but lower frequency
+      'ethnic-specialty': { frequency: 0.9, ticketVariation: 1.1 }
+    }
+    
+    // Aggressive utilization assumptions with higher variance
+    const baseUtilization = 0.45 + random() * 0.30  // 45-75% capacity utilization
+    const locationFactor = locationMultipliers[locationQuality]
+    const cuisineFactor = cuisineFactors[cuisineType]
+    
+    // Calculate daily customers with aggressive growth assumptions
+    const actualUtilization = min(baseUtilization * locationFactor * cuisineFactor.frequency, 1.0)
+    const dailyCustomers = seatingCapacity * actualUtilization * 2.8  // Aggressive 2.8 table turns
+    
+    // Revenue calculations with higher volatility for upside potential
+    const actualTicket = averageTicket * (0.7 + random() * 0.6) * cuisineFactor.ticketVariation  // Higher variance
+    const dineInRevenue = dailyCustomers * actualTicket * 30  // Monthly
+    
+    // Delivery revenue with premium service
+    let deliveryRevenue = 0
+    if (hasDelivery) {
+      const deliveryCustomers = dailyCustomers * 0.35 * (0.7 + random() * 0.6)  // Aggressive delivery uptake
+      deliveryRevenue = deliveryCustomers * actualTicket * 0.90 * 30  // Premium delivery pricing
+    }
+    
+    const monthlyRevenue = dineInRevenue + deliveryRevenue
+    
+    // Operating cost calculations with premium service costs
+    const laborCosts = staffCount * avgWage * 40 * 4.33  // Higher labor costs for premium service
+    const foodCosts = monthlyRevenue * (0.25 + random() * 0.10)  // Premium ingredients 25-35%
+    const utilitiesInsurance = 4500 + random() * 2000  // Higher utilities for larger space
+    const marketingCosts = monthlyRevenue * 0.04  // Aggressive 4% marketing spend
+    const maintenanceRepairs = 1800 + random() * 1200  // Higher maintenance for premium equipment
+    const miscOperating = 3000 + random() * 1500  // Higher miscellaneous costs
+    
+    const monthlyOperatingCosts = monthlyRent + laborCosts + foodCosts + 
+                                 utilitiesInsurance + marketingCosts + 
+                                 maintenanceRepairs + miscOperating
+    
+    // Profit calculations
+    const monthlyNetProfit = monthlyRevenue - monthlyOperatingCosts
+    
+    // Break-even and ROI calculations
+    const breakEvenMonths = monthlyNetProfit > 0 ? 
+                           startupCosts / monthlyNetProfit : 999
+    
+    const annualNetProfit = monthlyNetProfit * 12
+    const annualROI = (annualNetProfit / startupCosts) * 100
+    
+    return {
+      monthlyRevenue: round(monthlyRevenue),
+      monthlyOperatingCosts: round(monthlyOperatingCosts),
+      monthlyNetProfit: round(monthlyNetProfit),
+      breakEvenMonths: min(round(breakEvenMonths * 10) / 10, 999),
+      annualROI: round(annualROI * 10) / 10
+    }
