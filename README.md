@@ -22,12 +22,14 @@ npx monte-carlo-simulator run marketing-campaign-roi --compare conservative,aggr
 
 ### Create New Simulations
 ```bash
-# Interactive configuration builder
+# Interactive configuration builder with business guidance
 npm run cli create --interactive "Your Simulation Name"
 
 # Generate from template
 npm run cli create "Your Simulation Name" --template
 ```
+
+**Coming Soon**: Industry-specific templates and enhanced business guidance - [see design](designs/interactive-cli-enhancement.md)
 
 ## Features
 
@@ -40,13 +42,13 @@ npm run cli create "Your Simulation Name" --template
 
 ## Current Simulations
 
-**Restaurant Profitability**: Models restaurant operations with industry metrics like food cost %, labor cost %, and table turnover rates.
+**Restaurant Profitability**: Industry KPIs including 28.9% food cost management, $2.04 CAC optimization, and 1.98 table turn efficiency tracking.
 
-**Marketing Campaign ROI**: ARR-based marketing budget allocation with CAC analysis and viral growth factors.
+**Marketing Campaign ROI**: ARR-scaled budgets ($80K→$900K), 0.255 CAC:CLV sustainability ratios, and viral growth modeling with 15%→25% organic conversion rates.
 
-**Software Project Timeline**: Feature-based development estimation with team scaling and velocity tracking.
+**Software Project Timeline**: Feature velocity (3.3 features/week), team scaling efficiency, and business-friendly metrics replacing academic story points.
 
-**ARR Framework**: Demonstrates automatic business context injection that scales budgets based on company size.
+**ARR Framework Demo**: Universal business context that automatically scales from $500K startup to $10M+ company budgets with department allocation functions.
 
 ## Getting Started
 
@@ -292,40 +294,56 @@ class CustomParameterSchema extends ParameterSchema {
 
 ## Architecture
 
-The current implementation is a single React component (`index.js`) that will be refactored into a modular framework supporting multiple simulation types.
+Modular TypeScript framework with business intelligence capabilities.
 
-### Planned Architecture
+### Current Architecture
 
 ```
 src/
-├── framework/          # Core Monte Carlo engine
-├── simulations/        # Individual simulation modules
-├── ui/                # Web interface components
-└── utils/             # Shared utilities
+├── framework/                    # Core Monte Carlo engine with ARR business intelligence
+│   ├── ARRBusinessContext.ts     # Universal ARR-based budgeting system
+│   ├── ConfigurableSimulation.ts # YAML-driven simulation execution
+│   ├── MonteCarloEngine.ts       # Statistical analysis engine
+│   └── index.ts
+├── cli/                         # Professional command-line interface
+│   ├── commands/                # CLI command implementations
+│   ├── interactive/             # Interactive simulation builder
+│   └── index.ts
+├── ui/                         # React web interface
+└── test/                       # Comprehensive test suite (58+ tests)
 
-tests/
-├── unit/              # Unit tests for components
-├── integration/       # End-to-end workflow tests
-├── performance/       # Load and timing tests
-└── visual/            # Screenshot regression tests
+examples/simulations/           # Business scenario configurations
+├── restaurant-profitability/   # Industry KPI modeling
+├── marketing-campaign-roi/     # ARR-based marketing analysis
+├── software-project-timeline/  # Feature velocity tracking
+└── arr-framework-demo/         # Business context demonstration
+
+designs/                        # Technical design documents
+└── interactive-cli-enhancement.md
 ```
 
 ## Development Status
 
 See [ACTIVE_WORK.md](ACTIVE_WORK.md) for current development progress and recent achievements.
 
-### Framework Status: ✅ Complete
+### Current Status: ✅ Production Ready with Business Intelligence
 
 The Monte Carlo Simulation Framework includes:
 
-- ✅ **ARR Framework**: Universal ARR-based budgeting with automatic business context injection
-- ✅ **CLI Interface**: Colorized terminal output with scenario comparison
-- ✅ **Business Metrics**: Restaurant profitability, marketing CAC analysis, software development velocity
-- ✅ **Scenario Coverage**: Conservative/Neutral/Aggressive risk analysis across simulation types
+- ✅ **ARR Business Intelligence**: Universal ARR-based budgeting with automatic business context injection across all simulation types
+- ✅ **Professional CLI**: Colorized terminal output with scenario comparison, progress bars, and business reporting (JSON/CSV/table formats)
+- ✅ **Industry-Standard KPIs**: Restaurant profitability (food cost %, labor cost %), marketing CAC analysis, software development velocity
+- ✅ **Validated Business Scenarios**: Conservative/Neutral/Aggressive risk analysis with realistic industry benchmarks
 - ✅ **Core Framework**: Complete with all components (MonteCarloEngine, ParameterSchema, SimulationRegistry, StatisticalAnalyzer)
 - ✅ **Web Interface**: Full React application with simulation browser and dynamic parameter forms
 - ✅ **Comprehensive Testing**: 58+ tests covering all framework components with ARR validation
 - ✅ **TypeScript**: Strict mode throughout for type safety
+
+### 🚀 **Next Phase: Enhanced User Experience** - [Design](designs/interactive-cli-enhancement.md)
+
+- **Industry Templates**: Pre-built scenarios for common business analysis (restaurant, SaaS, retail, marketing)
+- **Business Guidance**: Contextual help and realistic parameter suggestions during simulation creation
+- **Enhanced Logic**: Pattern-based business formula generation with industry-standard calculations
 
 ## Contributing
 
