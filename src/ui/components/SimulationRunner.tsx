@@ -47,7 +47,7 @@ export const SimulationRunner: React.FC<SimulationRunnerProps> = ({
       const results = await simulation.runSimulation(
         state.parameters,
         iterations,
-        (progress, iteration) => {
+        (progress) => {
           setState(prev => ({ ...prev, progress }))
         }
       )

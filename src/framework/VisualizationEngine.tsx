@@ -11,8 +11,7 @@ import {
   CartesianGrid, 
   Tooltip, 
   Legend, 
-  ResponsiveContainer,
-  Cell
+  ResponsiveContainer
 } from 'recharts'
 import { StatisticalSummary } from './types'
 
@@ -40,7 +39,7 @@ export const Histogram: React.FC<HistogramProps> = ({
       />
       <YAxis label={{ value: yAxisLabel, angle: -90, position: 'insideLeft' }} />
       <Tooltip 
-        formatter={(value: number, name: string) => [`${value} scenarios`, 'Count']}
+        formatter={(value: number) => [`${value} scenarios`, 'Count']}
         labelFormatter={(value: number) => `${xAxisLabel}: ${value.toFixed(1)}`}
       />
       <Bar dataKey="count" fill={color} />

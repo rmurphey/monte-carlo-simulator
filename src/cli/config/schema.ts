@@ -145,7 +145,7 @@ export class ConfigurationValidator {
       return this.validateBusinessRules(config)
     }
     
-    const errors = this.ajv.errorsText(this.validate.errors).split(', ')
+    const errors = this.ajv.errorsText(this.ajv.errors || []).split(', ')
     return { valid: false, errors }
   }
   

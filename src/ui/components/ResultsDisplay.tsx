@@ -182,7 +182,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results }) => {
             />
             <YAxis />
             <Tooltip 
-              formatter={(value: any, name) => [`${value} scenarios`, 'Count']}
+              formatter={(value: any) => [`${value} scenarios`, 'Count']}
               labelFormatter={(value) => `${primaryMetric}: ${formatValue(Number(value), primaryMetric)}`}
             />
             <Bar dataKey="count" fill="#3B82F6" />

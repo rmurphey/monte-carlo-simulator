@@ -83,7 +83,6 @@ export class FileGenerator {
   }
   
   async appendToFile(filePath: string, content: string, marker?: string): Promise<void> {
-    const fullPath = join(this.baseDir, filePath)
     
     if (!await this.fileExists(filePath)) {
       throw new Error(`File does not exist: ${filePath}`)
