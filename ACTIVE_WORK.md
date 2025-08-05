@@ -16,6 +16,42 @@ The Monte Carlo Simulation Framework is **production-ready** with:
 - ✅ Comprehensive documentation for AI tools like Claude Code
 - ✅ 58 passing tests with strict TypeScript compliance
 
+## Current Priority: CLI Run Command Implementation
+
+Based on the [CLI Simulation Generator Design](designs/cli-simulation-generator.md), implement terminal-based simulation execution:
+
+### Phase 4: CLI Run Command (In Progress)
+- [ ] **Run Command Infrastructure**
+  - [ ] Create `src/cli/commands/run-simulation.ts` with Commander.js integration
+  - [ ] Implement parameter resolution (scenarios → custom files → CLI args)
+  - [ ] Add simulation discovery and loading from examples directory
+
+- [ ] **Scenario System Implementation**
+  - [ ] Restructure examples into scenario-based directories
+  - [ ] Create conservative/neutral/aggressive scenarios for existing simulations
+  - [ ] Implement `baseSimulation` reference system for scenario inheritance
+
+- [ ] **Terminal Output Engine**
+  - [ ] Design rich terminal formatting with progress bars and statistical tables
+  - [ ] Implement multiple output formats (table, JSON, CSV, quiet)
+  - [ ] Add risk analysis and percentile distribution displays
+
+- [ ] **Parameter Override System**
+  - [ ] Support CLI parameter overrides (`--startupCosts 250000`)
+  - [ ] Implement scenario selection (`--scenario conservative`)
+  - [ ] Add custom parameter file loading (`--params custom.yaml`)
+
+- [ ] **Advanced Features**
+  - [ ] Comparison mode for multiple scenarios
+  - [ ] Results export to files (`--output results.json`)
+  - [ ] Validation and error handling for all input methods
+
+### Success Criteria
+- Execute simulations directly from terminal with `npm run cli run restaurant-profitability --scenario conservative`
+- Rich terminal output with progress bars, statistics, and risk analysis
+- Business users can quickly compare conservative vs aggressive scenarios
+- Support automation and scripting workflows
+
 ## Future Business-Driven Opportunities
 
 ### Decision Support & Risk Management
