@@ -14,6 +14,7 @@ This project follows strict quality standards optimized for large team coordinat
 - **Process consistency**: Standardized commits, comprehensive documentation
 - **Knowledge management**: Detailed specs, architecture decisions, team handoffs
 - **AI governance**: Use Claude with team guidelines for consistent code standards
+- Commit after every todo is completed
 
 ## Custom Commands
 Use the following commands for structured development:
@@ -42,3 +43,6 @@ Use the following commands for structured development:
 
 ## Collaboration
 This project is set up for AI-assisted development with Claude Code.
+
+## Project Management
+- ACTIVE_WORK.md should always be up to date

@@ -102,4 +102,9 @@ The existing simulation models AI tool investment ROI with sophisticated uncerta
 - **Modular Architecture**: Simulations are isolated, reducing coupling and risk
 - **Performance Monitoring**: Early performance testing prevents scaling issues
 
-This architecture provides a robust foundation for expanding the simulation library while maintaining code quality, performance, and user experience consistency.
+## Completion criteria
+
+- index.js in the root is no longer just a single simulator.
+- Simulators can be defined in a single directory using limited JavaScript.``
+- Simulators can be accessed via a localhost port.
+

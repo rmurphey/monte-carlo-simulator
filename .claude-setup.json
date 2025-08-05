@@ -4,7 +4,7 @@
     "primary": "js",
     "name": "JavaScript/TypeScript",
     "confidence": "medium",
-    "detected": "2025-08-05T17:06:21.078Z",
+    "detected": "2025-08-05T17:06:36.458Z",
     "evidence": {
       "foundFiles": [],
       "foundExtensions": [
@@ -32,9 +32,9 @@
     "timeout": 5000
   },
   "setup": {
-    "qualityLevel": null,
-    "teamSize": null,
-    "cicd": false,
-    "lastSetup": null
+    "qualityLevel": "strict",
+    "teamSize": "large",
+    "cicd": true,
+    "lastSetup": "2025-08-05T17:06:36.458Z"
   }
 }
