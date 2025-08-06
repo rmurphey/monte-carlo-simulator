@@ -174,11 +174,15 @@ All examples are **tested and working**.
 - **Professional CLI** with formatted output
 - **Test coverage** (51 passing tests)
 
-### 🚧 In Development  
-- **Risk scenario comparison** (conservative/neutral/aggressive)
-- **Interactive parameter tuning** through CLI
-- **Export capabilities** (JSON, CSV)
-- **AI agent integration** for natural language simulation generation
+### ✅ **Production Features**
+- **Risk scenario comparison** - Side-by-side analysis with `--compare` flag  
+- **Export capabilities** - JSON/CSV output with `--format` and `--output` options
+- **Parameter overrides** - Custom values via CLI arguments or parameter files
+- **Statistical analysis** - P10/P50/P90 percentiles, mean, standard deviation
+
+### 🚧 **In Development**  
+- **Interactive parameter tuning** - Real-time adjustment during simulation runs
+- **AI agent integration** - Natural language → YAML generation workflow
 
 ### 📋 Planned Features
 - **Web interface** for non-technical users
