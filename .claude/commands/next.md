@@ -11,7 +11,7 @@ description: next command
 - Immediate priorities: !grep -A 10 "Immediate (This Session)" ACTIVE_WORK.md
 
 ## Your task
-Analyze ACTIVE_WORK.md and recommend the next logical task for the agent-friendly Monte Carlo simulation framework.
+Analyze ACTIVE_WORK.md, README.md, and any other sources of roadmap information, and recommend the next logical task for the agent-friendly Monte Carlo simulation framework.
 
 Prioritize based on:
 1. **Current development phase** (hygiene, design, implementation)
