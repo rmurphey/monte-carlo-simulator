@@ -1,0 +1,207 @@
+name: AI Investment ROI Analysis
+category: Strategic Investment
+description: Monte Carlo simulation modeling the financial uncertainty around AI tool investments, incorporating adoption success, implementation delays, price changes, and varying business impact over 36 months
+version: 1.0.0
+tags:
+  - ai
+  - investment
+  - roi
+  - strategic
+  - monte-carlo
+businessContext: true
+parameters:
+  # Initial Investment Costs
+  - key: initialCost
+    label: Initial Setup Cost ($)
+    type: number
+    default: 50000
+    min: 10000
+    max: 200000
+    step: 5000
+    description: One-time implementation and setup costs for the AI tool
+  
+  - key: monthlySubscription
+    label: Monthly Subscription Cost ($)
+    type: number
+    default: 5000
+    min: 1000
+    max: 20000
+    step: 500
+    description: Recurring monthly subscription fees
+  
+  # Implementation Parameters
+  - key: implementationTime
+    label: Expected Implementation Time (months)
+    type: number
+    default: 6
+    min: 1
+    max: 12
+    step: 1
+    description: Expected time to fully implement and deploy the AI solution
+  
+  - key: adoptionRate
+    label: Adoption Success Probability
+    type: number
+    default: 0.7
+    min: 0.1
+    max: 1.0
+    step: 0.05
+    description: Probability that the AI implementation will be successfully adopted by the organization
+  
+  # Expected Benefits
+  - key: revenueImpact
+    label: Expected Revenue Impact (%)
+    type: number
+    default: 0.15
+    min: 0.01
+    max: 0.5
+    step: 0.01
+    description: Expected percentage increase in annual revenue from AI implementation
+  
+  - key: costSavings
+    label: Annual Cost Savings ($)
+    type: number
+    default: 25000
+    min: 5000
+    max: 200000
+    step: 5000
+    description: Expected annual cost savings from operational efficiency gains
+  
+  - key: baselineRevenue
+    label: Baseline Annual Revenue ($)
+    type: number
+    default: 1000000
+    min: 100000
+    max: 50000000
+    step: 100000
+    description: Current annual revenue baseline for calculating percentage improvements
+  
+  # Market Risk Factors
+  - key: priceIncreaseRate
+    label: Price Increase Multiplier
+    type: number
+    default: 1.5
+    min: 1.0
+    max: 5.0
+    step: 0.1
+    description: Factor by which subscription prices may increase due to market demand
+  
+  - key: priceIncreaseMonth
+    label: Price Increase Timeline (months)
+    type: number
+    default: 18
+    min: 6
+    max: 36
+    step: 1
+    description: Month when price increases are expected to occur
+
+groups:
+  - name: Investment Costs
+    description: Initial and recurring costs of the AI implementation
+    parameters: [initialCost, monthlySubscription]
+  
+  - name: Implementation Risk
+    description: Factors affecting successful deployment and adoption
+    parameters: [implementationTime, adoptionRate]
+  
+  - name: Business Impact
+    description: Expected revenue and cost benefits
+    parameters: [revenueImpact, costSavings, baselineRevenue]
+  
+  - name: Market Risk
+    description: External factors that may affect costs over time
+    parameters: [priceIncreaseRate, priceIncreaseMonth]
+
+outputs:
+  - key: roi
+    label: Return on Investment (%)
+    description: Total ROI over 36-month period
+  
+  - key: totalCost
+    label: Total Cost ($)
+    description: Sum of all costs over 36 months
+  
+  - key: totalBenefit
+    label: Total Benefit ($)
+    description: Sum of all benefits over 36 months
+  
+  - key: netBenefit
+    label: Net Benefit ($)
+    description: Total benefits minus total costs
+  
+  - key: breakEvenMonth
+    label: Break-even Month
+    description: Month when cumulative benefits exceed cumulative costs
+  
+  - key: riskScore
+    label: Risk Score (1-5)
+    description: Risk assessment score where 1=Low Risk, 3=Medium Risk, 5=High Risk
+
+simulation:
+  logic: |-
+    // Monte Carlo simulation for AI investment ROI
+    
+    // Random factors affecting the outcome
+    const adoptionMultiplier = random() < adoptionRate ? 1 : 0.3; // Success vs partial failure
+    const implementationDelay = 1 + random() * 2; // 1-3x longer than expected
+    const actualRevenueImpact = revenueImpact * (0.5 + random()); // 50%-150% of expected
+    const actualCostSavings = costSavings * (0.3 + random() * 0.9); // 30%-120% of expected
+    const competitorResponse = random() < 0.3 ? 0.7 : 1; // 30% chance competitors reduce advantage
+    
+    // Calculate costs and benefits over 36 months
+    let totalCost = initialCost;
+    let totalBenefit = 0;
+    let cumulativeCost = initialCost;
+    let cumulativeBenefit = 0;
+    let breakEvenMonth = 36; // Default to end if never breaks even
+    
+    const timeToValue = implementationTime * implementationDelay;
+    
+    for (let month = 1; month <= 36; month++) {
+      // Monthly subscription cost (with potential price increase)
+      let monthlyCost = monthlySubscription;
+      if (month >= priceIncreaseMonth) {
+        monthlyCost *= priceIncreaseRate;
+      }
+      totalCost += monthlyCost;
+      cumulativeCost += monthlyCost;
+      
+      // Benefits start after implementation period
+      if (month > timeToValue) {
+        const monthlyRevenueBenefit = (actualRevenueImpact * baselineRevenue / 12) * adoptionMultiplier * competitorResponse;
+        const monthlyCostSaving = (actualCostSavings / 12) * adoptionMultiplier;
+        const monthlyBenefit = monthlyRevenueBenefit + monthlyCostSaving;
+        
+        totalBenefit += monthlyBenefit;
+        cumulativeBenefit += monthlyBenefit;
+        
+        // Check for break-even point
+        if (cumulativeBenefit >= cumulativeCost && breakEvenMonth === 36) {
+          breakEvenMonth = month;
+        }
+      }
+    }
+    
+    const netBenefit = totalBenefit - totalCost;
+    const roi = totalCost > 0 ? (netBenefit / totalCost) * 100 : 0;
+    
+    // Risk assessment (1=Low, 3=Medium, 5=High)
+    let riskScore = 1; // Low risk baseline
+    if (adoptionMultiplier < 1) {
+      riskScore = 5; // High risk - adoption failed
+    } else if (implementationDelay > 2.5) {
+      riskScore = 4; // High-medium risk - significant delays
+    } else if (implementationDelay > 2) {
+      riskScore = 3; // Medium risk - moderate delays
+    } else if (competitorResponse < 1) {
+      riskScore = 3; // Medium risk - competitive response
+    }
+    
+    return {
+      roi: round(roi, 1),
+      totalCost: round(totalCost, 0),
+      totalBenefit: round(totalBenefit, 0),
+      netBenefit: round(netBenefit, 0),
+      breakEvenMonth: breakEvenMonth === 36 ? 999 : breakEvenMonth,
+      riskScore: riskScore
+    }
