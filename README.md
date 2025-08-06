@@ -39,36 +39,36 @@ Turn uncertain business questions into **rigorous risk analysis with confidence 
 - ❌ Immediate decisions (analysis takes time)
 - ❌ When you have dedicated data science team with specialized tools
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js 16+ and npm
 - Basic understanding of business metrics
 
-### Installation
+### Installation & Setup
 ```bash
+# Clone the repository (required - not available via npx)
 git clone https://github.com/rmurphey/monte-carlo-simulator
-cd monte-carlo-simulator  
+cd monte-carlo-simulator
+
+# Install dependencies and build
 npm install
 npm run build
+
+# Verify everything works
+npm test
 ```
 
 ### Run Your First Analysis
 ```bash
-# Verify the framework works
-npm test
+# Simple ROI analysis
+npm run cli run examples/simulations/simple-roi-analysis.yaml
 
-# Explore the framework capabilities
-npm run build
+# Technology investment decision
+npm run cli run examples/simulations/technology-investment.yaml
+
+# See all available commands
 npm run cli --help
-```
-
-**Test results:**
-```
-✓ 58 tests passing
-✓ Framework functionality verified
-✓ YAML configuration system working
-✓ Monte Carlo engine operational
 ```
 
 ## 📊 What You Can Do Right Now
@@ -138,7 +138,9 @@ simulation:
     return { roi: Math.round(roi * 10) / 10 }
 ```
 
-All examples are **tested and working** - see [examples/README.md](examples/README.md) for agent patterns.
+All examples are **tested and working**.
+
+**For AI Agents:** See [AGENT.md](AGENT.md) for complete technical specifications, working patterns, and validation rules.
 
 ## 💰 Real Business Impact Examples
 
@@ -154,9 +156,13 @@ All examples are **tested and working** - see [examples/README.md](examples/READ
 
 ## 📚 Documentation
 
-- **[TECHNICAL.md](TECHNICAL.md)** - Framework architecture, agent integration, complete YAML specifications
-- **[examples/](examples/)** - Working simulation examples and configuration files
-- **[src/test/](src/test/)** - Test cases showing framework capabilities
+### For Humans:
+- **[examples/](examples/)** - Working simulation examples you can run and modify
+- **[TECHNICAL.md](TECHNICAL.md)** - Framework architecture and advanced features
+
+### For AI Agents:
+- **[AGENT.md](AGENT.md)** - Complete technical specifications, working patterns, schema requirements
+- **[examples/README.md](examples/README.md)** - Detailed simulation patterns with validation rules
 
 ## 🛠 Current Capabilities
 
@@ -180,28 +186,45 @@ All examples are **tested and working** - see [examples/README.md](examples/READ
 - **Industry-specific templates** (SaaS, e-commerce, consulting)
 - **Advanced statistical analysis** (sensitivity analysis, Monte Carlo tree search)
 
-## 🔧 Development
+## 🔧 Development & Customization
 
-### Run Tests
+### Working with Examples
 ```bash
-npm test                    # Full test suite
-npm run test:watch          # Watch mode for development
+# Copy and modify existing examples
+cp examples/simulations/simple-roi-analysis.yaml my-analysis.yaml
+
+# Edit parameters and simulation logic
+# Then run your custom simulation
+npm run cli run my-analysis.yaml
 ```
 
-### Build
+### Development Commands
 ```bash
+npm test                    # Run full test suite (58 tests)
 npm run build              # Compile TypeScript
-npm run cli run <simulation>  # Test CLI functionality
+npm run cli validate my-analysis.yaml  # Validate YAML syntax
+npm run cli list           # List available simulations
 ```
 
 ### Project Structure
 ```
 src/
-├── framework/             # Core simulation engine
+├── framework/             # Core Monte Carlo engine
 ├── cli/                   # Command-line interface
 ├── examples/              # Working example simulations  
 └── test/                  # Test cases and validation
+
+examples/simulations/      # All working examples
+├── simple-roi-analysis.yaml
+├── technology-investment.yaml  
+├── team-scaling-decision.yaml
+└── ai-tool-adoption/      # Scenario examples
 ```
+
+### Current Limitations
+- **Local development only** - not published to npm
+- **Requires full repository clone** - no npx support yet
+- **Node.js dev environment needed** - not a standalone binary
 
 ## 🤝 Contributing
 
