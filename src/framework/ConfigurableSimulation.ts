@@ -11,21 +11,20 @@ export class ConfigurableSimulation extends MonteCarloEngine {
   constructor(private config: SimulationConfig) {
     super()
     this.arrInjector = globalARRInjector
-    this.enhancedConfig = this.enhanceConfigWithARR(config)
+    this.enhancedConfig = this.enhanceConfigWithBusinessContext(config)
   }
-  
+
   /**
-   * Enhances simulation config with optional ARR injection
-   * Only injects ARR if explicitly requested via config metadata
+   * Enhances simulation config with optional business context injection
+   * Only injects ARR if explicitly requested or detected via strategic keywords
    */
-  private enhanceConfigWithARR(config: SimulationConfig): SimulationConfig {
+  private enhanceConfigWithBusinessContext(config: SimulationConfig): SimulationConfig {
     const parameterKeys = config.parameters.map(p => p.key)
     
-    // Check if simulation explicitly requests business context
+    // Check if simulation needs business context
     const needsBusinessContext = this.shouldInjectBusinessContext(config)
     
     if (!needsBusinessContext) {
-      // No business context needed, return original config
       return config
     }
     
@@ -35,22 +34,32 @@ export class ConfigurableSimulation extends MonteCarloEngine {
       return {
         ...config,
         simulation: {
-          logic: this.injectARRBusinessContext(config.simulation?.logic || '', parameterKeys)
+          logic: this.injectBusinessContext(config.simulation?.logic || '', parameterKeys)
         }
       }
     }
     
     // Inject ARR parameter and business context
-    const arrParam = this.arrInjector.getARRParameterDefinition()
+    const arrParam = this.arrInjector.getARRParameterDefinition('Strategic Analysis')
+    const budgetParam: ParameterDefinition = {
+      key: 'budgetPercent',
+      label: 'Budget Allocation (% of ARR)',
+      type: 'number',
+      default: 10,
+      min: 1,
+      max: 50,
+      step: 0.5,
+      description: 'Budget as percentage of ARR for this strategic analysis'
+    }
     const arrGroup = this.arrInjector.getARRParameterGroup()
-    const allParameterKeys = [arrParam.key, ...parameterKeys]
+    const allParameterKeys = [arrParam.key, budgetParam.key, ...parameterKeys]
     
     return {
       ...config,
-      parameters: [arrParam, ...config.parameters],
+      parameters: [arrParam, budgetParam, ...config.parameters],
       groups: [arrGroup, ...(config.groups || [])],
       simulation: {
-        logic: this.injectARRBusinessContext(config.simulation?.logic || '', allParameterKeys)
+        logic: this.injectBusinessContext(config.simulation?.logic || '', allParameterKeys)
       }
     }
   }
@@ -64,31 +73,27 @@ export class ConfigurableSimulation extends MonteCarloEngine {
       return true
     }
     
-    // Check for business-related tags
-    const businessTags = ['business', 'roi', 'investment', 'finance', 'revenue', 'profit']
-    const hasBusinessTags = config.tags?.some(tag => 
-      businessTags.some(bizTag => tag.toLowerCase().includes(bizTag))
-    )
+    // Check for strategic/business keywords in various places
+    const strategicKeywords = [
+      'roi', 'investment', 'cost', 'benefit', 'revenue', 'profit', 'budget',
+      'runway', 'burn', 'hiring', 'scaling', 'strategy', 'payback', 'npv'
+    ]
     
-    // Check for business-related category
-    const businessCategories = ['business', 'finance', 'investment', 'operations']
-    const hasBusinessCategory = businessCategories.some(bizCat => 
-      config.category.toLowerCase().includes(bizCat)
-    )
+    const textToCheck = [
+      config.name.toLowerCase(),
+      config.description.toLowerCase(),
+      config.category.toLowerCase(),
+      ...(config.tags?.map(t => t.toLowerCase()) || []),
+      config.simulation?.logic?.toLowerCase() || ''
+    ].join(' ')
     
-    // Check if simulation logic references business functions
-    const businessFunctions = ['calculateROI', 'calculatePayback', 'calculateNPV', 'arrBudget']
-    const hasBusinessLogic = businessFunctions.some(func => 
-      config.simulation?.logic?.includes(func)
-    )
-    
-    return hasBusinessTags || hasBusinessCategory || hasBusinessLogic
+    return strategicKeywords.some(keyword => textToCheck.includes(keyword))
   }
   
   /**
-   * Injects ARR business context into simulation logic
+   * Injects business context into simulation logic
    */
-  private injectARRBusinessContext(originalLogic: string, parameterKeys: string[] = []): string {
+  private injectBusinessContext(originalLogic: string, parameterKeys: string[] = []): string {
     const contextInjection = this.arrInjector.getBusinessContextInjectionCode(parameterKeys)
     
     return `${contextInjection}
@@ -96,6 +101,7 @@ export class ConfigurableSimulation extends MonteCarloEngine {
     // Original simulation logic:
     ${originalLogic}`
   }
+  
   
   getMetadata(): SimulationMetadata {
     return {
@@ -210,7 +216,7 @@ export class ConfigurableSimulation extends MonteCarloEngine {
   }
   
   getConfiguration(): SimulationConfig {
-    return { ...this.enhancedConfig } // Return enhanced config with ARR injection
+    return { ...this.enhancedConfig }
   }
   
   validateConfiguration(): { valid: boolean; errors: string[] } {

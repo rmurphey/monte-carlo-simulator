@@ -1,181 +1,115 @@
-/**
- * ARR Business Context - Core framework module for automatic ARR-based budgeting
- * 
- * This module provides automatic injection of business context variables into all simulations,
- * ensuring consistent ARR-based budgeting across the entire Monte Carlo platform for companies
- * of any size from startup to large business.
- */
+import { ParameterDefinition } from './config/schema'
 
-export interface ARRBusinessContext {
-  // Core ARR parameters (automatically injected if not present)
+export interface ARRParameters {
   annualRecurringRevenue: number
-  
-  // Calculated business context (derived from ARR)
-  totalAnnualBudget: number
+  budgetPercent: number
+  category: string
+}
+
+export interface BusinessContextInjection {
+  arrBudget: number
   monthlyBudget: number
   quarterlyBudget: number
-  
-  // Department budget functions (percentage-based)
-  getMarketingBudget: (percent: number) => number
-  getSalesBudget: (percent: number) => number
-  getOperationsBudget: (percent: number) => number
-  getProductBudget: (percent: number) => number
-  getRDBudget: (percent: number) => number
-  getRestaurantBudget: (percent: number) => number
-  getGeneralBudget: (percent: number) => number
-  
-  // Time-based budget helpers
-  getMonthlyFromPercent: (percent: number) => number
-  getQuarterlyFromPercent: (percent: number) => number
-  getAnnualFromPercent: (percent: number) => number
 }
 
-export interface ARRInjectionConfig {
-  // Default ARR value for simulations that don't specify one
-  defaultARR: number
-  
-  // Whether to automatically inject ARR parameters
-  autoInjectARR: boolean
-  
-  // ARR parameter configuration
-  arrParameter: {
-    key: string
-    label: string
-    description: string
-    min: number
-    max: number
-    step: number
-  }
-}
-
+/**
+ * Handles ARR-based business context injection for strategic simulations
+ * Provides standard business intelligence functions without industry-specific logic
+ */
 export class ARRBusinessContextInjector {
-  private config: ARRInjectionConfig
-  
-  constructor(config: Partial<ARRInjectionConfig> = {}) {
-    this.config = {
-      defaultARR: 2000000, // $2M default ARR
-      autoInjectARR: true,
-      arrParameter: {
-        key: 'annualRecurringRevenue',
-        label: 'Annual Recurring Revenue (ARR)',
-        description: 'Company annual recurring revenue for business context and budget planning',
-        min: 100000,
-        max: 50000000,
-        step: 50000
-      },
-      ...config
-    }
-  }
   
   /**
-   * Creates ARR business context from parameters
-   */
-  createBusinessContext(parameters: Record<string, unknown>): ARRBusinessContext {
-    const arr = this.extractARR(parameters)
-    
-    return {
-      annualRecurringRevenue: arr,
-      totalAnnualBudget: arr,
-      monthlyBudget: arr / 12,
-      quarterlyBudget: arr / 4,
-      
-      // Department budget functions
-      getMarketingBudget: (percent: number) => arr * (percent / 100),
-      getSalesBudget: (percent: number) => arr * (percent / 100),
-      getOperationsBudget: (percent: number) => arr * (percent / 100),
-      getProductBudget: (percent: number) => arr * (percent / 100),
-      getRDBudget: (percent: number) => arr * (percent / 100),
-      getRestaurantBudget: (percent: number) => arr * (percent / 100),
-      getGeneralBudget: (percent: number) => arr * (percent / 100),
-      
-      // Time-based helpers
-      getMonthlyFromPercent: (percent: number) => (arr / 12) * (percent / 100),
-      getQuarterlyFromPercent: (percent: number) => (arr / 4) * (percent / 100),
-      getAnnualFromPercent: (percent: number) => arr * (percent / 100)
-    }
-  }
-  
-  /**
-   * Extracts ARR value from parameters, using default if not present
-   */
-  private extractARR(parameters: Record<string, unknown>): number {
-    const arrValue = parameters[this.config.arrParameter.key]
-    
-    if (typeof arrValue === 'number' && arrValue > 0) {
-      return arrValue
-    }
-    
-    return this.config.defaultARR
-  }
-  
-  /**
-   * Checks if simulation parameters already include ARR
+   * Check if parameters already include ARR
    */
   hasARRParameter(parameterKeys: string[]): boolean {
-    return parameterKeys.includes(this.config.arrParameter.key)
+    return parameterKeys.includes('annualRecurringRevenue')
   }
-  
+
   /**
-   * Gets the ARR parameter definition for auto-injection
+   * Get ARR parameter definition for strategic simulations
    */
-  getARRParameterDefinition(defaultValue?: number) {
+  getARRParameterDefinition(category: string = 'Strategic Investment'): ParameterDefinition {
     return {
-      key: this.config.arrParameter.key,
-      label: this.config.arrParameter.label,
-      type: 'number' as const,
-      default: defaultValue || this.config.defaultARR,
-      min: this.config.arrParameter.min,
-      max: this.config.arrParameter.max,
-      step: this.config.arrParameter.step,
-      description: this.config.arrParameter.description
+      key: 'annualRecurringRevenue',
+      label: 'Annual Recurring Revenue (ARR)',
+      type: 'number',
+      default: 5000000,
+      min: 100000,
+      max: 1000000000,
+      step: 50000,
+      description: `Company's annual recurring revenue for ${category} investment planning`
     }
   }
-  
+
   /**
-   * Creates standardized ARR parameter group
+   * Get parameter group for ARR context
    */
   getARRParameterGroup() {
     return {
       name: 'Business Context',
-      description: 'Company annual recurring revenue for business context and budget planning',
-      parameters: [this.config.arrParameter.key]
+      description: 'Company financial context for strategic decision-making',
+      parameters: ['annualRecurringRevenue', 'budgetPercent']
     }
   }
-  
+
   /**
-   * Creates the business context injection code for simulation logic
+   * Generate business context injection code
    */
   getBusinessContextInjectionCode(parameterKeys: string[]): string {
-    const hasArrParam = parameterKeys.includes(this.config.arrParameter.key)
+    const hasARR = this.hasARRParameter(parameterKeys)
     
+    if (!hasARR) {
+      return `// No business context injection - ARR not provided`
+    }
+
     return `
-      // ARR Business Context (automatically injected by framework)
-      const businessContext = {
-        annualRecurringRevenue: ${this.config.arrParameter.key},
-        totalAnnualBudget: ${this.config.arrParameter.key},
-        monthlyBudget: ${this.config.arrParameter.key} / 12,
-        quarterlyBudget: ${this.config.arrParameter.key} / 4,
-        
-        // Department budget functions
-        getMarketingBudget: (percent) => ${this.config.arrParameter.key} * (percent / 100),
-        getSalesBudget: (percent) => ${this.config.arrParameter.key} * (percent / 100),
-        getOperationsBudget: (percent) => ${this.config.arrParameter.key} * (percent / 100),
-        getProductBudget: (percent) => ${this.config.arrParameter.key} * (percent / 100),
-        getRDBudget: (percent) => ${this.config.arrParameter.key} * (percent / 100),
-        getRestaurantBudget: (percent) => ${this.config.arrParameter.key} * (percent / 100),
-        getGeneralBudget: (percent) => ${this.config.arrParameter.key} * (percent / 100),
-        
-        // Time-based helpers
-        getMonthlyFromPercent: (percent) => (${this.config.arrParameter.key} / 12) * (percent / 100),
-        getQuarterlyFromPercent: (percent) => (${this.config.arrParameter.key} / 4) * (percent / 100),
-        getAnnualFromPercent: (percent) => ${this.config.arrParameter.key} * (percent / 100)
-      };
-      ${!hasArrParam ? `
-      // Legacy compatibility: direct ARR access (only if not already a parameter)
-      const annualRecurringRevenue = ${this.config.arrParameter.key};` : ''}
-    `
+// Business Context Injection
+const arrBudget = annualRecurringRevenue * (budgetPercent || 10) / 100
+const monthlyBudget = arrBudget / 12
+const quarterlyBudget = arrBudget / 4
+
+// Business Intelligence Functions
+const calculateROI = (investment, returns, timeframe = 1) => {
+  if (investment <= 0) return 0
+  return ((returns - investment) / investment) * 100 / timeframe
+}
+
+const calculatePaybackPeriod = (investment, monthlyReturns) => {
+  if (monthlyReturns <= 0) return 999
+  return investment / monthlyReturns
+}
+
+const calculateRunway = (currentCash, monthlyBurnRate) => {
+  if (monthlyBurnRate <= 0) return 999
+  return currentCash / monthlyBurnRate
+}
+
+const calculateNPV = (cashFlows, discountRate) => {
+  return cashFlows.reduce((npv, cashFlow, year) => {
+    return npv + cashFlow / Math.pow(1 + discountRate, year)
+  }, 0)
+}
+
+const calculateCAC = (marketingSpend, customersAcquired) => {
+  if (customersAcquired <= 0) return 0
+  return marketingSpend / customersAcquired
+}
+`
+  }
+
+  /**
+   * Create business context for a strategic simulation
+   */
+  createBusinessContext(arr: number, budgetPercent: number = 10): BusinessContextInjection {
+    const arrBudget = arr * (budgetPercent / 100)
+    
+    return {
+      arrBudget,
+      monthlyBudget: arrBudget / 12,
+      quarterlyBudget: arrBudget / 4
+    }
   }
 }
 
-// Global instance for framework-wide use
+// Global instance for easy access
 export const globalARRInjector = new ARRBusinessContextInjector()

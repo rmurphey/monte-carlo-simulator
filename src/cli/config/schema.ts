@@ -7,7 +7,7 @@ export interface SimulationConfig {
   version: string
   tags: string[]
   baseSimulation?: string  // Path to base simulation file to inherit from
-  businessContext?: boolean // Optional flag to request ARR/business context injection
+  businessContext?: boolean // Optional flag to request business context injection
   parameters: ParameterConfig[]
   groups?: ParameterGroupConfig[]
   outputs?: OutputConfig[]  // Optional if inheriting from base

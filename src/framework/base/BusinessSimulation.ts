@@ -1,5 +1,13 @@
-import { BaseSimulation, ParameterValues, ScenarioResults } from './BaseSimulation'
+import { BaseSimulation } from './BaseSimulation'
 import { ParameterDefinition } from '../config/schema'
+
+export interface ParameterValues {
+  [key: string]: unknown
+}
+
+export interface ScenarioResults {
+  [key: string]: number | string
+}
 
 export interface BusinessKPIs {
   roi?: number
@@ -12,42 +20,12 @@ export interface BusinessKPIs {
   revenuePerUnit?: number
 }
 
-export interface ARRParameters {
-  annualRecurringRevenue: number
-  budgetPercent: number
-  category: string
-}
-
 /**
  * Base class for business-focused Monte Carlo simulations
- * Includes ARR framework and standard business intelligence metrics
+ * Provides essential business intelligence functions without industry-specific logic
  */
 export abstract class BusinessSimulation extends BaseSimulation {
   
-  // Business simulation classes should implement this to define ARR parameters
-  protected abstract defineARRParameters(): ARRParameters
-
-  /**
-   * Calculate total budget based on ARR and percentage allocation
-   */
-  protected calculateARRBudget(arrValue?: number, budgetPercent?: number): number {
-    const arr = arrValue || this.getParameter<number>('annualRecurringRevenue')
-    const percent = budgetPercent || this.getParameter<number>('budgetPercent', 10)
-    
-    if (!arr) {
-      throw new Error('Annual Recurring Revenue (ARR) parameter is required for business simulations')
-    }
-    
-    return arr * (percent / 100)
-  }
-
-  /**
-   * Calculate monthly budget from ARR allocation
-   */
-  protected calculateMonthlyARRBudget(arrValue?: number, budgetPercent?: number): number {
-    return this.calculateARRBudget(arrValue, budgetPercent) / 12
-  }
-
   /**
    * Calculate return on investment percentage
    */
@@ -98,11 +76,28 @@ export abstract class BusinessSimulation extends BaseSimulation {
   }
 
   /**
-   * Calculate compound growth rate
+   * Calculate compound annual growth rate
    */
   protected calculateCAGR(startingValue: number, endingValue: number, periods: number): number {
     if (startingValue <= 0 || endingValue <= 0 || periods <= 0) return 0
     return (Math.pow(endingValue / startingValue, 1 / periods) - 1) * 100
+  }
+
+  /**
+   * Calculate monthly burn rate and runway
+   */
+  protected calculateRunway(currentCash: number, monthlyBurnRate: number): number {
+    if (monthlyBurnRate <= 0) return 999
+    return currentCash / monthlyBurnRate
+  }
+
+  /**
+   * Calculate team scaling costs with coordination overhead
+   */
+  protected calculateTeamScalingCost(currentTeamSize: number, newHires: number, avgSalary: number, coordinationOverhead: number = 0.15): number {
+    const baseCost = newHires * avgSalary
+    const coordinationCost = (currentTeamSize + newHires) * coordinationOverhead * avgSalary
+    return baseCost + coordinationCost
   }
 
   /**
@@ -122,7 +117,7 @@ export abstract class BusinessSimulation extends BaseSimulation {
     
     const kpis: BusinessKPIs = {
       roi: this.round(roi, 1),
-      paybackPeriod: this.round(this.min(paybackPeriod, 999), 1),
+      paybackPeriod: this.round(Math.min(paybackPeriod, 999), 1),
       marginPercent: this.round(marginPercent, 1),
       revenuePerUnit: revenue
     }
@@ -157,20 +152,6 @@ export abstract class BusinessSimulation extends BaseSimulation {
     const variance = 0.8 + this.random() * 0.4  // ±20% execution variance
     
     return baseValue * baseMultiplier * variance
-  }
-
-  /**
-   * Model economic cycle impact
-   */
-  protected applyEconomicCycleImpact(baseValue: number, economicCycle: 'recession' | 'recovery' | 'expansion' | 'peak'): number {
-    const cycleMultipliers = {
-      recession: 0.7,
-      recovery: 0.9,
-      expansion: 1.1,
-      peak: 1.0
-    }
-    
-    return baseValue * cycleMultipliers[economicCycle]
   }
 
   /**
@@ -238,35 +219,6 @@ export abstract class BusinessSimulation extends BaseSimulation {
     return { results, statistics }
   }
 
-  /**
-   * Add ARR parameters to the parameter definition list
-   */
-  protected addARRParameters(existingParameters: ParameterDefinition[]): ParameterDefinition[] {
-    const arrParams = this.defineARRParameters()
-    
-    const arrParameterDefs: ParameterDefinition[] = [
-      {
-        key: 'annualRecurringRevenue',
-        label: 'Annual Recurring Revenue (ARR)',
-        type: 'number',
-        default: arrParams.annualRecurringRevenue,
-        min: 100000,
-        max: 1000000000,
-        step: 50000,
-        description: `Company's annual recurring revenue for ${arrParams.category} investment planning`
-      },
-      {
-        key: 'budgetPercent',
-        label: `${arrParams.category} Budget (% of ARR)`,
-        type: 'number',
-        default: arrParams.budgetPercent,
-        min: 1,
-        max: 50,
-        step: 0.5,
-        description: `${arrParams.category} budget as percentage of ARR`
-      }
-    ]
-    
-    return [...arrParameterDefs, ...existingParameters]
-  }
+  // Abstract method that business simulations must implement
+  abstract calculateScenario(params: ParameterValues): ScenarioResults
 }
