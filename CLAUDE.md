@@ -43,18 +43,29 @@ Use the following commands for structured development:
 ## Collaboration
 This project is set up for AI-assisted development with Claude Code.
 
+### Documentation Guidelines
+- **README.md**: Focus on human users - business value, installation, working examples
+- **AGENT.md**: Focus on AI agents - technical specs, YAML patterns, validation rules
+- **TECHNICAL.md**: Focus on framework internals - architecture, advanced features
+- **examples/**: All examples must be tested and working before committing
+- Maintain clear separation between human and agent documentation needs
+
 ## Project Management
 - ACTIVE_WORK.md should always be up to date
 - Completed work should be archived in archive/ directory with comprehensive insights
 
 ## Documentation Structure
 - `ACTIVE_WORK.md` - Current priorities and next steps
-- `README.md` - Project overview and current capabilities
+- `README.md` - Human-focused project overview and business value proposition
+- `AGENT.md` - Complete technical specifications for AI agents (YAML patterns, validation rules)
+- `TECHNICAL.md` - Deep framework architecture and advanced technical details
+- `examples/` - Working simulation examples with comprehensive agent patterns
+  - `examples/README.md` - Agent-friendly simulation creation patterns
+  - `examples/simulations/` - Tested, working YAML simulation files
 - `archive/` - Completed designs, implementations, and development insights
   - `COMPLETED_WORK.md` - Original framework foundation archive
   - `business-intelligence-transformation.md` - ARR framework and professional CLI
   - `cli-simulation-generator-completed.md` - YAML-based simulation creation
-- `designs/` - Active design documents for features in development
 
 
 # important-instruction-reminders
