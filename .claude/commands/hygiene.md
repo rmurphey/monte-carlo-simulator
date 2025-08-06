@@ -15,13 +15,11 @@ Review hygiene of the repository:
 - test status
 - dead code
 - dead docs
+- outdated readme
+- missing docs
+- opportunities for better agent guidance
 
 ## Output
-Report your recommendations regarding:
-
-- outdated docs
-- dead code
-- test coverage
-- test status
+Report your recommendations regarding the above. 
 
 Recommend atomic commits.
