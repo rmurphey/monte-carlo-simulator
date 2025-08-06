@@ -3,7 +3,7 @@
 ## Overview
 **Completion Date**: August 6, 2025  
 **Status**: ✅ Core Framework Complete  
-**Design Source**: [designs/agent-friendly-config-driven-framework.md](../designs/agent-friendly-config-driven-framework.md) (420 lines)  
+**Design Source**: [agent-friendly-config-driven-framework.md](agent-friendly-config-driven-framework.md) (420 lines)  
 **Impact**: Enabled agents to create strategic business simulations through YAML configuration
 
 ## Implementation Achievements

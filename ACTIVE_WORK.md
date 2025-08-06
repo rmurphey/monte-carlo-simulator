@@ -57,7 +57,7 @@ The project has transitioned from design to **working, agent-friendly simulation
 | Working Examples | 6 tested | 6+ | ✅ |
 | Documentation | Complete | Complete | ✅ |
 | Agent Specs | Complete | Complete | ✅ |
-| Template Logic | TODO exists | Clean | ❌ |
+| Template Logic | Clean | Clean | ✅ |
 
 ---
 
@@ -70,9 +70,8 @@ The project has transitioned from design to **working, agent-friendly simulation
 - **Configuration System**: YAML-based simulation creation
 - **ARR Business Context**: Optional injection system (opt-in)
 
-### 📋 **Designs Remaining**
+### 📋 **Active Designs**
 - **[Conversational Simulation Generation](designs/conversational-monte-carlo-generation.md)**: Natural language → YAML generation (384 lines)
-- **[CLI Simulation Generator](designs/cli-simulation-generator.md)**: Interactive simulation creation (670 lines)
 - **[Interactive CLI Enhancement](designs/interactive-cli-enhancement.md)**: Parameter tuning features (191 lines)
 
 ### ⚠️ **Technical Debt**
