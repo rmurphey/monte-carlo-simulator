@@ -1,5 +1,5 @@
 ---
-allowed-tools: [Bash]
+allowed-tools: [Read, Edit, Bash]
 description: todo command
 ---
 
@@ -7,9 +7,30 @@ description: todo command
 
 ## Context
 - Project status: !git status --porcelain
+- Current todos: !cat ACTIVE_WORK.md | grep -A 20 "Current Priorities"
 
 ## Your task
-Implement todo functionality.
+Manage todos in ACTIVE_WORK.md for the agent-friendly Monte Carlo simulation framework.
+
+Display current priorities from ACTIVE_WORK.md and provide todo management capabilities.
 
 ## Output
-Provide helpful output for the todo command.
+Show:
+1. **Current priorities** from ACTIVE_WORK.md "Current Priorities" section
+2. **Priority levels** (Immediate vs Next Session)
+3. **Progress status** of each priority item
+4. **Development phase context** (hygiene, design, implementation)
+
+Offer to:
+- Update ACTIVE_WORK.md with new priorities
+- Mark priorities as completed (move to "Recently Completed" section)
+- Adjust priority levels and descriptions
+- Add new strategic priorities for simulation framework
+
+Focus on todos related to:
+- Agent integration improvements
+- Simulation framework enhancements  
+- Documentation and guidance
+- Code quality and testing
+- YAML configuration features
+- Strategic simulation generation
