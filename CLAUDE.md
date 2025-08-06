@@ -66,6 +66,9 @@ This project is set up for AI-assisted development with Claude Code.
   - `COMPLETED_WORK.md` - Original framework foundation archive
   - `business-intelligence-transformation.md` - ARR framework and professional CLI
   - `cli-simulation-generator-completed.md` - YAML-based simulation creation
+  - `documentation-restructure-2025.md` - Human/agent documentation separation
+  - `working-examples-system-2025.md` - Professional example system implementation
+  - `agent-friendly-framework-implementation-2025.md` - Config-driven simulation architecture
 
 
 # important-instruction-reminders
