@@ -34,7 +34,7 @@ export async function listSimulations(options: any = {}) {
       } else {
         console.log(`   Description: ${config.description}`)
         console.log(`   Parameters: ${config.parameters.length}`)
-        console.log(`   Outputs: ${config.outputs.length}`)
+        console.log(`   Outputs: ${config.outputs?.length || 0}`)
         if (config.tags?.length) {
           console.log(`   Tags: ${config.tags.join(', ')}`)
         }

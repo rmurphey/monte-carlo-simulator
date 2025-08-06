@@ -62,11 +62,11 @@ export class ConfigurationLoader {
       groups: this.mergeGroups(baseConfig.groups, config.groups),
       
       // Outputs: merge arrays, child overrides base (child can add or override outputs)
-      outputs: this.mergeOutputs(baseConfig.outputs, config.outputs || []),
+      outputs: this.mergeOutputs(baseConfig.outputs || [], config.outputs || []),
       
       // Simulation logic: child overrides base completely
       simulation: {
-        logic: config.simulation?.logic || baseConfig.simulation.logic
+        logic: config.simulation?.logic || baseConfig.simulation?.logic || ''
       }
     }
     
@@ -237,7 +237,7 @@ export class ConfigurationLoader {
         category: config.category,
         version: config.version,
         parameterCount: config.parameters.length,
-        outputCount: config.outputs.length
+        outputCount: config.outputs?.length || 0
       }
     } catch {
       return null

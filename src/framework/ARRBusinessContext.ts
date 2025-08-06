@@ -1,4 +1,4 @@
-import { ParameterDefinition } from './config/schema'
+import { ParameterConfig } from '@/cli/config/schema'
 
 export interface ARRParameters {
   annualRecurringRevenue: number
@@ -28,7 +28,7 @@ export class ARRBusinessContextInjector {
   /**
    * Get ARR parameter definition for strategic simulations
    */
-  getARRParameterDefinition(category: string = 'Strategic Investment'): ParameterDefinition {
+  getARRParameterDefinition(category: string = 'Strategic Investment'): ParameterConfig {
     return {
       key: 'annualRecurringRevenue',
       label: 'Annual Recurring Revenue (ARR)',

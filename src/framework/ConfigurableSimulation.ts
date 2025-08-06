@@ -41,7 +41,7 @@ export class ConfigurableSimulation extends MonteCarloEngine {
     
     // Inject ARR parameter and business context
     const arrParam = this.arrInjector.getARRParameterDefinition('Strategic Analysis')
-    const budgetParam: ParameterDefinition = {
+    const budgetParam: ParameterConfig = {
       key: 'budgetPercent',
       label: 'Budget Allocation (% of ARR)',
       type: 'number',
@@ -123,7 +123,7 @@ export class ConfigurableSimulation extends MonteCarloEngine {
       max: param.max,
       step: param.step,
       options: param.options,
-      description: param.description
+      description: param.description || ''
     }))
   }
   

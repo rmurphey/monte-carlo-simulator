@@ -120,10 +120,12 @@ export class InteractiveConfigBuilder {
       short: template.info.name
     }))
     
-    choices.push(new inquirer.Separator())
+    if (choices.length > 0) {
+      choices.push({ name: '─'.repeat(40), value: '', short: '' } as any)
+    }
     choices.push({ name: '🔍 Search templates', value: 'search', short: 'Search' })
     choices.push({ name: '📊 Filter by category', value: 'filter', short: 'Filter' })
-    choices.push({ name: '❌ Cancel - build from scratch', value: null, short: 'Cancel' })
+    choices.push({ name: '❌ Cancel - build from scratch', value: 'cancel', short: 'Cancel' })
     
     const { templateId } = await inquirer.prompt([
       {
@@ -139,7 +141,7 @@ export class InteractiveConfigBuilder {
       return await this.searchTemplates()
     } else if (templateId === 'filter') {
       return await this.filterTemplatesByCategory()
-    } else if (templateId === null) {
+    } else if (templateId === 'cancel') {
       return null
     }
     
@@ -148,7 +150,7 @@ export class InteractiveConfigBuilder {
       this.displayTemplateGuidance(template)
     }
     
-    return template
+    return template || null
   }
   
   private async searchTemplates(): Promise<BusinessTemplate | null> {
@@ -194,7 +196,7 @@ export class InteractiveConfigBuilder {
       this.displayTemplateGuidance(template)
     }
     
-    return template
+    return template || null
   }
   
   private async filterTemplatesByCategory(): Promise<BusinessTemplate | null> {
@@ -244,7 +246,7 @@ export class InteractiveConfigBuilder {
       this.displayTemplateGuidance(template)
     }
     
-    return template
+    return template || null
   }
   
   private displayTemplateGuidance(template: BusinessTemplate): void {
@@ -317,7 +319,9 @@ export class InteractiveConfigBuilder {
       ])
       
       if (modifyLogic) {
-        const logic = await this.promptSimulationLogic(config.parameters, config.outputs)
+        const parametersInput = config.parameters.map(p => ({ ...p, description: p.description || '' }))
+        const outputsInput = (config.outputs || []).map(o => ({ ...o, description: o.description || '' }))
+        const logic = await this.promptSimulationLogic(parametersInput, outputsInput)
         config.simulation = { logic }
       }
     }
@@ -371,20 +375,18 @@ export class InteractiveConfigBuilder {
       }
       
       if (param.type === 'number') {
-        const { newValue } = await inquirer.prompt([
-          {
+        const { newValue } = await inquirer.prompt({
             type: 'number',
             name: 'newValue',
             message: `${param.label}:`,
-            default: param.default,
+            default: Number(param.default),
             validate: (input?: number) => {
               if (input === undefined || isNaN(input)) return 'Must be a valid number'
               if (param.min !== undefined && input < param.min) return `Must be at least ${param.min}`
               if (param.max !== undefined && input > param.max) return `Must be at most ${param.max}`
               return true
             }
-          }
-        ])
+          })
         
         const paramIndex = updatedParams.findIndex(p => p.key === param.key)
         if (paramIndex !== -1) {
@@ -433,7 +435,8 @@ export class InteractiveConfigBuilder {
     const updatedParams = []
     
     for (const param of config.parameters) {
-      const customized = await this.promptSingleParameter(param, template.guidance.parameterTips[param.key])
+      const paramInput = { ...param, description: param.description || '' }
+      const customized = await this.promptSingleParameter(paramInput, template.guidance.parameterTips[param.key])
       updatedParams.push(customized)
     }
     

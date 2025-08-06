@@ -1,5 +1,4 @@
 import { BaseSimulation } from './BaseSimulation'
-import { ParameterDefinition } from '../config/schema'
 
 export interface ParameterValues {
   [key: string]: unknown

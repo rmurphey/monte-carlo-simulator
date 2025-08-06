@@ -1,4 +1,4 @@
-import { SimulationConfig, ParameterDefinition, OutputDefinition } from '../config/schema'
+import { SimulationConfig, ParameterConfig, OutputConfig } from '@/cli/config/schema'
 
 export interface ParameterValues {
   [key: string]: number | string | boolean
@@ -37,8 +37,8 @@ export abstract class BaseSimulation {
 
   // Abstract methods that must be implemented by derived classes
   abstract defineMetadata(): SimulationMetadata
-  abstract defineParameters(): ParameterDefinition[]
-  abstract defineOutputs(): OutputDefinition[]
+  abstract defineParameters(): ParameterConfig[]
+  abstract defineOutputs(): OutputConfig[]
   abstract calculateScenario(params: ParameterValues): ScenarioResults
 
   // Optional method for parameter grouping

@@ -36,7 +36,7 @@ export async function validateSimulation(file: string, options: any = {}) {
       console.log(`   Category: ${metadata.category}`)
       console.log(`   Version: ${metadata.version}`)
       console.log(`   Parameters: ${config.parameters.length}`)
-      console.log(`   Outputs: ${config.outputs.length}`)
+      console.log(`   Outputs: ${config.outputs?.length || 0}`)
       
       if (config.tags?.length) {
         console.log(`   Tags: ${config.tags.join(', ')}`)
