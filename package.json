@@ -5,14 +5,12 @@
   "scripts": {
     "dev": "tsx watch src/cli/index.ts",
     "build": "tsc --project tsconfig.cli.json",
-    "build:web": "vite build",
-    "preview": "vite preview",
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "lint:fix": "eslint . --ext ts,tsx --fix",
+    "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --ext ts --fix",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "cli": "tsx src/cli/index.ts"
