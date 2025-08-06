@@ -70,10 +70,6 @@ The project has transitioned from design to **working, agent-friendly simulation
 - **Configuration System**: YAML-based simulation creation
 - **ARR Business Context**: Optional injection system (opt-in)
 
-### 📋 **Active Designs**
-- **[Conversational Simulation Generation](designs/conversational-monte-carlo-generation.md)**: Natural language → YAML generation (384 lines)
-- **[Interactive CLI Enhancement](designs/interactive-cli-enhancement.md)**: Parameter tuning features (191 lines)
-
 ### ⚠️ **Technical Debt**
 - **Missing exports**: BusinessSimulation module needs ParameterValues/ScenarioResults exports
 - **Module resolution**: Missing `../config/schema` module in several files
