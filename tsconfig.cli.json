@@ -1,29 +1,19 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "outDir": "./dist/cli",
+    "noEmit": false,
+    "outDir": "./dist",
     "rootDir": "./src",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
     "declaration": true,
     "sourceMap": true
   },
   "include": [
     "src/cli/**/*",
     "src/framework/**/*",
-    "src/simulations/**/*",
-    "src/test/**/*"
+    "src/simulations/**/*"
   ],
   "exclude": [
-    "src/ui/**/*",
-    "src/main.tsx",
+    "src/test/**/*",
     "dist",
     "node_modules"
   ]
