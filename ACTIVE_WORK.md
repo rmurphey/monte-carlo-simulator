@@ -27,19 +27,28 @@ The project has transitioned from design to **working, agent-friendly simulation
 ### 🔥 **Immediate (This Session)**
 ✅ **Complete Template Logic Implementation** - Removed TODO placeholder in config-builder.ts:736
 ✅ **Roadmap Feature Assessment** - Completed evaluation and corrected README documentation  
-3. **Agent Integration Enhancement** - Based on framework readiness
+✅ **Interactive Simulation Studio Design** - Architecture design for definition + realtime execution system
+4. **Agent Integration Enhancement** - Based on framework readiness
 
 ### 📋 **Next Session Priorities**
-1. **Interactive Parameter Tuning Enhancement** - Real-time parameter adjustment during simulation runs
-2. **AI Agent Integration** - Natural language → YAML generation workflow implementation
-3. **Web Interface Development** - Non-technical user interface (from designs)
+
+#### **Interactive Simulation Studio Implementation** (1-2 weeks)
+1. **Interactive Definition Builder** - Extend config-builder.ts with guided simulation creation
+2. **Realtime Parameter Control** - Live parameter adjustment during simulation execution  
+3. **Live Results Dashboard** - Streaming statistical updates with ASCII visualization
+4. **Session Persistence** - Save/load interactive studio sessions
+
+#### **Additional Priorities**
+5. **AI Agent Integration** - Natural language → YAML generation workflow implementation
+6. **Web Interface Development** - Browser-based interactive studio (future)
 
 ### 🗺️ **Development Roadmap**
 
-#### **Phase 4: Enhanced User Experience** (Current)
-- **Interactive Parameter Tuning** - Real-time adjustment during simulation runs
-- **AI Agent Integration** - Natural language → YAML generation workflow  
-- **Advanced CLI Features** - Enhanced user experience patterns
+#### **Phase 4: Interactive Simulation Studio** (Current)
+- **Interactive Definition Builder** - Guided simulation creation with live validation
+- **Realtime Parameter Control** - Live adjustment during execution with streaming updates
+- **Live Results Dashboard** - ASCII visualization and convergence monitoring
+- **Session Management** - Save/load/compare interactive sessions
 
 #### **Phase 5: Platform Expansion** (Future)
 - **Web Interface** - Non-technical user interface
@@ -69,6 +78,38 @@ The project has transitioned from design to **working, agent-friendly simulation
 - **CLI Framework**: Interactive commands and templates
 - **Configuration System**: YAML-based simulation creation
 - **ARR Business Context**: Optional injection system (opt-in)
+
+## Interactive Studio Implementation Details
+
+### **Technical Specifications**
+
+#### **Component 1: Interactive Definition Builder**
+- **File**: `src/cli/interactive/definition-studio.ts`
+- **Extends**: Existing `config-builder.ts` architecture
+- **Features**: Guided questions, real-time validation, quick test runs
+- **Dependencies**: inquirer, existing ConfigurableSimulation
+
+#### **Component 2: Realtime Parameter Control**  
+- **File**: `src/cli/interactive/realtime-runner.ts`
+- **Architecture**: Observable parameter streams + simulation re-execution
+- **UI**: ASCII sliders, live statistics display, keyboard controls
+- **Performance**: Efficient re-runs with parameter caching
+
+#### **Component 3: Live Results Dashboard**
+- **File**: `src/cli/interactive/live-dashboard.ts` 
+- **Features**: Streaming updates, convergence monitoring, ASCII charts
+- **Display**: Real-time mean/std dev, confidence intervals, progress bars
+- **Interaction**: Pause/resume, save snapshots, compare scenarios
+
+#### **Integration Points**
+- **Existing CLI**: New `studio` subcommand with `define` and `run` modes
+- **Config System**: Full compatibility with existing YAML configurations
+- **Statistics Engine**: Leverages existing StatisticalAnalyzer for live updates
+
+### **Development Timeline**
+- **Week 1**: Interactive Definition Builder + Live Validation
+- **Week 2**: Realtime Parameter Control + Live Dashboard
+- **Testing**: Full integration with existing simulation examples
 
 ### ⚠️ **Technical Debt**
 - **Missing exports**: BusinessSimulation module needs ParameterValues/ScenarioResults exports
