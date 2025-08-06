@@ -59,6 +59,9 @@ This project is set up for AI-assisted development with Claude Code.
 - `README.md` - Human-focused project overview and business value proposition
 - `AGENT.md` - Complete technical specifications for AI agents (YAML patterns, validation rules)
 - `TECHNICAL.md` - Deep framework architecture and advanced technical details
+- `docs/` - Detailed implementation specifications
+  - `docs/INTERACTIVE_STUDIO.md` - Interactive simulation system specification (human + agent)
+  - `docs/YAML_SCHEMA_GUIDE.md` - Complete YAML validation reference
 - `examples/` - Working simulation examples with comprehensive agent patterns
   - `examples/README.md` - Agent-friendly simulation creation patterns
   - `examples/simulations/` - Tested, working YAML simulation files

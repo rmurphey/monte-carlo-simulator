@@ -1,5 +1,18 @@
 # Agent Guide - Monte Carlo Business Simulation Framework
 
+## 🎯 Interactive Studio (Planned)
+
+### Interactive Simulation Creation
+```bash
+# Coming: Interactive definition studio
+npm run cli studio define
+
+# Coming: Real-time parameter control
+npm run cli studio run simulation.yaml
+```
+
+**Agent Integration**: Full programmatic API for controlling interactive sessions, real-time parameter updates, and streaming results. See [docs/INTERACTIVE_STUDIO.md](docs/INTERACTIVE_STUDIO.md) for complete specifications.
+
 ## ✅ Working Commands (Tested)
 
 ```bash

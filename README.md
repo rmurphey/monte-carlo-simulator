@@ -142,6 +142,8 @@ All examples are **tested and working**.
 
 **For AI Agents:** See [AGENT.md](AGENT.md) for complete technical specifications, working patterns, and validation rules.
 
+**For Interactive Development:** See [docs/INTERACTIVE_STUDIO.md](docs/INTERACTIVE_STUDIO.md) for the planned interactive simulation definition and real-time execution system.
+
 ## 💰 Real Business Impact Examples
 
 ### Before This Framework:
