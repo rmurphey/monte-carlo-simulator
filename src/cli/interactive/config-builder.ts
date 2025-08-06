@@ -733,16 +733,35 @@ export class InteractiveConfigBuilder {
   
   private generateDefaultLogic(parameters: ParameterInput[], outputs: OutputInput[]): string {
     const paramUsage = parameters.map(p => `  // ${p.description}\n  // ${p.key} = ${p.default}`).join('\n')
-    const outputReturn = outputs.map(o => `${o.key}: 0 // TODO: Calculate ${o.description.toLowerCase()}`).join(',\n    ')
     
-    return `// Simulation logic - replace this with your calculations
+    // Generate meaningful default calculations based on parameter/output patterns
+    const outputCalculations = outputs.map((output, index) => {
+      const param = parameters[index] || parameters[0]
+      if (!param) return `${output.key}: 100 * (0.8 + random() * 0.4)`
+      
+      // Create realistic relationships between parameters and outputs
+      if (output.key.toLowerCase().includes('roi') || output.key.toLowerCase().includes('return')) {
+        return `${output.key}: Math.round(((${param.key} * (0.8 + random() * 0.4)) / ${param.key}) * 100 * 10) / 10`
+      } else if (output.key.toLowerCase().includes('cost')) {
+        return `${output.key}: Math.round(${param.key} * (1.1 + random() * 0.2))`
+      } else if (output.key.toLowerCase().includes('time') || output.key.toLowerCase().includes('month') || output.key.toLowerCase().includes('period')) {
+        return `${output.key}: Math.round((${param.key} / 1000) * (0.8 + random() * 0.4) * 10) / 10`
+      } else if (output.key.toLowerCase().includes('percent') || output.key.toLowerCase().includes('%')) {
+        return `${output.key}: Math.round((${param.key} / 100) * (0.7 + random() * 0.6) * 10) / 10`
+      } else {
+        // Generic calculation with uncertainty
+        return `${output.key}: Math.round(${param.key} * (0.8 + random() * 0.4) * 10) / 10`
+      }
+    }).join(',\n    ')
+    
+    return `// Simulation logic - modify these calculations for your specific scenario
 ${paramUsage}
 
-  // Example calculation using random variation
-  const result = ${parameters[0]?.key || '100'} * (0.8 + random() * 0.4)
+  // Example calculations with Monte Carlo uncertainty
+  // Replace these with your business logic
   
   return {
-    ${outputReturn}
+    ${outputCalculations}
   }`
   }
   

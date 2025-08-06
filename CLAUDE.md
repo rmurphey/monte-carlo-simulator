@@ -76,3 +76,6 @@ Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
 NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+
+## Test Execution Guidelines
+- ALWAYS run the tests so that they exit immediately after the test run; never run them as a long-running process unless specifically requested.

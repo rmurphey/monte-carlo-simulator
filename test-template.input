@@ -1,0 +1,18 @@
+Test Template
+business
+Template logic test with realistic calculations
+testParam1
+Test Parameter 1
+number
+1000
+testParam2
+Test Parameter 2
+number
+500
+n
+testROI
+Test ROI
+ROI percentage from test calculation
+testCost
+Test Cost
+Cost calculation result
