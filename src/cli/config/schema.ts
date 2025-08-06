@@ -7,6 +7,7 @@ export interface SimulationConfig {
   version: string
   tags: string[]
   baseSimulation?: string  // Path to base simulation file to inherit from
+  businessContext?: boolean // Optional flag to request ARR/business context injection
   parameters: ParameterConfig[]
   groups?: ParameterGroupConfig[]
   outputs?: OutputConfig[]  // Optional if inheriting from base
@@ -102,6 +103,7 @@ const simulationConfigSchema: JSONSchemaType<SimulationConfig> = {
       maxItems: 10
     },
     baseSimulation: { type: 'string', nullable: true },
+    businessContext: { type: 'boolean', nullable: true },
     parameters: {
       type: 'array',
       items: parameterSchema,

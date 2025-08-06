@@ -9,7 +9,19 @@ description: hygiene command
 - Project status: !git status --porcelain
 
 ## Your task
-Implement hygiene functionality.
+Review hygiene of the repository:
+
+- test coverage
+- test status
+- dead code
+- dead docs
 
 ## Output
-Provide helpful output for the hygiene command.
+Report your recommendations regarding:
+
+- outdated docs
+- dead code
+- test coverage
+- test status
+
+Recommend atomic commits.

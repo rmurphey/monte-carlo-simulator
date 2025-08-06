@@ -15,10 +15,19 @@ export class ConfigurableSimulation extends MonteCarloEngine {
   }
   
   /**
-   * Enhances simulation config with automatic ARR injection
+   * Enhances simulation config with optional ARR injection
+   * Only injects ARR if explicitly requested via config metadata
    */
   private enhanceConfigWithARR(config: SimulationConfig): SimulationConfig {
     const parameterKeys = config.parameters.map(p => p.key)
+    
+    // Check if simulation explicitly requests business context
+    const needsBusinessContext = this.shouldInjectBusinessContext(config)
+    
+    if (!needsBusinessContext) {
+      // No business context needed, return original config
+      return config
+    }
     
     // Check if ARR is already present
     if (this.arrInjector.hasARRParameter(parameterKeys)) {
@@ -44,6 +53,36 @@ export class ConfigurableSimulation extends MonteCarloEngine {
         logic: this.injectARRBusinessContext(config.simulation?.logic || '', allParameterKeys)
       }
     }
+  }
+
+  /**
+   * Determines if this simulation should have business context injected
+   */
+  private shouldInjectBusinessContext(config: SimulationConfig): boolean {
+    // Check for explicit business context request
+    if (config.businessContext === true) {
+      return true
+    }
+    
+    // Check for business-related tags
+    const businessTags = ['business', 'roi', 'investment', 'finance', 'revenue', 'profit']
+    const hasBusinessTags = config.tags?.some(tag => 
+      businessTags.some(bizTag => tag.toLowerCase().includes(bizTag))
+    )
+    
+    // Check for business-related category
+    const businessCategories = ['business', 'finance', 'investment', 'operations']
+    const hasBusinessCategory = businessCategories.some(bizCat => 
+      config.category.toLowerCase().includes(bizCat)
+    )
+    
+    // Check if simulation logic references business functions
+    const businessFunctions = ['calculateROI', 'calculatePayback', 'calculateNPV', 'arrBudget']
+    const hasBusinessLogic = businessFunctions.some(func => 
+      config.simulation?.logic?.includes(func)
+    )
+    
+    return hasBusinessTags || hasBusinessCategory || hasBusinessLogic
   }
   
   /**
