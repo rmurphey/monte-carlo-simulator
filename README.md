@@ -73,69 +73,72 @@ npm run cli --help
 
 ## 📊 What You Can Do Right Now
 
-### 1. **Explore the Framework**
+### 1. **Run Working Examples**
 ```bash
-# See available CLI commands
-npm run cli --help
+# Simple ROI analysis - basic pattern for learning
+npm run cli run examples/simulations/simple-roi-analysis.yaml
 
-# List simulation templates
-npm run cli list
+# Technology investment - realistic business decision
+npm run cli run examples/simulations/technology-investment.yaml
 
-# Check example configurations
-ls examples/simulations/
+# Team scaling - advanced with business intelligence
+npm run cli run examples/simulations/team-scaling-decision.yaml
+
+# Scenario analysis - compare risk scenarios
+npm run cli run examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml
+npm run cli run examples/simulations/ai-tool-adoption/conservative.yaml
+npm run cli run examples/simulations/ai-tool-adoption/aggressive.yaml
 ```
 
-### 2. **Study Working Examples**
-```typescript
-// Review test cases to understand framework capabilities
-// src/test/ConfigurableSimulation.test.ts shows YAML parsing
-// src/test/AIInvestmentROI.test.ts shows business intelligence features
+**Expected output:**
+```
+🔬 Monte Carlo Simulation: AI Tool Adoption Analysis (Conservative)
+📊 Results (1,000 iterations):
+   Annual Tool Cost ($): $10,800
+   Net Annual Benefit ($): $61,538 ± $16,261
+   ROI Percentage: 570% ± 151%
 
-// Example from tests:
-const config = {
-  name: "Simple ROI Analysis",
-  parameters: [
-    { key: "investment", type: "number", default: 10000 },
-    { key: "monthlyReturn", type: "number", default: 1000 }
-  ],
-  outputs: [
-    { key: "roi", label: "Return on Investment" }
-  ],
-  simulation: {
-    logic: `
-      const annualReturn = monthlyReturn * 12
-      const roi = ((annualReturn - investment) / investment) * 100
-      return { roi: roi }
-    `
-  }
-}
+🔬 Monte Carlo Simulation: AI Tool Adoption Analysis (Aggressive)  
+📊 Results (1,000 iterations):
+   Annual Tool Cost ($): $4,800
+   Net Annual Benefit ($): $565,544 ± $84,549
+   ROI Percentage: 11,782% ± 1,761%
+```
+
+### 2. **Study Working Patterns**
+```bash
+# See all available examples with agent-friendly patterns
+ls examples/simulations/
+cat examples/README.md
+
+# Study the YAML structure that actually works
+cat examples/simulations/simple-roi-analysis.yaml
 ```
 
 ### 3. **Create Your Own Simulation**
+Copy and modify working examples:
 ```yaml
-# Create simple-analysis.yaml
-name: "My Business Decision"
+# Based on proven working patterns
+name: "Your Business Decision"
+category: "Business"
+description: "Analysis of your specific strategic decision with uncertainty modeling"
+version: "1.0.0"
+tags: [strategy, decision]
+
 parameters:
-  - key: cost
-    label: "Investment Cost"
+  - key: investment
+    label: "Investment Amount ($)"
     type: number
     default: 50000
-  - key: benefit
-    label: "Annual Benefit"
-    type: number
-    default: 60000
-
-outputs:
-  - key: paybackYears
-    label: "Payback Period (Years)"
-
+    
 simulation:
   logic: |
-    const paybackYears = cost / benefit
-    return { paybackYears: Math.round(paybackYears * 10) / 10 }
+    const annualBenefit = investment * (0.15 + random() * 0.1)  
+    const roi = ((annualBenefit - investment) / investment) * 100
+    return { roi: Math.round(roi * 10) / 10 }
 ```
 
-The framework is ready - examples need debugging (see TECHNICAL.md for full specifications).
+All examples are **tested and working** - see [examples/README.md](examples/README.md) for agent patterns.
 
 ## 💰 Real Business Impact Examples
 

@@ -1,0 +1,83 @@
+name: AI Tool Adoption Analysis
+category: Technology  
+description: Strategic analysis of AI tool adoption with different risk scenarios for budget planning
+version: 1.0.0
+tags: [ai, tools, adoption, strategy, scenarios]
+
+parameters:
+  - key: teamSize
+    label: Team Size
+    type: number
+    default: 20
+    min: 5
+    max: 200
+    step: 1
+    description: Number of developers who will use AI tools
+
+  - key: monthlyToolCost
+    label: Monthly Tool Cost per Developer ($)
+    type: number
+    default: 30
+    min: 10
+    max: 100
+    step: 5
+    description: Monthly subscription cost per developer
+
+  - key: productivityGain
+    label: Expected Productivity Gain (%)
+    type: number
+    default: 15
+    min: 5
+    max: 40
+    step: 1
+    description: Expected productivity improvement percentage
+
+  - key: adoptionRate
+    label: Team Adoption Rate (%)
+    type: number
+    default: 75
+    min: 30
+    max: 95
+    step: 5
+    description: Percentage of team expected to actively use tools
+
+outputs:
+  - key: annualCost
+    label: Annual Tool Cost ($)
+    description: Total annual cost for AI tools
+
+  - key: annualSavings
+    label: Annual Productivity Savings ($)
+    description: Cost savings from productivity improvements
+
+  - key: netBenefit
+    label: Net Annual Benefit ($)
+    description: Annual savings minus costs
+
+  - key: roi
+    label: ROI Percentage
+    description: Return on investment percentage
+
+simulation:
+  logic: |
+    // Calculate costs
+    const annualCost = teamSize * monthlyToolCost * 12
+    
+    // Model adoption with uncertainty
+    const actualAdoption = (adoptionRate / 100) * (0.8 + random() * 0.4)
+    const actualProductivity = (productivityGain / 100) * (0.7 + random() * 0.6)
+    
+    // Calculate savings (average developer cost $120k)
+    const avgDeveloperCost = 120000
+    const annualSavings = teamSize * avgDeveloperCost * actualAdoption * actualProductivity
+    
+    // Calculate metrics
+    const netBenefit = annualSavings - annualCost
+    const roi = annualCost > 0 ? (netBenefit / annualCost) * 100 : 0
+    
+    return {
+      annualCost: Math.round(annualCost),
+      annualSavings: Math.round(annualSavings),
+      netBenefit: Math.round(netBenefit),
+      roi: Math.round(roi * 10) / 10
+    }

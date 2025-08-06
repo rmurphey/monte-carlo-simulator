@@ -1,0 +1,96 @@
+name: Team Scaling Decision Analysis
+category: Business
+description: Strategic analysis of team scaling decisions considering coordination overhead and productivity
+version: 1.0.0
+tags: [hiring, scaling, team, productivity, strategy]
+
+# Enable business context for strategic functions
+businessContext: true
+
+parameters:
+  - key: currentTeamSize
+    label: Current Team Size
+    type: number
+    default: 15
+    min: 5
+    max: 100
+    step: 1
+    description: Current number of team members
+
+  - key: newHires
+    label: New Hires to Add
+    type: number
+    default: 5
+    min: 1
+    max: 25
+    step: 1
+    description: Number of new team members to hire
+
+  - key: avgSalary
+    label: Average Salary ($)
+    type: number
+    default: 130000
+    min: 60000
+    max: 300000
+    step: 5000
+    description: Average annual salary for new hires
+
+  - key: rampUpTime
+    label: Ramp-up Time (months)
+    type: number
+    default: 4
+    min: 2
+    max: 12
+    step: 1
+    description: Time for new hires to reach full productivity
+
+outputs:
+  - key: totalAnnualCost
+    label: Total Annual Cost ($)
+    description: Total cost including salaries and coordination overhead
+
+  - key: expectedProductivityGain
+    label: Expected Productivity Gain (%)
+    description: Net productivity increase considering coordination overhead
+
+  - key: roi
+    label: ROI Percentage
+    description: Return on investment for the hiring decision
+
+  - key: paybackPeriod
+    label: Payback Period (months)
+    description: Time to recover investment through productivity gains
+
+simulation:
+  logic: |
+    // Calculate hiring costs
+    const hiringCost = newHires * avgSalary
+    
+    // Coordination overhead increases with team size (Brooks' Law)
+    const newTeamSize = currentTeamSize + newHires
+    const coordinationOverhead = Math.pow(newTeamSize, 1.2) / Math.pow(currentTeamSize, 1.2)
+    
+    // Ramp-up reduces initial productivity
+    const rampUpFactor = Math.max(0.3, 1 - (rampUpTime / 12))
+    const effectiveNewProductivity = newHires * rampUpFactor * (0.8 + random() * 0.4)
+    
+    // Net productivity gain considering coordination drag
+    const grossProductivityGain = effectiveNewProductivity / currentTeamSize
+    const netProductivityGain = grossProductivityGain / coordinationOverhead
+    const productivityGainPercent = netProductivityGain * 100
+    
+    // Calculate business value using business context functions
+    const annualProductivityValue = currentTeamSize * avgSalary * netProductivityGain
+    const roi = calculateROI(hiringCost, annualProductivityValue)
+    const paybackPeriod = calculatePaybackPeriod(hiringCost, annualProductivityValue / 12)
+    
+    // Total cost including coordination overhead
+    const coordinationCost = currentTeamSize * avgSalary * (coordinationOverhead - 1) * 0.1
+    const totalAnnualCost = hiringCost + coordinationCost
+    
+    return {
+      totalAnnualCost: Math.round(totalAnnualCost),
+      expectedProductivityGain: Math.round(productivityGainPercent * 10) / 10,
+      roi: Math.round(roi * 10) / 10,
+      paybackPeriod: Math.round(paybackPeriod * 10) / 10
+    }
