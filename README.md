@@ -150,21 +150,110 @@ src/
     └── strategic-simulations/       # Agent-generated examples
 ```
 
+## 📊 Scenario-Based Analysis
+
+The framework supports **risk-adjusted decision making** through scenario analysis:
+
+### **Running Scenarios**
+```bash
+# Single scenario analysis
+monte-carlo-simulator run marketing-campaign-roi --scenario conservative
+
+# Compare risk scenarios side-by-side  
+monte-carlo-simulator run marketing-campaign-roi --compare conservative,aggressive
+
+# Export scenario comparison
+monte-carlo-simulator run software-project-timeline --compare conservative,neutral,aggressive --output analysis.json
+```
+
+### **Scenario Types**
+- **Conservative**: Risk-averse parameters with proven benchmarks
+- **Neutral**: Balanced approach with industry-standard metrics  
+- **Aggressive**: Growth-focused parameters with higher risk/reward
+
+### **Example Scenario Output**
+```
+🔬 Scenario Comparison: marketing-campaign-roi
+Comparing scenarios: conservative, aggressive
+
+📈 Campaign ROI Comparison
+Scenario        Mean      P10      P90
+Conservative    127%      45%      210%
+Aggressive      285%      -15%     580%
+```
+
 ## 📈 Strategic Simulation Examples
 
 **Current Working Simulations:**
-- **[Marketing Campaign ROI](examples/simulations/marketing-campaign-roi/)** - ARR-scaled budget allocation and customer acquisition analysis
-- **[Software Project Timeline](examples/simulations/software-project-timeline/)** - Feature velocity and team coordination modeling
-- **[Technology Investment Analysis](examples/simulations/ai-investment-analysis/)** - Cost-benefit analysis for strategic technology decisions
+- **[Marketing Campaign ROI](examples/simulations/marketing-campaign-roi/)** - Conservative (8% ARR), Neutral (12% ARR), Aggressive (20% ARR) budget scenarios
+- **[Software Project Timeline](examples/simulations/software-project-timeline/)** - Team velocity scenarios with coordination overhead modeling
+- **[Technology Investment Analysis](examples/simulations/ai-investment-analysis/)** - Cost-benefit analysis across risk scenarios
+
+## 📝 Creating Scenarios
+
+### **For AI Agents**
+Generate risk scenarios by varying key parameters:
+
+```yaml
+# Base simulation: ai-tool-adoption.yaml
+name: "AI Tool Adoption Analysis"
+category: "Technology Investment"
+parameters:
+  - key: toolCostPerDev
+    default: 25  # Neutral baseline
+  - key: productivityGain
+    default: 15  # 15% baseline gain
+```
+
+```yaml  
+# Scenario: ai-tool-adoption/conservative.yaml
+name: "AI Tool Adoption Analysis (Conservative)"
+parameters:
+  - key: toolCostPerDev
+    default: 35    # Higher cost assumption
+  - key: productivityGain  
+    default: 8     # Lower productivity gain
+  - key: adoptionRate
+    default: 60    # Slower team adoption
+```
+
+```yaml
+# Scenario: ai-tool-adoption/aggressive.yaml  
+name: "AI Tool Adoption Analysis (Aggressive)"
+parameters:
+  - key: toolCostPerDev
+    default: 15    # Lower cost assumption
+  - key: productivityGain
+    default: 25    # Higher productivity gain
+  - key: adoptionRate
+    default: 95    # Fast team adoption
+```
+
+### **Scenario Directory Structure**
+```
+examples/simulations/
+└── your-simulation/
+    ├── your-simulation.yaml      # Base simulation
+    ├── conservative.yaml         # Risk-averse parameters
+    ├── neutral.yaml             # Balanced parameters  
+    └── aggressive.yaml          # Growth-focused parameters
+```
+
+### **Agent Scenario Generation Guidelines**
+1. **Identify Risk Variables**: Which parameters have the highest uncertainty?
+2. **Define Conservative Bounds**: What are realistic worst-case assumptions?
+3. **Define Aggressive Bounds**: What are optimistic best-case scenarios?
+4. **Maintain Business Logic**: Keep relationships between parameters realistic
+5. **Document Assumptions**: Explain the reasoning behind scenario parameters
 
 ## 🚀 Getting Started
 
 ### For AI Agents
 1. **Analyze** strategic business question
-2. **Generate** YAML configuration using framework patterns
-3. **Execute** simulation with business context
-4. **Refine** parameters through conversational feedback
-5. **Report** results for strategic decision-making
+2. **Generate** base YAML configuration with neutral parameters
+3. **Create scenario variations** (conservative/aggressive) for key uncertainties
+4. **Execute** scenario comparison for risk analysis
+5. **Report** results with confidence intervals for strategic decisions
 
 ### For Direct Use
 ```bash
