@@ -1,0 +1,224 @@
+name: SaaS Growth & Unit Economics
+category: Software Business
+description: Comprehensive SaaS business analysis including MRR growth, churn modeling, CAC:LTV optimization, and ARR-based scaling projections
+version: 2.0.0
+tags: [saas, subscription, mrr, churn, unit-economics, growth]
+
+parameters:
+  - key: annualRecurringRevenue
+    label: Current ARR ($)
+    type: number
+    default: 2400000
+    min: 100000
+    max: 100000000
+    step: 100000
+    description: Current annual recurring revenue baseline
+
+  - key: monthlyGrowthTarget
+    label: Monthly Growth Target (%)
+    type: number
+    default: 8.5
+    min: 2.0
+    max: 25.0
+    step: 0.5
+    description: Target monthly recurring revenue growth rate (typical: 5-15%)
+
+  - key: marketSegment
+    label: Market Segment
+    type: select
+    default: smb-focused
+    options: [startup-tier, smb-focused, mid-market, enterprise-focused]
+    description: Primary customer segment affecting pricing and churn characteristics
+
+  - key: pricingModel
+    label: Pricing Strategy
+    type: select
+    default: tiered-usage
+    options: [flat-subscription, tiered-usage, usage-based, freemium-conversion]
+    description: Revenue model impacting customer acquisition and expansion
+
+  - key: customerAcquisitionStrategy
+    label: Acquisition Strategy
+    type: select
+    default: product-led
+    options: [sales-led, product-led, hybrid-model, channel-partner]
+    description: Primary customer acquisition approach
+
+  - key: averageContractValue
+    label: Average Contract Value ($)
+    type: number
+    default: 4800
+    min: 100
+    max: 500000
+    step: 100
+    description: Annual contract value per customer (ACV)
+
+  - key: grossMargin
+    label: Gross Margin (%)
+    type: number
+    default: 82
+    min: 60
+    max: 95
+    step: 1
+    description: Gross margin after cost of goods sold (typical SaaS: 75-85%)
+
+  - key: churnTarget
+    label: Monthly Churn Target (%)
+    type: number
+    default: 3.2
+    min: 0.5
+    max: 15.0
+    step: 0.1
+    description: Target monthly customer churn rate (SMB: 3-7%, Enterprise: 1-3%)
+
+groups:
+  - name: Business Foundation
+    description: Current ARR and growth targets
+    parameters: [annualRecurringRevenue, monthlyGrowthTarget, grossMargin]
+    
+  - name: Market & Pricing
+    description: Customer segment and revenue model
+    parameters: [marketSegment, pricingModel, averageContractValue]
+    
+  - name: Growth Strategy
+    description: Customer acquisition and retention approach
+    parameters: [customerAcquisitionStrategy, churnTarget]
+
+outputs:
+  - key: projectedMRR
+    label: Projected MRR ($)
+    description: Monthly recurring revenue projection
+
+  - key: newMRRRequired
+    label: New MRR Required ($)
+    description: New MRR needed to hit growth targets after churn
+
+  - key: customersNeeded
+    label: New Customers Needed
+    description: Number of customers required to achieve growth target
+
+  - key: blendedCAC
+    label: Blended CAC ($)
+    description: Customer acquisition cost across all channels
+
+  - key: cac2ltvRatio
+    label: CAC:LTV Ratio
+    description: Customer acquisition cost to lifetime value ratio (target: <0.33)
+
+  - key: paybackPeriod
+    label: CAC Payback (months)
+    description: Time to recover customer acquisition investment
+
+  - key: netRevenueRetention
+    label: Net Revenue Retention (%)
+    description: Revenue retention including expansion (target: >100%)
+
+  - key: burnRate
+    label: Monthly Burn Rate ($)
+    description: Net cash consumption per month
+
+simulation:
+  logic: |
+    // Market segment characteristics
+    const segmentMetrics = {
+      'startup-tier': { 
+        churnMultiplier: 1.4, 
+        expansionRate: 0.05, 
+        salesCycleMonths: 1, 
+        cac: 850 
+      },
+      'smb-focused': { 
+        churnMultiplier: 1.0, 
+        expansionRate: 0.08, 
+        salesCycleMonths: 2, 
+        cac: 1200 
+      },
+      'mid-market': { 
+        churnMultiplier: 0.7, 
+        expansionRate: 0.12, 
+        salesCycleMonths: 4, 
+        cac: 3500 
+      },
+      'enterprise-focused': { 
+        churnMultiplier: 0.4, 
+        expansionRate: 0.18, 
+        salesCycleMonths: 8, 
+        cac: 12000 
+      }
+    }
+    
+    // Pricing model impact on metrics
+    const pricingImpact = {
+      'flat-subscription': { churnModifier: 1.0, expansionModifier: 0.6, conversionRate: 0.85 },
+      'tiered-usage': { churnModifier: 0.9, expansionModifier: 1.2, conversionRate: 0.75 },
+      'usage-based': { churnModifier: 0.8, expansionModifier: 1.5, conversionRate: 0.70 },
+      'freemium-conversion': { churnModifier: 1.3, expansionModifier: 0.8, conversionRate: 0.12 }
+    }
+    
+    // Acquisition strategy efficiency
+    const acquisitionMetrics = {
+      'sales-led': { cacEfficiency: 1.0, scalability: 0.7, conversionRate: 0.25 },
+      'product-led': { cacEfficiency: 0.6, scalability: 1.3, conversionRate: 0.08 },
+      'hybrid-model': { cacEfficiency: 0.8, scalability: 1.0, conversionRate: 0.15 },
+      'channel-partner': { cacEfficiency: 1.2, scalability: 0.9, conversionRate: 0.20 }
+    }
+    
+    // Extract metrics for current configuration
+    const segment = segmentMetrics[marketSegment]
+    const pricing = pricingImpact[pricingModel]
+    const acquisition = acquisitionMetrics[customerAcquisitionStrategy]
+    
+    // Calculate current baseline metrics
+    const currentMRR = annualRecurringRevenue / 12
+    const targetMRR = currentMRR * (1 + monthlyGrowthTarget / 100)
+    
+    // Churn modeling with market and pricing factors
+    const actualMonthlyChurn = churnTarget * segment.churnMultiplier * pricing.churnModifier * (0.8 + random() * 0.4) / 100
+    const churnedMRR = currentMRR * actualMonthlyChurn
+    
+    // Expansion revenue modeling
+    const monthlyExpansion = currentMRR * segment.expansionRate * pricing.expansionModifier * (0.7 + random() * 0.6) / 100
+    
+    // Net revenue retention calculation
+    const netRevenueRetention = ((currentMRR + monthlyExpansion - churnedMRR) / currentMRR) * 100
+    
+    // New MRR required to hit growth target
+    const newMRRRequired = targetMRR - currentMRR + churnedMRR - monthlyExpansion
+    
+    // Customer acquisition modeling
+    const avgMonthlyContractValue = averageContractValue / 12
+    const customersNeeded = Math.ceil(newMRRRequired / avgMonthlyContractValue)
+    
+    // CAC calculation with strategy and segment factors
+    const baseCACMultiplier = acquisition.cacEfficiency * (0.8 + random() * 0.4)
+    const blendedCAC = segment.cac * baseCACMultiplier
+    
+    // LTV calculation
+    const monthlyGrossProfit = avgMonthlyContractValue * (grossMargin / 100)
+    const averageLifetimeMonths = 1 / actualMonthlyChurn
+    const customerLTV = monthlyGrossProfit * averageLifetimeMonths
+    
+    // Unit economics
+    const cac2ltvRatio = customerLTV > 0 ? blendedCAC / customerLTV : 1
+    const paybackPeriod = monthlyGrossProfit > 0 ? blendedCAC / monthlyGrossProfit : 999
+    
+    // Cash flow modeling
+    const totalAcquisitionCost = customersNeeded * blendedCAC
+    const operatingExpenses = currentMRR * 0.65  // Typical SaaS opex ratio
+    const monthlyGrossRevenue = targetMRR * (grossMargin / 100)
+    const burnRate = Math.max(0, operatingExpenses + totalAcquisitionCost - monthlyGrossRevenue)
+    
+    // Projections with variance
+    const growthVariance = 0.8 + random() * 0.4  // ±20% variance in execution
+    const projectedMRR = currentMRR + (newMRRRequired * growthVariance) + monthlyExpansion - churnedMRR
+    
+    return {
+      projectedMRR: round(projectedMRR),
+      newMRRRequired: round(Math.max(0, newMRRRequired)),
+      customersNeeded: Math.max(0, customersNeeded),
+      blendedCAC: round(blendedCAC),
+      cac2ltvRatio: round(cac2ltvRatio * 100) / 100,
+      paybackPeriod: Math.min(round(paybackPeriod * 10) / 10, 99.9),
+      netRevenueRetention: round(netRevenueRetention * 10) / 10,
+      burnRate: round(Math.max(0, burnRate))
+    }

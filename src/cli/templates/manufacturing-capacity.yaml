@@ -1,0 +1,320 @@
+name: Manufacturing Capacity Planning
+category: Operations & Manufacturing  
+description: Manufacturing capacity optimization with production planning, resource allocation, and operational efficiency analysis for industrial operations
+version: 2.0.0
+tags: [manufacturing, capacity-planning, operations, production-optimization, industrial]
+
+parameters:
+  - key: annualRecurringRevenue
+    label: Manufacturing ARR ($)
+    type: number
+    default: 12500000
+    min: 1000000
+    max: 1000000000
+    step: 500000
+    description: Annual manufacturing revenue for capacity investment planning
+
+  - key: capacityInvestmentPercent
+    label: Capacity Investment (% of ARR)
+    type: number
+    default: 18.0
+    min: 8.0
+    max: 35.0
+    step: 1.0
+    description: Manufacturing capacity investment as percentage of ARR (typical: 15-25%)
+
+  - key: currentCapacityUtilization
+    label: Current Capacity Utilization (%)
+    type: number
+    default: 72
+    min: 30
+    max: 95
+    step: 5
+    description: Current production capacity utilization (optimal: 75-85%)
+
+  - key: manufacturingType
+    label: Manufacturing Type
+    type: select
+    default: discrete-assembly
+    options: [discrete-assembly, process-continuous, batch-production, custom-manufacturing, mixed-operations]
+    description: Primary manufacturing process type
+
+  - key: productComplexity
+    label: Product Complexity
+    type: select
+    default: moderate
+    options: [simple-commodity, moderate, complex-engineered, high-tech-precision]
+    description: Complexity level of manufactured products
+
+  - key: demandVariability
+    label: Demand Variability
+    type: select
+    default: seasonal
+    options: [stable-demand, seasonal, cyclical, volatile-unpredictable]
+    description: Pattern of customer demand variation
+
+  - key: automationLevel
+    label: Current Automation Level
+    type: select
+    default: semi-automated
+    options: [manual-intensive, semi-automated, highly-automated, fully-automated]
+    description: Current level of production automation
+
+  - key: qualityStandard
+    label: Quality Requirements
+    type: select
+    default: commercial-grade
+    options: [basic-commercial, commercial-grade, high-precision, aerospace-medical]
+    description: Required quality and precision standards
+
+  - key: shiftPattern
+    label: Production Schedule
+    type: select
+    default: two-shift
+    options: [single-shift, two-shift, three-shift-continuous, flexible-demand]
+    description: Current production shift pattern
+
+groups:
+  - name: Financial & Scale
+    description: ARR-based investment and current capacity utilization
+    parameters: [annualRecurringRevenue, capacityInvestmentPercent, currentCapacityUtilization]
+    
+  - name: Manufacturing Profile
+    description: Production type and product characteristics
+    parameters: [manufacturingType, productComplexity, qualityStandard]
+    
+  - name: Operations Context
+    description: Demand patterns, automation, and scheduling
+    parameters: [demandVariability, automationLevel, shiftPattern]
+
+outputs:
+  - key: optimizedCapacityUtilization
+    label: Optimized Capacity (%)
+    description: Target capacity utilization after optimization
+
+  - key: additionalAnnualOutput
+    label: Additional Annual Output ($)
+    description: Incremental production value from capacity optimization
+
+  - key: capacityInvestmentROI
+    label: Capacity Investment ROI (%)
+    description: Return on investment for capacity expansion
+
+  - key: laborProductivityGain
+    label: Labor Productivity Gain (%)
+    description: Improvement in output per worker
+
+  - key: operationalEfficiency
+    label: Overall Equipment Effectiveness (%)
+    description: Combined measure of availability, performance, and quality
+
+  - key: qualityImprovementPercent
+    label: Quality Improvement (%)
+    description: Reduction in defect rates and rework
+
+  - key: leadTimeReduction
+    label: Lead Time Reduction (%)
+    description: Improvement in order-to-delivery time
+
+  - key: maintenanceCostReduction
+    label: Maintenance Cost Reduction (%)
+    description: Savings in equipment maintenance and downtime
+
+simulation:
+  logic: |
+    // Calculate capacity investment budget
+    const annualCapacityBudget = annualRecurringRevenue * (capacityInvestmentPercent / 100)
+    const monthlyCapacityBudget = annualCapacityBudget / 12
+    
+    // Manufacturing type characteristics
+    const manufacturingFactors = {
+      'discrete-assembly': {
+        utilizationOptimal: 80,
+        flexibilityFactor: 1.2,
+        automationPotential: 1.3,
+        qualityControl: 1.0
+      },
+      'process-continuous': {
+        utilizationOptimal: 88,
+        flexibilityFactor: 0.7,
+        automationPotential: 1.1,
+        qualityControl: 1.2
+      },
+      'batch-production': {
+        utilizationOptimal: 75,
+        flexibilityFactor: 1.4,
+        automationPotential: 1.0,
+        qualityControl: 1.1
+      },
+      'custom-manufacturing': {
+        utilizationOptimal: 65,
+        flexibilityFactor: 1.6,
+        automationPotential: 0.8,
+        qualityControl: 0.9
+      },
+      'mixed-operations': {
+        utilizationOptimal: 72,
+        flexibilityFactor: 1.0,
+        automationPotential: 1.0,
+        qualityControl: 1.0
+      }
+    }
+    
+    // Product complexity impact on optimization
+    const complexityFactors = {
+      'simple-commodity': {
+        processImprovement: 1.2,
+        qualityVariance: 0.8,
+        automationBenefit: 1.4,
+        leadTimeOptimization: 1.3
+      },
+      'moderate': {
+        processImprovement: 1.0,
+        qualityVariance: 1.0,
+        automationBenefit: 1.0,
+        leadTimeOptimization: 1.0
+      },
+      'complex-engineered': {
+        processImprovement: 0.8,
+        qualityVariance: 1.3,
+        automationBenefit: 0.7,
+        leadTimeOptimization: 0.8
+      },
+      'high-tech-precision': {
+        processImprovement: 0.6,
+        qualityVariance: 1.5,
+        automationBenefit: 0.9,
+        leadTimeOptimization: 0.6
+      }
+    }
+    
+    // Demand variability impact
+    const demandFactors = {
+      'stable-demand': { planningEfficiency: 1.2, inventoryOptimization: 1.3, utilizationBonus: 1.1 },
+      'seasonal': { planningEfficiency: 1.0, inventoryOptimization: 1.0, utilizationBonus: 1.0 },
+      'cyclical': { planningEfficiency: 0.9, inventoryOptimization: 0.8, utilizationBonus: 0.9 },
+      'volatile-unpredictable': { planningEfficiency: 0.7, inventoryOptimization: 0.6, utilizationBonus: 0.8 }
+    }
+    
+    // Automation level capabilities
+    const automationLevels = {
+      'manual-intensive': { 
+        efficiency: 0.7, 
+        consistency: 0.6, 
+        improvementPotential: 1.8,
+        investmentRequired: 1.4 
+      },
+      'semi-automated': { 
+        efficiency: 0.9, 
+        consistency: 0.8, 
+        improvementPotential: 1.3,
+        investmentRequired: 1.0 
+      },
+      'highly-automated': { 
+        efficiency: 1.2, 
+        consistency: 1.1, 
+        improvementPotential: 0.8,
+        investmentRequired: 0.7 
+      },
+      'fully-automated': { 
+        efficiency: 1.4, 
+        consistency: 1.3, 
+        improvementPotential: 0.5,
+        investmentRequired: 0.5 
+      }
+    }
+    
+    // Quality standard requirements
+    const qualityRequirements = {
+      'basic-commercial': { processControl: 0.8, testingRequirement: 0.7, certificationCost: 0.5 },
+      'commercial-grade': { processControl: 1.0, testingRequirement: 1.0, certificationCost: 1.0 },
+      'high-precision': { processControl: 1.3, testingRequirement: 1.4, certificationCost: 1.5 },
+      'aerospace-medical': { processControl: 1.6, testingRequirement: 1.8, certificationCost: 2.2 }
+    }
+    
+    // Shift pattern efficiency
+    const shiftEfficiency = {
+      'single-shift': { utilization: 0.35, flexibility: 1.0, laborCost: 1.0 },
+      'two-shift': { utilization: 0.65, flexibility: 0.9, laborCost: 1.1 },
+      'three-shift-continuous': { utilization: 0.90, flexibility: 0.7, laborCost: 1.3 },
+      'flexible-demand': { utilization: 0.55, flexibility: 1.4, laborCost: 1.2 }
+    }
+    
+    // Extract factors for current configuration
+    const manufacturing = manufacturingFactors[manufacturingType]
+    const complexity = complexityFactors[productComplexity]
+    const demand = demandFactors[demandVariability]
+    const automation = automationLevels[automationLevel]
+    const quality = qualityRequirements[qualityStandard]
+    const shift = shiftEfficiency[shiftPattern]
+    
+    // Calculate investment efficiency
+    const investmentEfficiency = Math.min(1.5, Math.pow(annualCapacityBudget / 1000000, 0.6))
+    
+    // Optimize capacity utilization
+    const targetUtilization = manufacturing.utilizationOptimal
+    const utilizationGap = Math.max(0, targetUtilization - currentCapacityUtilization)
+    const achievableImprovement = utilizationGap * 
+                                 investmentEfficiency * 
+                                 automation.improvementPotential *
+                                 demand.planningEfficiency *
+                                 (0.7 + random() * 0.6)  // Execution variance
+    
+    const optimizedCapacityUtilization = Math.min(95, currentCapacityUtilization + achievableImprovement)
+    
+    // Calculate production improvements
+    const capacityIncrease = (optimizedCapacityUtilization - currentCapacityUtilization) / 100
+    const additionalAnnualOutput = annualRecurringRevenue * capacityIncrease * (0.8 + random() * 0.4)
+    
+    // Labor productivity improvements
+    const laborProductivityGain = automation.efficiency * 
+                                 complexity.processImprovement * 
+                                 investmentEfficiency *
+                                 (0.8 + random() * 0.4) * 25  // Up to 25% gain
+    
+    // Overall Equipment Effectiveness (OEE)
+    const availabilityImprovement = investmentEfficiency * 0.15  // Up to 15% availability gain
+    const performanceImprovement = automation.efficiency * complexity.processImprovement * 0.12
+    const qualityImprovement = automation.consistency * quality.processControl * 0.08
+    
+    const currentOEE = 0.65  // Typical baseline OEE
+    const operationalEfficiency = Math.min(0.95, 
+      currentOEE + availabilityImprovement + performanceImprovement + qualityImprovement) * 100
+    
+    // Quality improvements
+    const qualityImprovementPercent = automation.consistency * 
+                                    quality.processControl * 
+                                    complexity.qualityVariance *
+                                    investmentEfficiency * 
+                                    (0.7 + random() * 0.6) * 30  // Up to 30% quality improvement
+    
+    // Lead time reduction
+    const leadTimeReduction = automation.efficiency * 
+                            complexity.leadTimeOptimization * 
+                            demand.planningEfficiency * 
+                            shift.flexibility *
+                            investmentEfficiency *
+                            (0.8 + random() * 0.4) * 35  // Up to 35% lead time reduction
+    
+    // Maintenance cost reduction
+    const maintenanceCostReduction = (automation.consistency - 0.6) * 20 +  // Automation reduces maintenance
+                                   investmentEfficiency * 15 +  // Better equipment
+                                   (0.8 + random() * 0.4) * 5   // Execution variance
+    
+    // ROI calculation
+    const implementationCosts = annualCapacityBudget * automation.investmentRequired
+    const annualSavings = additionalAnnualOutput + 
+                         (annualRecurringRevenue * 0.15 * maintenanceCostReduction / 100)  // 15% typical maintenance cost
+    const capacityInvestmentROI = implementationCosts > 0 ? 
+                                 ((annualSavings - implementationCosts * 0.2) / implementationCosts) * 100 : 0
+    
+    return {
+      optimizedCapacityUtilization: round(optimizedCapacityUtilization * 10) / 10,
+      additionalAnnualOutput: round(additionalAnnualOutput),
+      capacityInvestmentROI: round(capacityInvestmentROI * 10) / 10,
+      laborProductivityGain: round(laborProductivityGain * 10) / 10,
+      operationalEfficiency: round(operationalEfficiency * 10) / 10,
+      qualityImprovementPercent: round(qualityImprovementPercent * 10) / 10,
+      leadTimeReduction: round(leadTimeReduction * 10) / 10,
+      maintenanceCostReduction: round(Math.max(0, maintenanceCostReduction) * 10) / 10
+    }

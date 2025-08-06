@@ -2,6 +2,7 @@ import inquirer from 'inquirer'
 import { SimulationConfig, ParameterType } from '../config/schema'
 import { ConfigurationLoader } from '../config/loader'
 import { ConfigurableSimulation } from '../../framework/ConfigurableSimulation'
+import { TemplateLibrary, BusinessTemplate } from './template-library'
 
 interface ParameterInput {
   key: string
@@ -23,9 +24,30 @@ interface OutputInput {
 
 export class InteractiveConfigBuilder {
   private loader = new ConfigurationLoader()
+  private templateLibrary = new TemplateLibrary()
   
   async buildConfiguration(): Promise<SimulationConfig> {
     console.log('🚀 Monte Carlo Simulation Configuration Builder\n')
+    
+    // Load templates
+    await this.templateLibrary.loadTemplates()
+    
+    // Check if user wants to start from template
+    const useTemplate = await this.promptTemplateUsage()
+    
+    if (useTemplate) {
+      const template = await this.selectTemplate()
+      if (template) {
+        return await this.customizeTemplate(template)
+      }
+    }
+    
+    // Build from scratch
+    return await this.buildFromScratch()
+  }
+  
+  private async buildFromScratch(): Promise<SimulationConfig> {
+    console.log('🛠️  Building simulation from scratch...\n')
     
     // Basic information
     const basicInfo = await this.promptBasicInfo()
@@ -55,6 +77,392 @@ export class InteractiveConfigBuilder {
     }
     
     return config
+  }
+  
+  private async promptTemplateUsage(): Promise<boolean> {
+    const templates = this.templateLibrary.getAllTemplates()
+    
+    if (templates.length === 0) {
+      console.log('ℹ️  No business templates available. Building from scratch.\n')
+      return false
+    }
+    
+    const { useTemplate } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'useTemplate',
+        message: 'How would you like to create your simulation?',
+        choices: [
+          { name: '📋 Start from business template (recommended)', value: true },
+          { name: '🛠️  Build from scratch', value: false },
+          { name: '🔍 Browse available templates first', value: 'browse' }
+        ]
+      }
+    ])
+    
+    if (useTemplate === 'browse') {
+      await this.browseTemplates()
+      return await this.promptTemplateUsage()
+    }
+    
+    return useTemplate
+  }
+  
+  private async selectTemplate(): Promise<BusinessTemplate | null> {
+    const templates = this.templateLibrary.getAllTemplates()
+    
+    console.log('\n📁 Available Business Templates:')
+    console.log('These templates include industry-standard parameters, proven formulas, and business intelligence metrics.\n')
+    
+    const choices = templates.map(template => ({
+      name: `${template.info.name} - ${template.info.businessContext}`,
+      value: template.info.id,
+      short: template.info.name
+    }))
+    
+    choices.push(new inquirer.Separator())
+    choices.push({ name: '🔍 Search templates', value: 'search', short: 'Search' })
+    choices.push({ name: '📊 Filter by category', value: 'filter', short: 'Filter' })
+    choices.push({ name: '❌ Cancel - build from scratch', value: null, short: 'Cancel' })
+    
+    const { templateId } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'templateId',
+        message: 'Select a business template:',
+        choices,
+        pageSize: 12
+      }
+    ])
+    
+    if (templateId === 'search') {
+      return await this.searchTemplates()
+    } else if (templateId === 'filter') {
+      return await this.filterTemplatesByCategory()
+    } else if (templateId === null) {
+      return null
+    }
+    
+    const template = this.templateLibrary.getTemplate(templateId)
+    if (template) {
+      this.displayTemplateGuidance(template)
+    }
+    
+    return template
+  }
+  
+  private async searchTemplates(): Promise<BusinessTemplate | null> {
+    const { query } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'query',
+        message: 'Search templates (name, description, tags):',
+        validate: (input: string) => input.trim().length > 0 || 'Search query is required'
+      }
+    ])
+    
+    const results = this.templateLibrary.searchTemplates(query)
+    
+    if (results.length === 0) {
+      console.log('❌ No templates found matching your search.')
+      return await this.selectTemplate()
+    }
+    
+    const choices = results.map(template => ({
+      name: `${template.info.name} - ${template.info.businessContext}`,
+      value: template.info.id,
+      short: template.info.name
+    }))
+    
+    choices.push({ name: '🔙 Back to template selection', value: 'back', short: 'Back' })
+    
+    const { templateId } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'templateId',
+        message: `Found ${results.length} template(s):`,
+        choices
+      }
+    ])
+    
+    if (templateId === 'back') {
+      return await this.selectTemplate()
+    }
+    
+    const template = this.templateLibrary.getTemplate(templateId)
+    if (template) {
+      this.displayTemplateGuidance(template)
+    }
+    
+    return template
+  }
+  
+  private async filterTemplatesByCategory(): Promise<BusinessTemplate | null> {
+    const categories = this.templateLibrary.getTemplateCategories()
+    
+    const { category } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'category',
+        message: 'Filter by category:',
+        choices: [
+          ...categories.map(cat => ({ name: cat, value: cat })),
+          { name: '🔙 Back to template selection', value: 'back' }
+        ]
+      }
+    ])
+    
+    if (category === 'back') {
+      return await this.selectTemplate()
+    }
+    
+    const templates = this.templateLibrary.getTemplatesByCategory(category)
+    
+    const choices = templates.map(template => ({
+      name: `${template.info.name} - ${template.info.businessContext}`,
+      value: template.info.id,
+      short: template.info.name
+    }))
+    
+    choices.push({ name: '🔙 Back to template selection', value: 'back', short: 'Back' })
+    
+    const { templateId } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'templateId',
+        message: `${category} templates:`,
+        choices
+      }
+    ])
+    
+    if (templateId === 'back') {
+      return await this.selectTemplate()
+    }
+    
+    const template = this.templateLibrary.getTemplate(templateId)
+    if (template) {
+      this.displayTemplateGuidance(template)
+    }
+    
+    return template
+  }
+  
+  private displayTemplateGuidance(template: BusinessTemplate): void {
+    console.log('\n' + '='.repeat(60))
+    console.log(this.templateLibrary.generateBusinessGuidance(template))
+    console.log('='.repeat(60) + '\n')
+  }
+  
+  private async browseTemplates(): Promise<void> {
+    const templates = this.templateLibrary.getAllTemplates()
+    
+    for (const template of templates) {
+      console.log('\n' + '─'.repeat(50))
+      console.log(`📋 ${template.info.name}`)
+      console.log(`🏢 Category: ${template.info.category}`)
+      console.log(`📝 ${template.info.description}`)
+      console.log(`🎯 Industries: ${template.info.industryRelevance.join(', ')}`)
+      console.log(`🏷️  Tags: ${template.info.tags.join(', ')}`)
+    }
+    
+    console.log('\n' + '─'.repeat(50))
+    
+    await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'continue',
+        message: 'Press Enter to continue...',
+      }
+    ])
+  }
+  
+  private async customizeTemplate(template: BusinessTemplate): Promise<SimulationConfig> {
+    console.log(`🎨 Customizing: ${template.info.name}\n`)
+    
+    const { customizationLevel } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'customizationLevel',
+        message: 'How much do you want to customize this template?',
+        choices: [
+          { name: '⚡ Use as-is (recommended for testing)', value: 'none' },
+          { name: '🔧 Light customization (name, description, basic parameters)', value: 'light' },
+          { name: '🛠️  Full customization (modify all aspects)', value: 'full' }
+        ]
+      }
+    ])
+    
+    if (customizationLevel === 'none') {
+      return { ...template.config }
+    }
+    
+    let config = { ...template.config }
+    
+    if (customizationLevel === 'light' || customizationLevel === 'full') {
+      config = await this.customizeBasicInfo(config)
+      config = await this.customizeKeyParameters(config, template)
+    }
+    
+    if (customizationLevel === 'full') {
+      config = await this.customizeAllParameters(config, template)
+      config = await this.customizeOutputs(config)
+      
+      const { modifyLogic } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'modifyLogic',
+          message: 'Modify simulation logic? (Advanced)',
+          default: false
+        }
+      ])
+      
+      if (modifyLogic) {
+        const logic = await this.promptSimulationLogic(config.parameters, config.outputs)
+        config.simulation = { logic }
+      }
+    }
+    
+    return config
+  }
+  
+  private async customizeBasicInfo(config: SimulationConfig): Promise<SimulationConfig> {
+    const answers = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'name',
+        message: 'Simulation name:',
+        default: config.name,
+        validate: (input: string) => input.trim().length > 0 || 'Name is required'
+      },
+      {
+        type: 'input',
+        name: 'description',
+        message: 'Description:',
+        default: config.description,
+        validate: (input: string) => input.trim().length > 0 || 'Description is required'
+      }
+    ])
+    
+    return {
+      ...config,
+      name: answers.name,
+      description: answers.description
+    }
+  }
+  
+  private async customizeKeyParameters(config: SimulationConfig, template: BusinessTemplate): Promise<SimulationConfig> {
+    console.log('\n🔧 Key Parameter Customization')
+    console.log('Adjust the most important parameters for your specific use case.\n')
+    
+    const keyParams = config.parameters.filter(param => 
+      template.guidance.parameterTips[param.key] || 
+      param.key.toLowerCase().includes('arr') ||
+      param.key.toLowerCase().includes('budget') ||
+      param.key.toLowerCase().includes('target') ||
+      param.key.toLowerCase().includes('rate')
+    )
+    
+    const updatedParams = [...config.parameters]
+    
+    for (const param of keyParams.slice(0, 5)) { // Limit to top 5 most important
+      const tip = template.guidance.parameterTips[param.key]
+      if (tip) {
+        console.log(`💡 ${param.label}: ${tip}`)
+      }
+      
+      if (param.type === 'number') {
+        const { newValue } = await inquirer.prompt([
+          {
+            type: 'number',
+            name: 'newValue',
+            message: `${param.label}:`,
+            default: param.default,
+            validate: (input?: number) => {
+              if (input === undefined || isNaN(input)) return 'Must be a valid number'
+              if (param.min !== undefined && input < param.min) return `Must be at least ${param.min}`
+              if (param.max !== undefined && input > param.max) return `Must be at most ${param.max}`
+              return true
+            }
+          }
+        ])
+        
+        const paramIndex = updatedParams.findIndex(p => p.key === param.key)
+        if (paramIndex !== -1) {
+          updatedParams[paramIndex] = { ...param, default: newValue }
+        }
+      } else if (param.type === 'select') {
+        const { newValue } = await inquirer.prompt([
+          {
+            type: 'list',
+            name: 'newValue',
+            message: `${param.label}:`,
+            choices: param.options || [],
+            default: param.default
+          }
+        ])
+        
+        const paramIndex = updatedParams.findIndex(p => p.key === param.key)
+        if (paramIndex !== -1) {
+          updatedParams[paramIndex] = { ...param, default: newValue }
+        }
+      }
+      
+      console.log() // Add spacing
+    }
+    
+    return {
+      ...config,
+      parameters: updatedParams
+    }
+  }
+  
+  private async customizeAllParameters(config: SimulationConfig, template: BusinessTemplate): Promise<SimulationConfig> {
+    const { customizeAll } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'customizeAll',
+        message: 'Customize all parameters individually?',
+        default: false
+      }
+    ])
+    
+    if (!customizeAll) {
+      return config
+    }
+    
+    const updatedParams = []
+    
+    for (const param of config.parameters) {
+      const customized = await this.promptSingleParameter(param, template.guidance.parameterTips[param.key])
+      updatedParams.push(customized)
+    }
+    
+    return {
+      ...config,
+      parameters: updatedParams
+    }
+  }
+  
+  private async customizeOutputs(config: SimulationConfig): Promise<SimulationConfig> {
+    const { customizeOutputs } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'customizeOutputs',
+        message: 'Customize output metrics?',
+        default: false
+      }
+    ])
+    
+    if (!customizeOutputs) {
+      return config
+    }
+    
+    const outputs = await this.promptOutputs()
+    
+    return {
+      ...config,
+      outputs
+    }
   }
   
   private async promptBasicInfo() {
@@ -115,12 +523,17 @@ export class InteractiveConfigBuilder {
     return parameters
   }
   
-  private async promptSingleParameter(): Promise<ParameterInput> {
+  private async promptSingleParameter(existingParam?: ParameterInput, businessTip?: string): Promise<ParameterInput> {
+    if (businessTip) {
+      console.log(`💡 Business Tip: ${businessTip}\n`)
+    }
+    
     const basic = await inquirer.prompt([
       {
         type: 'input',
         name: 'key',
         message: 'Parameter key (variable name):',
+        default: existingParam?.key,
         validate: (input: string) => {
           if (!input.trim()) return 'Key is required'
           if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(input)) return 'Key must be a valid variable name'
@@ -131,12 +544,14 @@ export class InteractiveConfigBuilder {
         type: 'input',
         name: 'label',
         message: 'Display label:',
+        default: existingParam?.label,
         validate: (input: string) => input.trim().length > 0 || 'Label is required'
       },
       {
         type: 'list',
         name: 'type',
         message: 'Parameter type:',
+        default: existingParam?.type,
         choices: [
           { name: 'Number', value: 'number' },
           { name: 'Boolean (True/False)', value: 'boolean' },
@@ -148,6 +563,7 @@ export class InteractiveConfigBuilder {
         type: 'input',
         name: 'description',
         message: 'Description:',
+        default: existingParam?.description,
         validate: (input: string) => input.trim().length > 0 || 'Description is required'
       }
     ])
@@ -159,25 +575,29 @@ export class InteractiveConfigBuilder {
         type: 'number',
         name: 'default',
         message: 'Default value:',
+        default: existingParam?.type === 'number' ? existingParam.default as number : undefined,
         validate: (input?: number) => input !== undefined && !isNaN(input) || 'Must be a valid number'
       })
       
       const minVal = await inquirer.prompt({
         type: 'number',
         name: 'min',
-        message: 'Minimum value (optional):'
+        message: 'Minimum value (optional):',
+        default: existingParam?.type === 'number' ? existingParam.min : undefined
       })
       
       const maxVal = await inquirer.prompt({
         type: 'number',
         name: 'max',
-        message: 'Maximum value (optional):'
+        message: 'Maximum value (optional):',
+        default: existingParam?.type === 'number' ? existingParam.max : undefined
       })
       
       const stepVal = await inquirer.prompt({
         type: 'number',
         name: 'step',
-        message: 'Step size (optional):'
+        message: 'Step size (optional):',
+        default: existingParam?.type === 'number' ? existingParam.step : undefined
       })
       
       additional = {
@@ -192,7 +612,7 @@ export class InteractiveConfigBuilder {
           type: 'confirm',
           name: 'default',
           message: 'Default value:',
-          default: false
+          default: existingParam?.type === 'boolean' ? existingParam.default as boolean : false
         }
       ])
     } else if (basic.type === 'string') {
@@ -201,7 +621,7 @@ export class InteractiveConfigBuilder {
           type: 'input',
           name: 'default',
           message: 'Default value:',
-          default: ''
+          default: existingParam?.type === 'string' ? existingParam.default as string : ''
         }
       ])
     } else if (basic.type === 'select') {
@@ -210,6 +630,7 @@ export class InteractiveConfigBuilder {
           type: 'input',
           name: 'options',
           message: 'Options (comma-separated):',
+          default: existingParam?.type === 'select' && existingParam.options ? existingParam.options.join(', ') : '',
           validate: (input: string) => input.trim().length > 0 || 'At least one option is required',
           filter: (input: string) => input.split(',').map(opt => opt.trim()).filter(opt => opt.length > 0)
         }
@@ -220,7 +641,8 @@ export class InteractiveConfigBuilder {
           type: 'list',
           name: 'defaultOption',
           message: 'Default option:',
-          choices: options
+          choices: options,
+          default: existingParam?.type === 'select' ? existingParam.default : options[0]
         }
       ])
       

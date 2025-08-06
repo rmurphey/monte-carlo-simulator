@@ -1,0 +1,272 @@
+name: E-commerce Conversion Optimization
+category: E-commerce & Retail
+description: E-commerce conversion funnel analysis with traffic modeling, conversion rate optimization, and customer journey revenue analysis
+version: 2.0.0
+tags: [e-commerce, conversion-optimization, retail, customer-journey, revenue-modeling]
+
+parameters:
+  - key: annualRecurringRevenue
+    label: Current E-commerce ARR ($)
+    type: number
+    default: 4200000
+    min: 100000
+    max: 100000000
+    step: 100000
+    description: Annual e-commerce revenue for optimization investment planning
+
+  - key: optimizationBudgetPercent
+    label: Optimization Budget (% of ARR)
+    type: number
+    default: 8.5
+    min: 2.0
+    max: 20.0
+    step: 0.5
+    description: Conversion optimization budget as percentage of ARR (typical: 5-15%)
+
+  - key: currentConversionRate
+    label: Current Conversion Rate (%)
+    type: number
+    default: 2.8
+    min: 0.5
+    max: 15.0
+    step: 0.1
+    description: Current website conversion rate (industry average: 2-4%)
+
+  - key: averageOrderValue
+    label: Average Order Value ($)
+    type: number
+    default: 125
+    min: 15
+    max: 2000
+    step: 5
+    description: Current average order value per transaction
+
+  - key: monthlyTraffic
+    label: Monthly Website Traffic
+    type: number
+    default: 45000
+    min: 1000
+    max: 5000000
+    step: 1000
+    description: Monthly unique visitors to e-commerce site
+
+  - key: businessModel
+    label: E-commerce Model
+    type: select
+    default: direct-consumer
+    options: [direct-consumer, marketplace, subscription-box, b2b-wholesale, dropship]
+    description: Primary e-commerce business model
+
+  - key: productCategory
+    label: Product Category
+    type: select
+    default: lifestyle-retail
+    options: [fashion-apparel, lifestyle-retail, electronics-tech, home-garden, health-beauty, digital-products]
+    description: Primary product category affecting conversion patterns
+
+  - key: customerSegment
+    label: Target Customer Segment
+    type: select
+    default: mass-market
+    options: [budget-conscious, mass-market, premium-buyers, luxury-segment]
+    description: Primary customer demographic and price sensitivity
+
+  - key: mobileTrafficPercent
+    label: Mobile Traffic (%)
+    type: number
+    default: 65
+    min: 20
+    max: 90
+    step: 5
+    description: Percentage of traffic from mobile devices
+
+  - key: optimizationFocus
+    label: Optimization Focus
+    type: select
+    default: comprehensive
+    options: [checkout-funnel, product-pages, mobile-experience, comprehensive, personalization]
+    description: Primary area of conversion optimization focus
+
+groups:
+  - name: Current Performance
+    description: Baseline e-commerce metrics and traffic
+    parameters: [annualRecurringRevenue, currentConversionRate, averageOrderValue, monthlyTraffic]
+    
+  - name: Business Context
+    description: E-commerce model and customer characteristics
+    parameters: [businessModel, productCategory, customerSegment, mobileTrafficPercent]
+    
+  - name: Optimization Strategy
+    description: Investment and focus areas for conversion improvement
+    parameters: [optimizationBudgetPercent, optimizationFocus]
+
+outputs:
+  - key: optimizedConversionRate
+    label: Optimized Conversion Rate (%)
+    description: Projected conversion rate after optimization efforts
+
+  - key: additionalMonthlyRevenue
+    label: Additional Monthly Revenue ($)
+    description: Incremental revenue from conversion rate improvements
+
+  - key: annualRevenueIncrease
+    label: Annual Revenue Increase ($)
+    description: Total annual revenue uplift from optimization
+
+  - key: optimizationROI
+    label: Optimization ROI (%)
+    description: Return on investment for conversion optimization budget
+
+  - key: customerLifetimeIncrease
+    label: Customer LTV Increase (%)
+    description: Improvement in customer lifetime value
+
+  - key: mobileConversionGap
+    label: Mobile Conversion Gap (%)
+    description: Difference between desktop and mobile conversion rates
+
+  - key: averageOrderIncrease
+    label: AOV Increase (%)
+    description: Average order value improvement from optimization
+
+  - key: customerRetentionImprovement
+    label: Retention Rate Improvement (%)
+    description: Improvement in customer repeat purchase rate
+
+simulation:
+  logic: |
+    // Calculate optimization budget
+    const annualOptimizationBudget = annualRecurringRevenue * (optimizationBudgetPercent / 100)
+    const monthlyOptimizationBudget = annualOptimizationBudget / 12
+    
+    // Business model conversion characteristics
+    const modelFactors = {
+      'direct-consumer': { 
+        conversionPotential: 1.0, 
+        aovGrowth: 1.0, 
+        retentionFactor: 1.0,
+        optimizationComplexity: 1.0
+      },
+      'marketplace': { 
+        conversionPotential: 0.8, 
+        aovGrowth: 0.9, 
+        retentionFactor: 0.7,
+        optimizationComplexity: 1.3
+      },
+      'subscription-box': { 
+        conversionPotential: 1.2, 
+        aovGrowth: 1.4, 
+        retentionFactor: 1.6,
+        optimizationComplexity: 0.8
+      },
+      'b2b-wholesale': { 
+        conversionPotential: 0.6, 
+        aovGrowth: 1.8, 
+        retentionFactor: 1.3,
+        optimizationComplexity: 1.2
+      },
+      'dropship': { 
+        conversionPotential: 0.9, 
+        aovGrowth: 0.8, 
+        retentionFactor: 0.8,
+        optimizationComplexity: 1.1
+      }
+    }
+    
+    // Product category optimization potential
+    const categoryFactors = {
+      'fashion-apparel': { conversionCeiling: 4.5, visualImpact: 1.3, seasonality: 1.2 },
+      'lifestyle-retail': { conversionCeiling: 3.8, visualImpact: 1.1, seasonality: 1.0 },
+      'electronics-tech': { conversionCeiling: 3.2, visualImpact: 0.9, seasonality: 0.9 },
+      'home-garden': { conversionCeiling: 3.0, visualImpact: 1.2, seasonality: 1.1 },
+      'health-beauty': { conversionCeiling: 4.2, visualImpact: 1.2, seasonality: 0.8 },
+      'digital-products': { conversionCeiling: 5.5, visualImpact: 0.7, seasonality: 0.7 }
+    }
+    
+    // Customer segment behavior
+    const segmentFactors = {
+      'budget-conscious': { pricesensitivity: 1.4, loyaltyFactor: 0.8, aovSensitivity: 0.7 },
+      'mass-market': { priceSenitivity: 1.0, loyaltyFactor: 1.0, aovSensitivity: 1.0 },
+      'premium-buyers': { priceSensitivity: 0.7, loyaltyFactor: 1.3, aovSensitivity: 1.4 },
+      'luxury-segment': { priceSensitivity: 0.4, loyaltyFactor: 1.6, aovSensitivity: 1.8 }
+    }
+    
+    // Optimization focus impact
+    const optimizationImpact = {
+      'checkout-funnel': { conversionLift: 0.25, aovImpact: 1.05, effortRequired: 0.7 },
+      'product-pages': { conversionLift: 0.20, aovImpact: 1.12, effortRequired: 0.8 },
+      'mobile-experience': { conversionLift: 0.35, aovImpact: 1.08, effortRequired: 1.0 },
+      'comprehensive': { conversionLift: 0.45, aovImpact: 1.18, effortRequired: 1.3 },
+      'personalization': { conversionLift: 0.55, aovImpact: 1.25, effortRequired: 1.5 }
+    }
+    
+    // Extract factors
+    const model = modelFactors[businessModel]
+    const category = categoryFactors[productCategory]
+    const segment = segmentFactors[customerSegment]
+    const optimization = optimizationImpact[optimizationFocus]
+    
+    // Calculate mobile conversion gap
+    const desktopConversionRate = currentConversionRate * 1.15  // Desktop typically 15% higher
+    const mobileConversionRate = currentConversionRate * 0.85   // Mobile typically 15% lower
+    const mobileConversionGap = desktopConversionRate - mobileConversionRate
+    
+    // Budget efficiency calculation (diminishing returns)
+    const budgetEfficiency = Math.min(1.0, Math.pow(monthlyOptimizationBudget / 10000, 0.7))
+    
+    // Conversion rate optimization potential
+    const maxConversionRate = Math.min(
+      category.conversionCeiling,
+      currentConversionRate * 2.5  // Cap at 2.5x current rate
+    )
+    
+    const conversionImprovement = (maxConversionRate - currentConversionRate) * 
+                                 optimization.conversionLift * 
+                                 model.conversionPotential * 
+                                 budgetEfficiency *
+                                 (0.8 + random() * 0.4)  // Execution variance
+    
+    const optimizedConversionRate = Math.min(
+      currentConversionRate + conversionImprovement,
+      maxConversionRate
+    )
+    
+    // AOV optimization
+    const aovImprovementPercent = (optimization.aovImpact - 1) * 
+                                 segment.aovSensitivity * 
+                                 model.aovGrowth * 
+                                 budgetEfficiency *
+                                 (0.8 + random() * 0.4) * 100
+    
+    const optimizedAOV = averageOrderValue * (1 + aovImprovementPercent / 100)
+    
+    // Revenue calculations
+    const currentMonthlyRevenue = monthlyTraffic * (currentConversionRate / 100) * averageOrderValue
+    const optimizedMonthlyRevenue = monthlyTraffic * (optimizedConversionRate / 100) * optimizedAOV
+    const additionalMonthlyRevenue = optimizedMonthlyRevenue - currentMonthlyRevenue
+    const annualRevenueIncrease = additionalMonthlyRevenue * 12
+    
+    // ROI calculation
+    const optimizationROI = annualOptimizationBudget > 0 ? 
+                           ((annualRevenueIncrease - annualOptimizationBudget) / annualOptimizationBudget) * 100 : 0
+    
+    // Customer retention improvement
+    const retentionImprovement = optimization.conversionLift * 
+                               model.retentionFactor * 
+                               segment.loyaltyFactor * 
+                               (0.7 + random() * 0.6) * 15  // Up to 15% retention boost
+    
+    // Customer lifetime value increase
+    const customerLifetimeIncrease = (aovImprovementPercent + retentionImprovement * 0.6) * 
+                                   (0.8 + random() * 0.4)
+    
+    return {
+      optimizedConversionRate: round(optimizedConversionRate * 100) / 100,
+      additionalMonthlyRevenue: round(additionalMonthlyRevenue),
+      annualRevenueIncrease: round(annualRevenueIncrease),
+      optimizationROI: round(optimizationROI * 10) / 10,
+      customerLifetimeIncrease: round(customerLifetimeIncrease * 10) / 10,
+      mobileConversionGap: round(mobileConversionGap * 100) / 100,
+      averageOrderIncrease: round(aovImprovementPercent * 10) / 10,
+      customerRetentionImprovement: round(retentionImprovement * 10) / 10
+    }
