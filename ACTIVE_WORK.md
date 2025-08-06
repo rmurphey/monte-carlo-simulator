@@ -35,7 +35,7 @@ The project has transitioned from design to **working, agent-friendly simulation
 #### **Interactive Simulation Studio Implementation** (1-2 weeks)
 1. **Interactive Definition Builder** - Extend config-builder.ts with guided simulation creation
 2. **Realtime Parameter Control** - Live parameter adjustment during simulation execution  
-3. **Live Results Dashboard** - Streaming statistical updates with ASCII visualization
+3. **Live Results Dashboard** - Streaming statistical updates with Unicode visualization
 4. **Session Persistence** - Save/load interactive studio sessions
 
 #### **Additional Priorities**
@@ -47,7 +47,7 @@ The project has transitioned from design to **working, agent-friendly simulation
 #### **Phase 4: Interactive Simulation Studio** (Current)
 - **Interactive Definition Builder** - Guided simulation creation with live validation
 - **Realtime Parameter Control** - Live adjustment during execution with streaming updates
-- **Live Results Dashboard** - ASCII visualization and convergence monitoring
+- **Live Results Dashboard** - Unicode visualization and convergence monitoring
 - **Session Management** - Save/load/compare interactive sessions
 
 #### **Phase 5: Platform Expansion** (Future)
@@ -92,12 +92,12 @@ The project has transitioned from design to **working, agent-friendly simulation
 #### **Component 2: Realtime Parameter Control**  
 - **File**: `src/cli/interactive/realtime-runner.ts`
 - **Architecture**: Observable parameter streams + simulation re-execution
-- **UI**: ASCII sliders, live statistics display, keyboard controls
+- **UI**: Unicode sliders, live statistics display, keyboard controls
 - **Performance**: Efficient re-runs with parameter caching
 
 #### **Component 3: Live Results Dashboard**
 - **File**: `src/cli/interactive/live-dashboard.ts` 
-- **Features**: Streaming updates, convergence monitoring, ASCII charts
+- **Features**: Streaming updates, convergence monitoring, Unicode charts
 - **Display**: Real-time mean/std dev, confidence intervals, progress bars
 - **Interaction**: Pause/resume, save snapshots, compare scenarios
 
