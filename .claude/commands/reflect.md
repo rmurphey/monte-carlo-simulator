@@ -1,15 +1,23 @@
 ---
 allowed-tools: [Bash]
-description: reflect command
+description: reflect command (STUB - NO FUNCTIONALITY)
 ---
 
-# Reflect Command
+# Reflect Command (STUB)
 
-## Context
-- Project status: !git status --porcelain
+**⚠️ THIS IS A NON-FUNCTIONAL STUB COMMAND**
 
-## Your task
-Implement reflect functionality.
+This command has not been implemented and provides no functionality.
 
-## Output
-Provide helpful output for the reflect command.
+## Status
+- **Implementation**: Not implemented
+- **Functionality**: None
+- **Purpose**: Placeholder for future development
+
+## Usage
+This command will return an error message indicating it is not implemented.
+
+If you need reflection functionality, consider using:
+- `/learn` for development insights and knowledge capture
+- `/archive` for comprehensive work documentation
+- `/next` for analyzing current state and recommendations

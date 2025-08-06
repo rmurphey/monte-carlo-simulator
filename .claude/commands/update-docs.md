@@ -1,15 +1,23 @@
 ---
 allowed-tools: [Bash]
-description: update-docs command
+description: update-docs command (STUB - NO FUNCTIONALITY)
 ---
 
-# Update-docs Command
+# Update-docs Command (STUB)
 
-## Context
-- Project status: !git status --porcelain
+**⚠️ THIS IS A NON-FUNCTIONAL STUB COMMAND**
 
-## Your task
-Implement update-docs functionality.
+This command has not been implemented and provides no functionality.
 
-## Output
-Provide helpful output for the update-docs command.
+## Status
+- **Implementation**: Not implemented
+- **Functionality**: None
+- **Purpose**: Placeholder for future development
+
+## Usage
+This command will return an error message indicating it is not implemented.
+
+If you need documentation updates, use:
+- `/docs` for comprehensive documentation management
+- Manual editing of README.md, ACTIVE_WORK.md, and other docs
+- `/commit` for documenting changes

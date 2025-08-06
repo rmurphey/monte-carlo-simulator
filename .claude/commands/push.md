@@ -1,15 +1,22 @@
 ---
 allowed-tools: [Bash]
-description: push command
+description: push command (STUB - NO FUNCTIONALITY)
 ---
 
-# Push Command
+# Push Command (STUB)
 
-## Context
-- Project status: !git status --porcelain
+**⚠️ THIS IS A NON-FUNCTIONAL STUB COMMAND**
 
-## Your task
-Implement push functionality.
+This command has not been implemented and provides no functionality.
 
-## Output
-Provide helpful output for the push command.
+## Status
+- **Implementation**: Not implemented
+- **Functionality**: None
+- **Purpose**: Placeholder for future development
+
+## Usage
+This command will return an error message indicating it is not implemented.
+
+If you need git push functionality, use:
+- Standard git commands: `git push origin main`
+- `/commit` for structured commits before pushing
