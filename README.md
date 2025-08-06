@@ -324,7 +324,12 @@ designs/                        # Technical design documents
 
 ## Development Status
 
-See [ACTIVE_WORK.md](ACTIVE_WORK.md) for current development progress and recent achievements.
+**Current Development**: See [ACTIVE_WORK.md](ACTIVE_WORK.md) for current priorities and next steps.
+
+**Completed Work**: See [Archive Directory](archive/) for completed designs and development insights:
+- [Business Intelligence Transformation](archive/business-intelligence-transformation.md) - ARR framework and professional CLI
+- [CLI Simulation Generator](archive/cli-simulation-generator-completed.md) - YAML-based simulation creation
+- [Framework Foundation](archive/COMPLETED_WORK.md) - Core infrastructure and web interface
 
 ### Current Status: ✅ Production Ready with Business Intelligence
 

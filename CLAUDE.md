@@ -24,7 +24,6 @@ Use the following commands for structured development:
 - `/learn` - Knowledge capture
 - `/docs` - Documentation updates
 
-
 ### Large Team Commands
 - `/design` - Formal feature design documentation
 - `/estimate` - Detailed project estimation
@@ -46,3 +45,20 @@ This project is set up for AI-assisted development with Claude Code.
 
 ## Project Management
 - ACTIVE_WORK.md should always be up to date
+- Completed work should be archived in archive/ directory with comprehensive insights
+
+## Documentation Structure
+- `ACTIVE_WORK.md` - Current priorities and next steps
+- `README.md` - Project overview and current capabilities
+- `archive/` - Completed designs, implementations, and development insights
+  - `COMPLETED_WORK.md` - Original framework foundation archive
+  - `business-intelligence-transformation.md` - ARR framework and professional CLI
+  - `cli-simulation-generator-completed.md` - YAML-based simulation creation
+- `designs/` - Active design documents for features in development
+
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
