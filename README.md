@@ -83,15 +83,40 @@ Analyze business decisions instantly without installation:
 # Generate and test simulations from natural language - NO SETUP REQUIRED
 npx github:rmurphey/monte-carlo-simulator studio generate "Should we invest $200K in AI tools?" --test
 
+# Interactive parameter exploration - adjust parameters in real-time
+npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --interactive
+
+# Parameter override examples
+npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --set initialInvestment=500000
+npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --list-params
+
 # Interactive simulation browser
 npx github:rmurphey/monte-carlo-simulator interactive
-
-# Run specific examples  
-npx github:rmurphey/monte-carlo-simulator run examples/simple-roi-analysis.yaml
 
 
 
 ```
+
+### **Interactive Parameter Exploration** 🎛️
+
+Adjust parameters in real-time and see results update instantly:
+
+```bash
+# Launch interactive mode for any simulation
+npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --interactive
+
+# Override specific parameters from command line
+npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --set initialInvestment=300000 --set affectedEmployees=75
+
+# Discover available parameters for any simulation  
+npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --list-params
+```
+
+**Interactive Features:**
+- **Real-time parameter adjustment** - Change values and see immediate impact on results  
+- **Before/after comparison** - Track how parameter changes affect outcomes
+- **Parameter validation** - Type checking and range enforcement with helpful error messages
+- **Dynamic parameter discovery** - No static documentation to maintain
 
 ### **Natural Language Simulation Generation** ✨
 
