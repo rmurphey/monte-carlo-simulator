@@ -34,7 +34,8 @@ export class TemplateLibrary {
   private templates: Map<string, BusinessTemplate> = new Map()
 
   constructor() {
-    this.templatesPath = path.join(__dirname, '..', 'templates')
+    // Point to working examples directory instead of broken templates directory
+    this.templatesPath = path.join(__dirname, '..', '..', '..', 'examples', 'simulations')
   }
 
   async loadTemplates(): Promise<void> {
