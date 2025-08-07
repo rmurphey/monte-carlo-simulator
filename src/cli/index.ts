@@ -79,6 +79,7 @@ program
       .option('-o, --output <file>', 'output YAML file path')
       .option('-v, --verbose', 'detailed generation information')
       .option('--validate', 'enable real-time validation feedback')
+      .option('--test', 'run simulation with generated YAML')
       .action(async (query, options) => {
         try {
           const { generateFromNaturalLanguage } = await import('./interactive/definition-studio')
@@ -94,6 +95,31 @@ program
             console.log('Generated YAML Configuration:')
             console.log('─'.repeat(50))
             console.log(yamlContent)
+          }
+          
+          if (options.test) {
+            console.log('\n🧪 Running Quick Test...\n')
+            
+            // Write to temp file and run existing simulation runner
+            const fs = await import('fs/promises')
+            const path = await import('path')
+            const os = await import('os')
+            
+            const tempFile = path.join(os.tmpdir(), `test-${Date.now()}.yaml`)
+            await fs.writeFile(tempFile, yamlContent)
+            
+            try {
+              // Use existing run-simulation command
+              const { runSimulation } = await import('./commands/run-simulation')
+              await runSimulation(tempFile, { iterations: 100 })
+            } finally {
+              // Clean up temp file
+              try {
+                await fs.unlink(tempFile)
+              } catch (cleanupError) {
+                // Ignore cleanup errors
+              }
+            }
           }
           
           if (options.verbose) {

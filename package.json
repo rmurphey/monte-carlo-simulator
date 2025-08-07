@@ -15,12 +15,7 @@
     "typecheck": "tsc --noEmit",
     "cli": "tsx src/cli/index.ts",
     "sim": "tsx src/cli/index.ts interactive",
-    "run": "tsx src/cli/index.ts run",
-    "ai": "tsx src/cli/index.ts run simulations/ai-investment-roi/baseline.yaml",
-    "ai:interactive": "tsx src/cli/index.ts run simulations/ai-investment-roi/baseline.yaml --interactive",
-    "ai:i": "tsx src/cli/index.ts run simulations/ai-investment-roi/baseline.yaml --interactive",
-    "ai:conservative": "tsx src/cli/index.ts run simulations/ai-investment-roi/conservative.yaml",
-    "ai:aggressive": "tsx src/cli/index.ts run simulations/ai-investment-roi/aggressive.yaml"
+    "run": "tsx src/cli/index.ts run"
   },
   "dependencies": {
     "ajv": "^8.17.1",

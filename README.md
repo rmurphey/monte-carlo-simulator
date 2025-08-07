@@ -1,5 +1,27 @@
 # Monte Carlo Business Decision Framework
 
+## ⚡ TL;DR - Quick Start
+
+**Want to analyze a business decision right now?**
+
+```bash
+# 1. Setup (2 minutes)
+git clone https://github.com/rmurphey/monte-carlo-simulator
+cd monte-carlo-simulator && npm install && npm run build
+
+# 2. Generate & test your analysis in natural language
+npm run cli studio generate "Should we invest $100K in AI tools?" --test
+npm run cli studio generate "Marketing campaign ROI for $50K budget" --test
+
+# 3. Run working examples
+npm run sim    # Interactive simulation selection
+npm run cli run examples/simulations/simple-roi-analysis.yaml
+```
+
+**Result**: Get confidence intervals like *"75% chance of $200K+ savings, 15% chance of breaking even, 10% chance of loss"* instead of *"AI tools will probably save money"*.
+
+---
+
 ## 🤔 Why Use This?
 
 ### The Problem
