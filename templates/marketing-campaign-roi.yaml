@@ -21,7 +21,7 @@ parameters:
     min: 5.0
     max: 30.0
     step: 0.5
-    description: Marketing spend as percentage of ARR (typical B2B: 8-15%, B2C: 15-25%)
+    description: "Marketing spend as percentage of ARR (typical B2B: 8-15%, B2C: 15-25%)"
 
   - key: campaignDuration
     label: Campaign Duration (months)
@@ -241,12 +241,12 @@ simulation:
                            (0.8 + random() * 0.4) * 10
     
     return {
-      totalCampaignBudget: round(totalCampaignBudget),
-      totalCustomersAcquired: round(totalCustomersAcquired),
-      blendedCAC: round(blendedCAC * 100) / 100,
-      campaignROI: round(campaignROI * 10) / 10,
-      lifetimeROI: round(lifetimeROI * 10) / 10,
-      paybackPeriod: Math.min(round(paybackPeriod * 10) / 10, 99.9),
-      organicMultiplier: round(organicMultiplier * 100) / 100,
-      brandImpactScore: Math.min(round(brandImpactScore * 10) / 10, 10.0)
+      totalCampaignBudget: Math.round(totalCampaignBudget),
+      totalCustomersAcquired: Math.round(totalCustomersAcquired),
+      blendedCAC: Math.round(blendedCAC * 100) / 100,
+      campaignROI: Math.round(campaignROI * 10) / 10,
+      lifetimeROI: Math.round(lifetimeROI * 10) / 10,
+      paybackPeriod: Math.min(Math.round(paybackPeriod * 10) / 10, 99.9),
+      organicMultiplier: Math.round(organicMultiplier * 100) / 100,
+      brandImpactScore: Math.min(Math.round(brandImpactScore * 10) / 10, 10.0)
     }

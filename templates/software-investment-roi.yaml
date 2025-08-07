@@ -1,0 +1,126 @@
+name: Software Investment ROI Analysis
+category: Technology Investment
+description: Comprehensive ROI analysis for software investments including productivity gains, cost savings, automation benefits, and risk-adjusted returns
+version: 1.0.0
+tags: [software-investment, roi, productivity, automation, cost-savings, technology]
+
+parameters:
+  - key: initialInvestment
+    label: Software Investment ($)
+    type: number
+    default: 250000
+    min: 10000
+    max: 10000000
+    step: 10000
+    description: Total software purchase, implementation, and training costs
+
+  - key: affectedEmployees
+    label: Employees Affected
+    type: number
+    default: 50
+    min: 5
+    max: 10000
+    step: 5
+    description: Number of employees who will use or benefit from the software
+
+  - key: averageEmployeeCost
+    label: Average Employee Cost ($/year)
+    type: number
+    default: 120000
+    min: 50000
+    max: 300000
+    step: 5000
+    description: Fully-loaded annual cost per affected employee
+
+  - key: productivityGain
+    label: Productivity Gain (%)
+    type: number
+    default: 15.0
+    min: 2.0
+    max: 50.0
+    step: 1.0
+    description: Expected productivity improvement per affected employee
+
+  - key: implementationMonths
+    label: Implementation Timeline (months)
+    type: number
+    default: 6
+    min: 1
+    max: 24
+    step: 1
+    description: Time required for full deployment and adoption
+
+  - key: adoptionRate
+    label: User Adoption Rate (%)
+    type: number
+    default: 85.0
+    min: 50.0
+    max: 100.0
+    step: 5.0
+    description: Expected percentage of users who will fully adopt the software
+
+outputs:
+  - key: annualProductivitySavings
+    label: Annual Productivity Savings ($)
+    description: Annual savings from improved employee productivity
+
+  - key: annualMaintenanceCost
+    label: Annual Maintenance Cost ($)
+    description: Ongoing annual costs for software maintenance and support
+
+  - key: netAnnualBenefit
+    label: Net Annual Benefit ($)
+    description: Annual benefits minus maintenance costs
+
+  - key: simpleROI
+    label: Simple ROI (%)
+    description: First-year return on investment percentage
+
+  - key: paybackMonths
+    label: Payback Period (months)
+    description: Time to recover initial investment
+
+  - key: threeYearNPV
+    label: 3-Year NPV ($)
+    description: Net present value over three years (10% discount rate)
+
+  - key: implementationRisk
+    label: Implementation Risk Score (%)
+    description: Risk adjustment factor based on timeline and complexity
+
+simulation:
+  logic: |
+    // Calculate annual productivity savings
+    const annualEmployeeCost = averageEmployeeCost
+    const productivitySavingPerEmployee = annualEmployeeCost * (productivityGain / 100)
+    const totalProductivitySavings = affectedEmployees * productivitySavingPerEmployee * (adoptionRate / 100)
+    
+    // Add implementation risk and execution variance
+    const implementationRisk = Math.max(0.5, 1.0 - (implementationMonths - 6) * 0.05)  // Longer implementations have more risk
+    const executionVariance = 0.7 + random() * 0.6  // ±30% execution variance
+    const realizedSavings = totalProductivitySavings * implementationRisk * executionVariance
+    
+    // Calculate maintenance costs (20% of initial investment annually)
+    const annualMaintenanceCost = initialInvestment * 0.20
+    const netAnnualBenefit = realizedSavings - annualMaintenanceCost
+    
+    // ROI calculations
+    const simpleROI = initialInvestment > 0 ? (netAnnualBenefit / initialInvestment) * 100 : 0
+    const paybackMonths = netAnnualBenefit > 0 ? (initialInvestment / (netAnnualBenefit / 12)) : 999
+    
+    // 3-year NPV (10% discount rate)
+    const discountRate = 0.10
+    const year1NPV = netAnnualBenefit / (1 + discountRate)
+    const year2NPV = netAnnualBenefit / Math.pow(1 + discountRate, 2) 
+    const year3NPV = netAnnualBenefit / Math.pow(1 + discountRate, 3)
+    const threeYearNPV = year1NPV + year2NPV + year3NPV - initialInvestment
+    
+    return {
+      annualProductivitySavings: Math.round(realizedSavings),
+      annualMaintenanceCost: Math.round(annualMaintenanceCost),
+      netAnnualBenefit: Math.round(netAnnualBenefit),
+      simpleROI: Math.round(simpleROI * 10) / 10,
+      paybackMonths: Math.min(Math.round(paybackMonths * 10) / 10, 99.9),
+      threeYearNPV: Math.round(threeYearNPV),
+      implementationRisk: Math.round(implementationRisk * 100)
+    }

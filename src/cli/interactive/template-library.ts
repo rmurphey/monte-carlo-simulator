@@ -48,8 +48,8 @@ export class TemplateLibrary {
   private validator: ConfigurationValidator
 
   constructor() {
-    // Point to working examples directory instead of broken templates directory
-    this.templatesPath = path.join(__dirname, '..', '..', '..', 'examples', 'simulations')
+    // Point to system templates directory for business intelligence template library
+    this.templatesPath = path.join(__dirname, '..', '..', '..', 'templates')
     this.validator = new ConfigurationValidator()
   }
 

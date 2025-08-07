@@ -32,12 +32,17 @@ npm run cli studio define --agent-mode
 
 ```bash
 # These commands are verified working:
-npm run cli run examples/simulations/simple-roi-analysis.yaml
-npm run cli run examples/simulations/technology-investment.yaml
-npm run cli run examples/simulations/team-scaling-decision.yaml
+npm run cli run templates/simple-roi-analysis.yaml
+npm run cli run templates/technology-investment.yaml  
+npm run cli run templates/team-scaling-decision.yaml
 npm run cli run examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml
 npm run cli run examples/simulations/ai-tool-adoption/conservative.yaml
 npm run cli run examples/simulations/ai-tool-adoption/aggressive.yaml
+
+# Directory structure:
+# /templates/ - System templates for agent generation (TemplateLibrary source)
+# /examples/ - Learning examples and documentation
+# /simulations/ - User workspace for custom simulations
 
 # CLI commands:
 npm run cli --help

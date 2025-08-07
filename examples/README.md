@@ -1,6 +1,23 @@
-# Working Simulation Examples
+# Learning and Documentation Examples
 
-These are **tested, working examples** that demonstrate the Monte Carlo simulation framework patterns.
+## 📚 Purpose: Educational Examples
+
+These are **educational examples** designed for learning how to use the Monte Carlo simulation framework. They focus on clarity, documentation, and teaching framework concepts.
+
+## 🎯 Directory Purpose
+
+- **Learning**: New users understanding the framework
+- **Documentation**: Examples referenced in guides and tutorials  
+- **Teaching**: Demonstrating framework capabilities and patterns
+- **NOT Production**: For system templates, see `/templates/` directory
+
+## ⚠️ Important Distinctions
+
+| Directory | Purpose | Used By | Optimization |
+|-----------|---------|---------|-------------|
+| `/templates/` | System templates for agent generation | TemplateLibrary, Agent workflows | Production efficiency |  
+| `/examples/` | Learning and documentation | New users, documentation | Educational clarity |
+| `/simulations/` | User workspace | End users creating custom sims | User flexibility |
 
 ## Available Examples
 

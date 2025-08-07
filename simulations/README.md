@@ -1,6 +1,22 @@
-# Monte Carlo Simulations
+# User Simulations Workspace
 
-This directory contains Monte Carlo simulation configurations for various business and strategic scenarios, organized by topic area.
+## 🎯 Purpose: Your Custom Simulations
+
+This directory is your **workspace** for creating, customizing, and maintaining your own simulation configurations.
+
+## Directory Purpose Clarification
+
+| Directory | Purpose | Used By | Validation |
+|-----------|---------|---------|-----------|
+| `/templates/` | **System templates** | TemplateLibrary, Agent generation | ✅ Strict |
+| `/examples/` | **Learning examples** | Documentation, New users | ❌ Educational |
+| `/simulations/` | **User workspace** | You, Your team | ❌ Freedom |
+
+## 🚫 Important: NOT Used by System
+
+- **TemplateLibrary ignores this directory** - it uses `/templates/` for agent workflows
+- **Agents don't see these files** - they use production templates for generation
+- **Full development freedom** - no validation requirements or restrictions
 
 ## Directory Structure
 
