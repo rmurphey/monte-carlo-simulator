@@ -7,7 +7,11 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "sourceMap": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -20,6 +24,14 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*", "vitest.config.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/cli/**/*",
+    "src/framework/**/*",
+    "src/simulations/**/*"
+  ],
+  "exclude": [
+    "src/test/**/*",
+    "dist",
+    "node_modules"
+  ]
 }
