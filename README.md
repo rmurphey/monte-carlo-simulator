@@ -201,7 +201,9 @@ simulation:
 
 All examples are **tested and working**.
 
-**For AI Agents:** See [docs/AGENT.md](docs/AGENT.md) for complete technical specifications, working patterns, and validation rules.
+**For AI Agents:** 
+- **New to this?** See [docs/AGENT_BEGINNER_GUIDE.md](docs/AGENT_BEGINNER_GUIDE.md) for step-by-step instructions
+- **Technical specs:** [docs/AGENT.md](docs/AGENT.md) for complete specifications and validation rules
 
 **For Interactive Development:** See [docs/INTERACTIVE_STUDIO.md](docs/INTERACTIVE_STUDIO.md) for the planned interactive simulation definition and real-time execution system.
 
