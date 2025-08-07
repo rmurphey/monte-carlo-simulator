@@ -40,6 +40,7 @@ The project has transitioned from design to **working, agent-friendly simulation
 - ✅ **Zero-Friction Distribution** - NPX access via `npx github:rmurphey/monte-carlo-simulator`
 - ✅ **Interactive Parameter Exploration** - Real-time parameter adjustment with --interactive flag
 - ✅ **Dynamic Parameter Override** - CLI parameter discovery with --set and --list-params
+- **Documentation Synchronization System** - Automated validation to prevent docs/code drift
 - **Enhanced UX** - Progress tracking and navigation improvements  
 - **Template Management** - Advanced template versioning and lifecycle management
 - **Performance Optimization** - Large-scale simulation handling and result caching
@@ -89,6 +90,7 @@ The project has transitioned from design to **working, agent-friendly simulation
 
 ### 📋 **Design Documentation**
 - **[Interactive Definition Builder Design](designs/interactive-definition-builder.md)**: Comprehensive design document with architecture, agent workflow optimization, and implementation plan
+- **[Documentation Synchronization System](designs/documentation-sync-system.md)**: Automated validation system to prevent documentation drift and ensure examples always work
 
 ### **Technical Specifications**
 
