@@ -21,7 +21,6 @@ Thumbs.db
 logs/
 
 # JavaScript/TypeScript
-dist/
 build/
 *.tsbuildinfo
 .eslintcache
