@@ -37,8 +37,8 @@ export interface WorkflowStep {
   id: string
   title: string
   description: string
-  validator: (data: any, context: WorkflowContext) => Promise<ValidationResult>
-  nextStep: (data: any, context: WorkflowContext) => string | null
+  validator: (_data: any, _context: WorkflowContext) => Promise<ValidationResult>
+  nextStep: (_data: any, _context: WorkflowContext) => string | null
   canSkip?: boolean
   businessTips?: string[]
 }
@@ -726,7 +726,7 @@ export class GuidedWorkflow {
       title: 'Basic Information',
       description: 'Define the basic properties of your simulation',
       validator: async () => ({ valid: true, errors: [] }),
-      nextStep: () => 'parameters'
+      nextStep: () => null  // Terminate workflow for now - will add more steps in phase completion
     })
     
     // More steps would be defined here...
