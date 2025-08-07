@@ -30,7 +30,9 @@
     "typecheck": "tsc --noEmit",
     "cli": "tsx src/cli/index.ts",
     "sim": "tsx src/cli/index.ts interactive",
-    "run": "tsx src/cli/index.ts run"
+    "run": "tsx src/cli/index.ts run",
+    "push": "npm run build && git add dist/ && git push",
+    "push-force": "npm run build && git add dist/ && git commit -m 'build: update dist/ for NPX compatibility' && git push"
   },
   "dependencies": {
     "ajv": "^8.17.1",

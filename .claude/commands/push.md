@@ -11,7 +11,9 @@ description: push command
 - Remote tracking: !git branch -vv
 
 ## Your task
-Push current branch to remote repository with comprehensive validation and documentation checks.
+Push current branch to remote repository with comprehensive validation and documentation checks. 
+
+Also make sure the dist/ directory is current and matches source code for NPX compatibility. 
 
 This command ensures safe pushing following large team coordination standards.
 
@@ -20,6 +22,7 @@ Before pushing, verify:
 - Working directory is clean (no uncommitted changes)
 - All commits follow conventional commit standards
 - **Documentation is up to date** with recent changes
+- **dist/ directory is current** with TypeScript source (for NPX compatibility)
 - Tests pass (if test command available)
 - Code builds successfully (if build command available)
 - Branch is up to date with remote
@@ -37,14 +40,16 @@ Check and update documentation:
 1. **Check working directory status** - ensure clean state
 2. **Validate documentation currency** - scan for outdated docs
 3. **Validate unpushed commits** - review commit messages and sizes
-4. **Run quality checks** if available:
+4. **Check dist/ directory currency** - rebuild if TypeScript source is newer
+5. **Run quality checks** if available:
    - `npm test` (if test script exists)
    - `npm run build` (if build script exists)
    - `npm run lint` (if lint script exists)
-5. **Check remote tracking** - ensure proper upstream branch
-6. **Update documentation** if gaps found
-7. **Push to remote** with appropriate flags
-8. **Confirm push success** and provide summary
+6. **Check remote tracking** - ensure proper upstream branch
+7. **Update documentation** if gaps found
+8. **Stage and commit updated dist/** if needed for NPX compatibility
+9. **Push to remote** with appropriate flags
+10. **Confirm push success** and provide summary
 
 ## Push Safety
 - Never force push to main/master branches
