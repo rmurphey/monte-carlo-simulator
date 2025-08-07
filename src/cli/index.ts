@@ -50,6 +50,30 @@ program
   .action(validateSimulation)
 
 program
+  .command('studio')
+  .description('Interactive simulation studio for guided creation')
+  .addCommand(
+    new Command('define')
+      .description('Create simulations with guided assistance')
+      .option('-q, --quick-start', 'quick start with business templates')
+      .option('-t, --template <template>', 'start from specific template')
+      .option('-o, --output <file>', 'output file path')
+      .option('-a, --agent-mode', 'agent-optimized creation workflow')
+      .option('-v, --verbose', 'detailed progress information')
+      .option('--no-interactive', 'skip interactive test during creation')
+      .action(async (options) => {
+        try {
+          const { InteractiveDefinitionStudio } = await import('./interactive/definition-studio')
+          const studio = new InteractiveDefinitionStudio()
+          await studio.createSimulation(options)
+        } catch (error) {
+          console.error('❌ Studio command failed:', error instanceof Error ? error.message : String(error))
+          process.exit(1)
+        }
+      })
+  )
+
+program
   .command('run')
   .description('Run a Monte Carlo simulation')
   .argument('<simulation>', 'simulation name or path')
