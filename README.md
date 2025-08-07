@@ -61,11 +61,13 @@ npm test
 
 ### Run Your First Analysis
 ```bash
-# Simple ROI analysis
-npm run cli run examples/simulations/simple-roi-analysis.yaml
+# Interactive AI investment analysis (recommended)
+npm run ai:i
 
-# Technology investment decision
-npm run cli run examples/simulations/technology-investment.yaml
+# Quick AI investment scenarios
+npm run ai                # Baseline scenario
+npm run ai:conservative   # Low-risk scenario  
+npm run ai:aggressive     # High-risk scenario
 
 # See all available commands
 npm run cli --help
@@ -194,10 +196,38 @@ cp examples/simulations/simple-roi-analysis.yaml my-analysis.yaml
 npm run cli run my-analysis.yaml
 ```
 
-### Development Commands
+### Advanced CLI Features
+
+**Interactive Mode** - Real-time parameter adjustment:
+```bash
+# Super short command for interactive AI investment analysis
+npm run ai:i
+
+# Other quick commands
+npm run ai              # Run baseline AI ROI analysis  
+npm run ai:conservative # Run conservative scenario
+npm run ai:aggressive   # Run aggressive scenario
+
+# Adjust parameters → See results instantly → Save scenarios
+# Perfect for exploring "what-if" scenarios in real-time
+```
+
+**Parameter Files** - Batch analysis with custom values:
+```bash
+# Create parameter file with custom values  
+echo '{"initialCost": 75000, "adoptionRate": 0.8}' > my-scenario.json
+
+# Run simulation with custom parameters
+npm run cli run simulations/ai-investment-roi/baseline.yaml --params my-scenario.json --verbose
+
+# Save results for analysis
+npm run cli run simulation.yaml --params scenario.json --output results.json --iterations 5000
+```
+
+**Development Commands**:
 ```bash
 npm test                    # Run full test suite (58 tests)
-npm run build              # Compile TypeScript
+npm run build              # Compile TypeScript  
 npm run cli validate my-analysis.yaml  # Validate YAML syntax
 npm run cli list           # List available simulations
 ```

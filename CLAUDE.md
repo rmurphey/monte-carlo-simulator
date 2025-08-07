@@ -82,3 +82,6 @@ NEVER proactively create documentation files (*.md) or README files. Only create
 
 ## Test Execution Guidelines
 - ALWAYS run the tests so that they exit immediately after the test run; never run them as a long-running process unless specifically requested.
+
+## Simulation Practices
+- simulations MUST be created in a simulations directory, never at the root
