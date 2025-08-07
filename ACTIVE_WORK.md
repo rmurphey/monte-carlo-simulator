@@ -17,6 +17,8 @@ The project has transitioned from design to **working, agent-friendly simulation
 - **[Technical Debt Resolution](archive/technical-debt-resolution-2025.md)**: Clean foundation with zero technical debt
 - **[Phase 2 Business Intelligence](archive/phase-2-business-intelligence-template-system-2025.md)**: Complete BI metadata integration with multi-factor template scoring
 - **[Directory Architecture Restructure](archive/directory-architecture-restructure-2025.md)**: Proper separation with comprehensive documentation system
+- **[NPX Distribution System](designs/npx-distribution-system.md)**: Zero-friction GitHub NPX access with complete agent feedback loop
+- **[Quick Test Execution](designs/quick-test-execution-system.md)**: Instant simulation testing with --test flag integration
 
 ### Foundation Quality Status
 - **58 tests passing** (100% success rate) ✅
@@ -33,8 +35,9 @@ The project has transitioned from design to **working, agent-friendly simulation
 
 ### 📋 **Next Development Phase**
 
-#### **Phase 3: Enhanced Features** (Current Priority)
-- **Quick Test Execution** - Run simulations during configuration for immediate feedback
+#### **Phase 3: Enhanced Features** (Next Priority)
+- ✅ **Quick Test Execution** - Complete agent feedback loop with --test flag
+- ✅ **Zero-Friction Distribution** - NPX access via `npx github:rmurphey/monte-carlo-simulator`
 - **Enhanced UX** - Progress tracking and navigation improvements  
 - **Template Management** - Advanced template versioning and lifecycle management
 - **Performance Optimization** - Large-scale simulation handling and result caching
