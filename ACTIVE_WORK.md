@@ -81,6 +81,9 @@ The project has transitioned from design to **working, agent-friendly simulation
 
 ## Interactive Studio Implementation Details
 
+### 📋 **Design Documentation**
+- **[Interactive Definition Builder Design](designs/interactive-definition-builder.md)**: Comprehensive design document with architecture, agent workflow optimization, and implementation plan
+
 ### **Technical Specifications**
 
 #### **Component 1: Interactive Definition Builder**
