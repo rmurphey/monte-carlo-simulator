@@ -2,6 +2,22 @@
   "name": "monte-carlo-simulator",
   "version": "1.0.0",
   "type": "module",
+  "description": "Business decision framework with Monte Carlo risk analysis - instant via npx",
+  "keywords": [
+    "monte-carlo", "business-analysis", "roi", "risk-assessment", 
+    "decision-making", "simulation", "business-intelligence", "npx"
+  ],
+  "bin": {
+    "monte-carlo-simulator": "./dist/cli/index.js",
+    "mcs": "./dist/cli/index.js"
+  },
+  "files": [
+    "dist/",
+    "templates/",
+    "examples/",
+    "docs/",
+    "README.md"
+  ],
   "scripts": {
     "dev": "tsx watch src/cli/index.ts",
     "build": "tsc",
@@ -20,6 +36,8 @@
   "dependencies": {
     "ajv": "^8.17.1",
     "chalk": "^5.5.0",
+    "commander": "^14.0.0",
+    "inquirer": "^12.9.0",
     "js-yaml": "^4.1.0",
     "yaml": "^2.8.1"
   },
@@ -30,9 +48,7 @@
     "@typescript-eslint/parser": "^6.14.0",
     "@vitest/coverage-v8": "^1.1.0",
     "@vitest/ui": "^1.1.0",
-    "commander": "^14.0.0",
     "eslint": "^8.55.0",
-    "inquirer": "^12.9.0",
     "jsdom": "^26.1.0",
     "prettier": "^3.1.1",
     "tsx": "^4.20.3",

@@ -1,11 +1,8 @@
 import path from 'path'
 import { promises as fs } from 'fs'
-import { fileURLToPath } from 'url'
 import yaml from 'yaml'
 import { SimulationConfig, ConfigurationValidator } from '../config/schema'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+import { getResourcePaths } from '../utils/resource-paths'
 
 export interface TemplateInfo {
   id: string
@@ -48,8 +45,9 @@ export class TemplateLibrary {
   private validator: ConfigurationValidator
 
   constructor() {
-    // Point to system templates directory for business intelligence template library
-    this.templatesPath = path.join(__dirname, '..', '..', '..', 'templates')
+    // Use dynamic resource path resolution for NPX compatibility
+    const resourcePaths = getResourcePaths()
+    this.templatesPath = resourcePaths.templates
     this.validator = new ConfigurationValidator()
   }
 

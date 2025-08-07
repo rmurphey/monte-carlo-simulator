@@ -189,7 +189,7 @@ simulation:
 
 All examples are **tested and working**.
 
-**For AI Agents:** See [AGENT.md](AGENT.md) for complete technical specifications, working patterns, and validation rules.
+**For AI Agents:** See [docs/AGENT.md](docs/AGENT.md) for complete technical specifications, working patterns, and validation rules.
 
 **For Interactive Development:** See [docs/INTERACTIVE_STUDIO.md](docs/INTERACTIVE_STUDIO.md) for the planned interactive simulation definition and real-time execution system.
 
@@ -209,10 +209,10 @@ All examples are **tested and working**.
 
 ### For Humans:
 - **[examples/](examples/)** - Working simulation examples you can run and modify
-- **[TECHNICAL.md](TECHNICAL.md)** - Framework architecture and advanced features
+- **[docs/TECHNICAL.md](docs/TECHNICAL.md)** - Framework architecture and advanced features
 
 ### For AI Agents:
-- **[AGENT.md](AGENT.md)** - Complete technical specifications, working patterns, schema requirements
+- **[docs/AGENT.md](docs/AGENT.md)** - Complete technical specifications, working patterns, schema requirements
 - **[examples/README.md](examples/README.md)** - Detailed simulation patterns with validation rules
 
 ## 🛠 Current Capabilities

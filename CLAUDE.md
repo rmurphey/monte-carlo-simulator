@@ -45,8 +45,8 @@ This project is set up for AI-assisted development with Claude Code.
 
 ### Documentation Guidelines
 - **README.md**: Focus on human users - business value, installation, working examples
-- **AGENT.md**: Focus on AI agents - technical specs, YAML patterns, validation rules
-- **TECHNICAL.md**: Focus on framework internals - architecture, advanced features
+- **docs/AGENT.md**: Focus on AI agents - technical specs, YAML patterns, validation rules
+- **docs/TECHNICAL.md**: Focus on framework internals - architecture, advanced features
 - **examples/**: All examples must be tested and working before committing
 - Maintain clear separation between human and agent documentation needs
 
@@ -57,8 +57,8 @@ This project is set up for AI-assisted development with Claude Code.
 ## Documentation Structure
 - `ACTIVE_WORK.md` - Current priorities and next steps
 - `README.md` - Human-focused project overview and business value proposition
-- `AGENT.md` - Complete technical specifications for AI agents (YAML patterns, validation rules)
-- `TECHNICAL.md` - Deep framework architecture and advanced technical details
+- `docs/AGENT.md` - Complete technical specifications for AI agents (YAML patterns, validation rules)
+- `docs/TECHNICAL.md` - Deep framework architecture and advanced technical details
 - `docs/` - Detailed implementation specifications
   - `docs/INTERACTIVE_STUDIO.md` - Interactive simulation system specification (human + agent)
   - `docs/YAML_SCHEMA_GUIDE.md` - Complete YAML validation reference
