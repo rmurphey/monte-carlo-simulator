@@ -24,6 +24,31 @@ Use the following commands for structured development:
 - `/learn` - Knowledge capture
 - `/docs` - Documentation updates
 
+## Documentation Requirements
+All feature implementations MUST include documentation updates in the same commit:
+
+### Mandatory Validation
+- **`npm run test:docs`** - All README examples must pass before commit
+- **Pre-commit hook** - Automatically validates documentation examples
+- **No broken examples** - Examples that don't work are blocked at commit time
+
+### Documentation Update Checklist
+When implementing features, update documentation:
+- [ ] README.md if public API changed
+- [ ] ACTIVE_WORK.md if feature completed
+- [ ] Parameter examples use correct parameter names  
+- [ ] All bash examples tested and working
+- [ ] Interactive commands marked as non-testable
+
+### Testing Examples
+```bash
+# Test all documentation examples
+npm run test:docs
+
+# Test specific simulation parameters
+npm run cli run simulation-name --list-params
+```
+
 ### Large Team Commands
 - `/design` - Formal feature design documentation
 - `/estimate` - Detailed project estimation
