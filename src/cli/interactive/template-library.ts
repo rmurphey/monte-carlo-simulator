@@ -2,7 +2,7 @@ import path from 'path'
 import { promises as fs } from 'fs'
 import { fileURLToPath } from 'url'
 import yaml from 'yaml'
-import { SimulationConfig } from '../config/schema'
+import { SimulationConfig, ConfigurationValidator } from '../config/schema'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -27,15 +27,30 @@ export interface BusinessTemplate {
     businessInsights: string[]
     industryBenchmarks?: Record<string, string>
   }
+  businessIntelligence: {
+    industry: string[]
+    businessModel: 'B2B' | 'B2C' | 'B2B2C' | 'Marketplace' | 'SaaS'
+    decisionType: 'investment' | 'operational' | 'strategic' | 'tactical'
+    riskProfile: 'low' | 'medium' | 'high'
+    timeHorizon: 'short' | 'medium' | 'long'
+    kpiCategories: string[]
+    agentOptimization: {
+      keywords: string[]
+      contextHints: string[]
+      parameterPriority: string[]
+    }
+  }
 }
 
 export class TemplateLibrary {
   private templatesPath: string
   private templates: Map<string, BusinessTemplate> = new Map()
+  private validator: ConfigurationValidator
 
   constructor() {
     // Point to working examples directory instead of broken templates directory
     this.templatesPath = path.join(__dirname, '..', '..', '..', 'examples', 'simulations')
+    this.validator = new ConfigurationValidator()
   }
 
   async loadTemplates(): Promise<void> {
@@ -44,20 +59,129 @@ export class TemplateLibrary {
       const yamlFiles = templateFiles.filter(file => file.endsWith('.yaml') || file.endsWith('.yml'))
 
       for (const file of yamlFiles) {
-        try {
-          const templatePath = path.join(this.templatesPath, file)
-          const content = await fs.readFile(templatePath, 'utf-8')
-          const config = yaml.parse(content) as SimulationConfig
-
-          const template = this.createBusinessTemplate(config, file)
+        const templatePath = path.join(this.templatesPath, file)
+        const validationResult = await this.validateTemplate(templatePath, file)
+        
+        if (validationResult.valid) {
+          const template = this.createBusinessTemplate(validationResult.config!, file)
           this.templates.set(template.info.id, template)
-        } catch (error) {
-          // Silently skip malformed templates
-          console.warn(`⚠️  Skipping template ${file}: YAML formatting issue`)
+        } else {
+          console.warn(`⚠️  Skipping template ${file}: ${validationResult.error}`)
         }
       }
     } catch (error) {
       // Templates directory not found - this is ok, just means no templates available
+    }
+  }
+
+  /**
+   * Comprehensive template validation with detailed error reporting
+   */
+  private async validateTemplate(templatePath: string, _filename: string): Promise<{
+    valid: boolean
+    config?: SimulationConfig
+    error?: string
+  }> {
+    try {
+      // Step 1: YAML syntax validation
+      const content = await fs.readFile(templatePath, 'utf-8')
+      let config: SimulationConfig
+      
+      try {
+        config = yaml.parse(content) as SimulationConfig
+      } catch (yamlError) {
+        return {
+          valid: false,
+          error: `YAML syntax error - ${yamlError instanceof Error ? yamlError.message : 'Invalid YAML'}`
+        }
+      }
+
+      // Step 2: Schema validation using existing ConfigurationValidator
+      const schemaValidation = this.validator.validateConfig(config)
+      if (!schemaValidation.valid) {
+        return {
+          valid: false,
+          error: `Schema validation failed - ${schemaValidation.errors.join(', ')}`
+        }
+      }
+
+      // Step 3: Business logic validation (if simulation logic exists)
+      if (config.simulation?.logic) {
+        const logicValidation = this.validateSimulationLogic(config.simulation.logic, config.parameters)
+        if (!logicValidation.valid) {
+          return {
+            valid: false,
+            error: `Logic validation failed - ${logicValidation.error}`
+          }
+        }
+      }
+
+      return { valid: true, config }
+
+    } catch (error) {
+      return {
+        valid: false,
+        error: `File read error - ${error instanceof Error ? error.message : 'Unknown error'}`
+      }
+    }
+  }
+
+  /**
+   * Validate simulation logic for common errors
+   */
+  private validateSimulationLogic(logic: string, parameters: SimulationConfig['parameters']): {
+    valid: boolean
+    error?: string
+  } {
+    try {
+      // Extract parameter names for validation
+      const parameterNames = parameters.map(p => p.key)
+      
+      // Check for undefined function calls (common issue)
+      if (logic.includes('round(') && !logic.includes('Math.round(')) {
+        return { valid: false, error: 'Use Math.round() instead of round()' }
+      }
+      
+      // Remove comments and strings before analyzing variables
+      const cleanedLogic = logic
+        .replace(/\/\/.*$/gm, '') // Remove single-line comments
+        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+        .replace(/"[^"]*"/g, '""') // Replace strings with empty strings
+        .replace(/'[^']*'/g, "''") // Replace single-quoted strings
+      
+      // Check for undefined variables by looking for parameter usage
+      const variablePattern = /\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g
+      const usedVariables = [...cleanedLogic.matchAll(variablePattern)]
+        .map(match => match[1])
+        .filter(name => 
+          !['Math', 'random', 'const', 'let', 'var', 'return', 'if', 'else', 'for', 'while', 'function', 'true', 'false', 'null', 'undefined'].includes(name) &&
+          !name.match(/^\d/) // not numbers
+        )
+      
+      const undefinedVariables = usedVariables.filter(variable => 
+        !parameterNames.includes(variable) && 
+        !cleanedLogic.includes(`const ${variable}`) &&
+        !cleanedLogic.includes(`let ${variable}`) &&
+        !cleanedLogic.includes(`var ${variable}`) &&
+        // Filter out object property names that are defined in the same scope
+        !cleanedLogic.includes(`${variable}:`) && 
+        // Filter out known JavaScript methods
+        !['min', 'max', 'pow', 'round', 'floor', 'ceil', 'abs'].includes(variable)
+      )
+      
+      if (undefinedVariables.length > 0) {
+        return { 
+          valid: false, 
+          error: `Undefined variables: ${undefinedVariables.join(', ')}. Available parameters: ${parameterNames.join(', ')}` 
+        }
+      }
+
+      return { valid: true }
+    } catch (error) {
+      return { 
+        valid: false, 
+        error: `Logic analysis failed - ${error instanceof Error ? error.message : 'Unknown error'}`
+      }
     }
   }
 
@@ -81,7 +205,8 @@ export class TemplateLibrary {
         parameterTips: this.generateParameterTips(config),
         businessInsights: this.generateBusinessInsights(config),
         industryBenchmarks: this.extractIndustryBenchmarks(config)
-      }
+      },
+      businessIntelligence: this.generateBusinessIntelligence(config)
     }
   }
 
@@ -272,6 +397,141 @@ export class TemplateLibrary {
     }
     
     return Object.keys(benchmarks).length > 0 ? benchmarks : undefined
+  }
+
+  private generateBusinessIntelligence(config: SimulationConfig): BusinessTemplate['businessIntelligence'] {
+    const name = config.name.toLowerCase()
+    const tags = config.tags || []
+    const hasARR = config.parameters.some(p => p.key.toLowerCase().includes('annualrecurringrevenue'))
+
+    // Determine industry categories
+    const industries: string[] = []
+    if (name.includes('restaurant') || tags.includes('restaurant')) {
+      industries.push('Hospitality', 'Food Service', 'Retail')
+    }
+    if (name.includes('saas') || tags.includes('saas') || hasARR) {
+      industries.push('Software', 'Technology', 'SaaS')
+    }
+    if (name.includes('marketing') || tags.includes('marketing')) {
+      industries.push('Marketing', 'Digital Marketing', 'E-commerce')
+    }
+    if (name.includes('software') || tags.includes('software')) {
+      industries.push('Technology', 'Software Development')
+    }
+    if (name.includes('manufacturing')) {
+      industries.push('Manufacturing', 'Industrial')
+    }
+    if (industries.length === 0) {
+      industries.push('General Business')
+    }
+
+    // Determine business model
+    let businessModel: BusinessTemplate['businessIntelligence']['businessModel'] = 'B2B'
+    if (name.includes('saas') || hasARR) {
+      businessModel = 'SaaS'
+    } else if (name.includes('b2c') || name.includes('consumer') || name.includes('restaurant')) {
+      businessModel = 'B2C'
+    } else if (name.includes('marketplace') || name.includes('platform')) {
+      businessModel = 'Marketplace'
+    }
+
+    // Determine decision type
+    let decisionType: BusinessTemplate['businessIntelligence']['decisionType'] = 'operational'
+    if (name.includes('investment') || name.includes('roi')) {
+      decisionType = 'investment'
+    } else if (name.includes('strategic') || name.includes('scaling')) {
+      decisionType = 'strategic'
+    } else if (name.includes('campaign') || name.includes('marketing')) {
+      decisionType = 'tactical'
+    }
+
+    // Determine risk profile
+    let riskProfile: BusinessTemplate['businessIntelligence']['riskProfile'] = 'medium'
+    if (name.includes('investment') || name.includes('scaling') || name.includes('software')) {
+      riskProfile = 'high'
+    } else if (name.includes('marketing') || name.includes('campaign')) {
+      riskProfile = 'medium'
+    } else if (name.includes('simple') || name.includes('basic')) {
+      riskProfile = 'low'
+    }
+
+    // Determine time horizon
+    let timeHorizon: BusinessTemplate['businessIntelligence']['timeHorizon'] = 'medium'
+    const hasLongTermMetrics = config.parameters.some(p => 
+      p.key.toLowerCase().includes('lifetime') || 
+      p.key.toLowerCase().includes('annual') ||
+      p.description?.toLowerCase().includes('year')
+    )
+    if (hasLongTermMetrics || name.includes('investment')) {
+      timeHorizon = 'long'
+    } else if (name.includes('campaign') || name.includes('tactical')) {
+      timeHorizon = 'short'
+    }
+
+    // Generate KPI categories
+    const kpiCategories: string[] = []
+    if (name.includes('roi') || name.includes('investment')) {
+      kpiCategories.push('Financial', 'ROI', 'Profitability')
+    }
+    if (name.includes('marketing') || name.includes('customer')) {
+      kpiCategories.push('Customer Acquisition', 'Marketing Performance')
+    }
+    if (name.includes('team') || name.includes('scaling')) {
+      kpiCategories.push('Operational Efficiency', 'Team Performance')
+    }
+    if (name.includes('software') || name.includes('technology')) {
+      kpiCategories.push('Technology ROI', 'Productivity')
+    }
+    if (kpiCategories.length === 0) {
+      kpiCategories.push('Business Performance', 'Financial')
+    }
+
+    // Generate agent optimization keywords
+    const keywords: string[] = []
+    keywords.push(...tags)
+    if (name.includes('marketing')) keywords.push('marketing', 'campaign', 'acquisition', 'roi')
+    if (name.includes('investment')) keywords.push('investment', 'roi', 'payback', 'npv')
+    if (name.includes('team') || name.includes('scaling')) keywords.push('team', 'scaling', 'hiring', 'growth')
+    if (name.includes('software')) keywords.push('software', 'technology', 'productivity', 'automation')
+    if (hasARR) keywords.push('arr', 'saas', 'recurring', 'subscription')
+
+    // Generate context hints for agent optimization
+    const contextHints: string[] = []
+    if (businessModel === 'SaaS') {
+      contextHints.push('ARR-driven budgeting', 'Subscription metrics', 'Recurring revenue models')
+    }
+    if (decisionType === 'investment') {
+      contextHints.push('ROI calculations', 'Payback periods', 'Risk-adjusted returns')
+    }
+    if (name.includes('marketing')) {
+      contextHints.push('Customer acquisition costs', 'Lifetime value optimization', 'Channel performance')
+    }
+
+    // Parameter priority for agent suggestions
+    const parameterPriority: string[] = []
+    const arrParam = config.parameters.find(p => p.key.toLowerCase().includes('annualrecurringrevenue'))
+    if (arrParam) parameterPriority.push(arrParam.key)
+    
+    const budgetParams = config.parameters.filter(p => 
+      p.key.toLowerCase().includes('budget') || 
+      p.key.toLowerCase().includes('investment') ||
+      p.key.toLowerCase().includes('cost')
+    )
+    parameterPriority.push(...budgetParams.map(p => p.key))
+
+    return {
+      industry: industries,
+      businessModel,
+      decisionType,
+      riskProfile,
+      timeHorizon,
+      kpiCategories,
+      agentOptimization: {
+        keywords: [...new Set(keywords)], // Remove duplicates
+        contextHints,
+        parameterPriority
+      }
+    }
   }
 
   getTemplatesByCategory(category: string): BusinessTemplate[] {

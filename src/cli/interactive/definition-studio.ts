@@ -863,45 +863,129 @@ export class AgentOptimizedStudio {
   }
   
   /**
-   * Find best template match based on agent context
+   * Find best template match based on agent context with intelligent BI-aware scoring
    */
   async findBestTemplate(context: AgentContext): Promise<BusinessTemplate | null> {
     await this.initialize()
     
-    // Intent-based template mapping
-    const intentTemplateMap: Record<AgentContext['intent'], string[]> = {
-      software_investment: ['software-investment-roi'],
-      marketing_campaign: ['marketing-campaign-roi'],
-      team_scaling: ['team-scaling-decision'],
-      roi_analysis: ['simple-roi-analysis'],
-      investment_planning: ['technology-investment'],
-      growth_modeling: ['saas-growth-model'],
-      risk_assessment: ['risk-assessment'],
-      capacity_planning: ['capacity-planning']
+    // Multi-factor template scoring system
+    const scoredTemplates = this.templateLibrary.getAllTemplates().map(template => ({
+      template,
+      score: this.calculateTemplateScore(template, context)
+    }))
+    
+    // Sort by score and return best match
+    scoredTemplates.sort((a, b) => b.score - a.score)
+    return scoredTemplates[0]?.score > 0 ? scoredTemplates[0].template : null
+  }
+
+  /**
+   * Calculate comprehensive template matching score using business intelligence metadata
+   */
+  private calculateTemplateScore(template: BusinessTemplate, context: AgentContext): number {
+    let score = 0
+    
+    // Intent matching (40% weight) - exact match gets full points
+    if (this.matchesIntent(template, context.intent)) {
+      score += 40
     }
     
-    const preferredTemplateIds = intentTemplateMap[context.intent] || []
-    
-    // Try to find exact template match
-    for (const templateId of preferredTemplateIds) {
-      const template = this.templateLibrary.getTemplate(templateId)
-      if (template) return template
+    // Industry context matching (30% weight)
+    if (context.industryContext && template.businessIntelligence.industry.some(industry => 
+      industry.toLowerCase().includes(context.industryContext!.toLowerCase()) ||
+      context.industryContext!.toLowerCase().includes(industry.toLowerCase())
+    )) {
+      score += 30
     }
     
-    // Fallback to industry-based search
-    if (context.industryContext) {
-      const industryTemplates = this.templateLibrary.getAllTemplates()
-        .filter(t => t.info.industryRelevance.includes(context.industryContext!))
-      if (industryTemplates.length > 0) return industryTemplates[0]
+    // Business model alignment (20% weight)
+    const inferredBusinessModel = this.inferBusinessModel(context)
+    if (inferredBusinessModel && template.businessIntelligence.businessModel === inferredBusinessModel) {
+      score += 20
     }
     
-    // Fallback to keyword search
-    if (context.naturalLanguageQuery) {
-      const searchResults = this.templateLibrary.searchTemplates(context.naturalLanguageQuery)
-      if (searchResults.length > 0) return searchResults[0]
+    // Keyword relevance (10% weight)
+    const keywordScore = this.calculateKeywordRelevance(template, context)
+    score += keywordScore * 0.1
+    
+    return score
+  }
+
+  /**
+   * Check if template matches the given intent
+   */
+  private matchesIntent(template: BusinessTemplate, intent: AgentContext['intent']): boolean {
+    const intentKeywords: Record<AgentContext['intent'], string[]> = {
+      software_investment: ['software', 'investment', 'technology', 'productivity'],
+      marketing_campaign: ['marketing', 'campaign', 'customer', 'acquisition'],
+      team_scaling: ['team', 'scaling', 'hiring', 'growth'],
+      roi_analysis: ['roi', 'return', 'analysis', 'investment'],
+      investment_planning: ['investment', 'planning', 'technology', 'roi'],
+      growth_modeling: ['growth', 'saas', 'revenue', 'scaling'],
+      risk_assessment: ['risk', 'assessment', 'uncertainty'],
+      capacity_planning: ['capacity', 'planning', 'operational', 'efficiency']
+    }
+    
+    const keywords = intentKeywords[intent] || []
+    const templateKeywords = template.businessIntelligence.agentOptimization.keywords.map(k => k.toLowerCase())
+    const templateName = template.config.name.toLowerCase()
+    
+    return keywords.some(keyword => 
+      templateKeywords.includes(keyword) || 
+      templateName.includes(keyword)
+    )
+  }
+
+  /**
+   * Infer business model from agent context
+   */
+  private inferBusinessModel(context: AgentContext): BusinessTemplate['businessIntelligence']['businessModel'] | null {
+    const query = context.naturalLanguageQuery?.toLowerCase() || context.businessContext?.toLowerCase() || ''
+    
+    if (query.includes('saas') || query.includes('subscription') || query.includes('recurring')) {
+      return 'SaaS'
+    } else if (query.includes('b2c') || query.includes('consumer') || query.includes('retail')) {
+      return 'B2C'
+    } else if (query.includes('marketplace') || query.includes('platform')) {
+      return 'Marketplace'
+    } else if (query.includes('b2b2c')) {
+      return 'B2B2C'
+    } else if (query.includes('b2b') || query.includes('enterprise')) {
+      return 'B2B'
     }
     
     return null
+  }
+
+  /**
+   * Calculate keyword relevance score between template and context
+   */
+  private calculateKeywordRelevance(template: BusinessTemplate, context: AgentContext): number {
+    const contextKeywords = [
+      ...context.keyParameters,
+      ...context.expectedOutputs,
+      ...(context.priorityMetrics || [])
+    ].map(k => k.toLowerCase())
+    
+    if (context.naturalLanguageQuery) {
+      // Extract keywords from natural language query
+      const queryWords = context.naturalLanguageQuery
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(word => word.length > 3 && !['this', 'that', 'with', 'from', 'they', 'have'].includes(word))
+      contextKeywords.push(...queryWords)
+    }
+    
+    const templateKeywords = template.businessIntelligence.agentOptimization.keywords.map(k => k.toLowerCase())
+    
+    let matches = 0
+    for (const keyword of contextKeywords) {
+      if (templateKeywords.some(tk => tk.includes(keyword) || keyword.includes(tk))) {
+        matches++
+      }
+    }
+    
+    return contextKeywords.length > 0 ? (matches / contextKeywords.length) * 100 : 0
   }
   
   /**

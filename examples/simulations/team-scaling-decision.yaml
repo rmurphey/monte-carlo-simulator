@@ -4,8 +4,6 @@ description: Strategic analysis of team scaling decisions considering coordinati
 version: 1.0.0
 tags: [hiring, scaling, team, productivity, strategy]
 
-# Enable business context for strategic functions
-businessContext: true
 
 parameters:
   - key: currentTeamSize
@@ -79,10 +77,11 @@ simulation:
     const netProductivityGain = grossProductivityGain / coordinationOverhead
     const productivityGainPercent = netProductivityGain * 100
     
-    // Calculate business value using business context functions
+    // Calculate business value and ROI directly
     const annualProductivityValue = currentTeamSize * avgSalary * netProductivityGain
-    const roi = calculateROI(hiringCost, annualProductivityValue)
-    const paybackPeriod = calculatePaybackPeriod(hiringCost, annualProductivityValue / 12)
+    const roi = annualProductivityValue > 0 ? ((annualProductivityValue - hiringCost) / hiringCost) * 100 : -100
+    const monthlyProductivityValue = annualProductivityValue / 12
+    const paybackPeriod = monthlyProductivityValue > 0 ? hiringCost / monthlyProductivityValue : 999
     
     // Total cost including coordination overhead
     const coordinationCost = currentTeamSize * avgSalary * (coordinationOverhead - 1) * 0.1
