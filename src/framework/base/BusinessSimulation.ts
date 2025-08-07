@@ -219,5 +219,5 @@ export abstract class BusinessSimulation extends BaseSimulation {
   }
 
   // Abstract method that business simulations must implement
-  abstract calculateScenario(params: ParameterValues): ScenarioResults
+  abstract calculateScenario(_params: ParameterValues): ScenarioResults
 }

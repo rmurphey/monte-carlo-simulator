@@ -8,7 +8,7 @@ export abstract class MonteCarloEngine {
 
   abstract getMetadata(): SimulationMetadata
   abstract getParameterDefinitions(): ParameterDefinition[]
-  abstract simulateScenario(parameters: Record<string, unknown>): Record<string, number>
+  abstract simulateScenario(_parameters: Record<string, unknown>): Record<string, number>
 
   getParameterSchema(): ParameterSchema {
     if (!this._parameterSchema) {
@@ -29,7 +29,7 @@ export abstract class MonteCarloEngine {
   async runSimulation(
     parameters: Record<string, unknown>, 
     iterations: number = 1000,
-    onProgress?: (progress: number, iteration: number) => void
+    onProgress?: (_progress: number, _iteration: number) => void
   ): Promise<SimulationResults> {
     const startTime = new Date()
     

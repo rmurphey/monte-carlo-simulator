@@ -3,12 +3,12 @@ import { vi } from 'vitest'
 
 // Global type declarations for CLI testing
 declare global {
-  var mockStdout: {
+  var _mockStdout: {
     write: ReturnType<typeof vi.fn>
     clearLine: ReturnType<typeof vi.fn>
     cursorTo: ReturnType<typeof vi.fn>
   }
-  var mockStdin: {
+  var _mockStdin: {
     setRawMode: ReturnType<typeof vi.fn>
     resume: ReturnType<typeof vi.fn>
     pause: ReturnType<typeof vi.fn>
@@ -18,14 +18,14 @@ declare global {
 }
 
 // Mock process.stdout for CLI output testing
-globalThis.mockStdout = {
+globalThis._mockStdout = {
   write: vi.fn(),
   clearLine: vi.fn(),
   cursorTo: vi.fn()
 }
 
 // Mock process.stdin for CLI input testing  
-globalThis.mockStdin = {
+globalThis._mockStdin = {
   setRawMode: vi.fn(),
   resume: vi.fn(),
   pause: vi.fn(),

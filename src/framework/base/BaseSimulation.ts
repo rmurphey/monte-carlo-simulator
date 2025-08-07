@@ -39,7 +39,7 @@ export abstract class BaseSimulation {
   abstract defineMetadata(): SimulationMetadata
   abstract defineParameters(): ParameterConfig[]
   abstract defineOutputs(): OutputConfig[]
-  abstract calculateScenario(params: ParameterValues): ScenarioResults
+  abstract calculateScenario(_params: ParameterValues): ScenarioResults
 
   // Optional method for parameter grouping
   defineParameterGroups(): ParameterGroup[] {
@@ -199,7 +199,7 @@ throw new Error('This simulation must be run through the TypeScript API')`
 
   // Helper method to check if parameter exists
   protected hasParameter(key: string): boolean {
-    return this.parameters.hasOwnProperty(key)
+    return Object.prototype.hasOwnProperty.call(this.parameters, key)
   }
 
   // Generate parameter validation schema

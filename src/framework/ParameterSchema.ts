@@ -62,7 +62,7 @@ export class ParameterSchema {
 
     // Type-specific validation
     switch (def.type) {
-      case 'number':
+      case 'number': {
         const numValue = Number(value)
         if (isNaN(numValue)) {
           errors.push(`Parameter '${def.label}' must be a number`)
@@ -82,6 +82,7 @@ export class ParameterSchema {
           }
         }
         break
+      }
 
       case 'boolean':
         if (typeof value !== 'boolean') {
