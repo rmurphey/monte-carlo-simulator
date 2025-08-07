@@ -33,6 +33,16 @@ program
   .action(listSimulations)
 
 program
+  .command('interactive')
+  .alias('i')
+  .description('Interactively select and run simulations')
+  .option('-v, --verbose', 'show detailed output')
+  .action(async (options) => {
+    const { runInteractiveSelection } = await import('./commands/interactive-selection')
+    await runInteractiveSelection(options)
+  })
+
+program
   .command('validate')
   .description('Validate a simulation file')
   .argument('<file>', 'path to simulation file')
@@ -51,6 +61,7 @@ program
   .option('-f, --format <format>', 'output format (table, json, csv, quiet)', 'table')
   .option('-v, --verbose', 'show detailed output')
   .option('-q, --quiet', 'minimal output')
+  .option('--interactive', 'launch interactive mode with real-time parameter adjustment')
   .action(async (simulation, options) => {
     // Convert iterations to number
     if (options.iterations) {

@@ -1,0 +1,11 @@
+{
+  "initialCost": 60000,
+  "monthlySubscription": 6000,
+  "implementationTime": 7,
+  "adoptionRate": 0.65,
+  "revenueImpact": 0.18,
+  "costSavings": 40000,
+  "baselineRevenue": 5000000,
+  "priceIncreaseRate": 1.6,
+  "priceIncreaseMonth": 16
+}
