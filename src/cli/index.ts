@@ -72,6 +72,39 @@ program
         }
       })
   )
+  .addCommand(
+    new Command('generate')
+      .description('Generate simulation from natural language description')
+      .argument('<query>', 'natural language description of desired simulation')
+      .option('-o, --output <file>', 'output YAML file path')
+      .option('-v, --verbose', 'detailed generation information')
+      .option('--validate', 'enable real-time validation feedback')
+      .action(async (query, options) => {
+        try {
+          const { generateFromNaturalLanguage } = await import('./interactive/definition-studio')
+          const yamlContent = await generateFromNaturalLanguage(query, { 
+            validate: options.validate || options.verbose 
+          })
+          
+          if (options.output) {
+            const fs = await import('fs/promises')
+            await fs.writeFile(options.output, yamlContent)
+            console.log(`✅ Generated simulation saved to: ${options.output}`)
+          } else {
+            console.log('Generated YAML Configuration:')
+            console.log('─'.repeat(50))
+            console.log(yamlContent)
+          }
+          
+          if (options.verbose) {
+            console.log('\n🤖 Agent Analysis Complete')
+          }
+        } catch (error) {
+          console.error('❌ Generation failed:', error instanceof Error ? error.message : String(error))
+          process.exit(1)
+        }
+      })
+  )
 
 program
   .command('run')

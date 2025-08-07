@@ -5,15 +5,21 @@ import { ConfigurationLoader } from '../config/loader'
 import { ConfigurableSimulation } from '../../framework/ConfigurableSimulation'
 import { TemplateLibrary, BusinessTemplate } from './template-library'
 import { InteractiveConfigBuilder } from './config-builder'
+import { ConfigurationValidator } from '../config/schema'
+import yaml from 'yaml'
 
 // Agent-optimized context interface for natural language integration
 export interface AgentContext {
-  intent: 'roi_analysis' | 'investment_planning' | 'growth_modeling' | 'risk_assessment' | 'capacity_planning'
+  intent: 'roi_analysis' | 'investment_planning' | 'growth_modeling' | 'risk_assessment' | 'capacity_planning' | 'software_investment' | 'marketing_campaign' | 'team_scaling'
   businessContext: string
   keyParameters: string[]
   expectedOutputs: string[]
   industryContext?: string
   timeHorizon?: 'quarterly' | 'annual' | 'multi_year'
+  naturalLanguageQuery?: string
+  targetAudience?: 'technical' | 'business' | 'executive'
+  complexityLevel?: 'simple' | 'moderate' | 'advanced'
+  priorityMetrics?: string[]
 }
 
 // Validation result with business context
@@ -374,18 +380,21 @@ export class InteractiveDefinitionStudio {
       let score = 0
       
       // Intent matching
-      const intentKeywords = {
+      const intentKeywords: Record<AgentContext['intent'], string[]> = {
         'roi_analysis': ['roi', 'return', 'investment', 'profitability'],
         'investment_planning': ['investment', 'budget', 'capital', 'planning'],
         'growth_modeling': ['growth', 'scaling', 'expansion', 'market'],
         'risk_assessment': ['risk', 'scenario', 'uncertainty', 'analysis'],
-        'capacity_planning': ['capacity', 'resource', 'operational', 'planning']
+        'capacity_planning': ['capacity', 'resource', 'operational', 'planning'],
+        'software_investment': ['software', 'technology', 'investment', 'productivity'],
+        'marketing_campaign': ['marketing', 'campaign', 'customer', 'acquisition'],
+        'team_scaling': ['team', 'hiring', 'scaling', 'workforce']
       }
       
       const keywords = intentKeywords[context.intent] || []
       const templateText = `${template.info.name} ${template.info.description} ${template.info.tags.join(' ')}`.toLowerCase()
       
-      keywords.forEach(keyword => {
+      keywords.forEach((keyword: string) => {
         if (templateText.includes(keyword.toLowerCase())) {
           score += 2
         }
@@ -734,9 +743,336 @@ export class GuidedWorkflow {
 }
 
 /**
+ * Simple watch-based validator for real-time feedback
+ * Uses existing ConfigurationValidator + simple file watching
+ */
+export class RealTimeValidator {
+  private configValidator: ConfigurationValidator
+
+  constructor() {
+    this.configValidator = new ConfigurationValidator()
+  }
+
+  /**
+   * Quick validation for immediate feedback
+   */
+  validateConfig(config: Partial<SimulationConfig>): { valid: boolean; errors: string[] } {
+    // Use existing proven validator
+    return this.configValidator.validateConfig(config)
+  }
+
+  /**
+   * Quick YAML syntax check
+   */
+  validateYaml(yamlContent: string): { valid: boolean; error?: string } {
+    try {
+      yaml.parse(yamlContent)
+      return { valid: true }
+    } catch (error) {
+      return { valid: false, error: error instanceof Error ? error.message : 'YAML syntax error' }
+    }
+  }
+
+  /**
+   * Preview structure without complex formatting
+   */
+  previewConfig(config: Partial<SimulationConfig>): string {
+    const params = config.parameters?.length || 0
+    const outputs = config.outputs?.length || 0
+    return `${config.name || 'Untitled'} (${params} params, ${outputs} outputs)`
+  }
+}
+
+/**
+ * Agent-optimized studio for context-aware simulation creation
+ * Provides sophisticated intent recognition and template matching
+ */
+export class AgentOptimizedStudio {
+  private templateLibrary: TemplateLibrary
+  
+  constructor() {
+    this.templateLibrary = new TemplateLibrary()
+  }
+  
+  /**
+   * Initialize template library for agent operations
+   */
+  async initialize(): Promise<void> {
+    await this.templateLibrary.loadTemplates()
+  }
+  
+  /**
+   * Parse natural language query into structured agent context
+   */
+  parseIntent(naturalLanguageQuery: string): Partial<AgentContext> {
+    const query = naturalLanguageQuery.toLowerCase()
+    
+    // Intent recognition based on business keywords
+    let intent: AgentContext['intent'] = 'roi_analysis'
+    
+    if (query.includes('software') && (query.includes('investment') || query.includes('roi'))) {
+      intent = 'software_investment'
+    } else if (query.includes('marketing') || query.includes('campaign') || query.includes('customer acquisition')) {
+      intent = 'marketing_campaign'
+    } else if (query.includes('team') && (query.includes('scaling') || query.includes('hiring'))) {
+      intent = 'team_scaling'
+    } else if (query.includes('growth') || query.includes('scaling') || query.includes('expansion')) {
+      intent = 'growth_modeling'
+    } else if (query.includes('risk') || query.includes('uncertainty') || query.includes('volatility')) {
+      intent = 'risk_assessment'
+    } else if (query.includes('capacity') || query.includes('planning') || query.includes('resource')) {
+      intent = 'capacity_planning'
+    } else if (query.includes('investment') || query.includes('planning')) {
+      intent = 'investment_planning'
+    }
+    
+    // Extract industry context
+    let industryContext: string | undefined
+    if (query.includes('saas') || query.includes('software')) industryContext = 'Software'
+    else if (query.includes('restaurant') || query.includes('hospitality')) industryContext = 'Hospitality'
+    else if (query.includes('manufacturing') || query.includes('production')) industryContext = 'Manufacturing'
+    else if (query.includes('ecommerce') || query.includes('retail')) industryContext = 'E-commerce'
+    
+    // Determine complexity level
+    let complexityLevel: AgentContext['complexityLevel'] = 'moderate'
+    if (query.includes('simple') || query.includes('basic') || query.includes('quick')) {
+      complexityLevel = 'simple'
+    } else if (query.includes('complex') || query.includes('advanced') || query.includes('sophisticated')) {
+      complexityLevel = 'advanced'
+    }
+    
+    // Extract key parameters from query
+    const keyParameters: string[] = []
+    if (query.includes('budget')) keyParameters.push('budget')
+    if (query.includes('revenue') || query.includes('arr')) keyParameters.push('revenue')
+    if (query.includes('cost')) keyParameters.push('cost')
+    if (query.includes('time') || query.includes('timeline')) keyParameters.push('timeline')
+    if (query.includes('team') || query.includes('employee')) keyParameters.push('team_size')
+    if (query.includes('conversion')) keyParameters.push('conversion_rate')
+    if (query.includes('productivity')) keyParameters.push('productivity_gain')
+    
+    return {
+      intent,
+      naturalLanguageQuery,
+      industryContext,
+      complexityLevel,
+      keyParameters,
+      businessContext: query,
+      expectedOutputs: ['roi', 'payback_period', 'npv']
+    }
+  }
+  
+  /**
+   * Find best template match based on agent context
+   */
+  async findBestTemplate(context: AgentContext): Promise<BusinessTemplate | null> {
+    await this.initialize()
+    
+    // Intent-based template mapping
+    const intentTemplateMap: Record<AgentContext['intent'], string[]> = {
+      software_investment: ['software-investment-roi'],
+      marketing_campaign: ['marketing-campaign-roi'],
+      team_scaling: ['team-scaling-decision'],
+      roi_analysis: ['simple-roi-analysis'],
+      investment_planning: ['technology-investment'],
+      growth_modeling: ['saas-growth-model'],
+      risk_assessment: ['risk-assessment'],
+      capacity_planning: ['capacity-planning']
+    }
+    
+    const preferredTemplateIds = intentTemplateMap[context.intent] || []
+    
+    // Try to find exact template match
+    for (const templateId of preferredTemplateIds) {
+      const template = this.templateLibrary.getTemplate(templateId)
+      if (template) return template
+    }
+    
+    // Fallback to industry-based search
+    if (context.industryContext) {
+      const industryTemplates = this.templateLibrary.getAllTemplates()
+        .filter(t => t.info.industryRelevance.includes(context.industryContext!))
+      if (industryTemplates.length > 0) return industryTemplates[0]
+    }
+    
+    // Fallback to keyword search
+    if (context.naturalLanguageQuery) {
+      const searchResults = this.templateLibrary.searchTemplates(context.naturalLanguageQuery)
+      if (searchResults.length > 0) return searchResults[0]
+    }
+    
+    return null
+  }
+  
+  /**
+   * Generate context-aware parameter suggestions
+   */
+  generateParameterSuggestions(template: BusinessTemplate, context: AgentContext): Record<string, any> {
+    const suggestions: Record<string, any> = {}
+    
+    // Apply complexity-based defaults
+    if (context.complexityLevel === 'simple') {
+      // Use conservative, safe defaults
+      template.config.parameters.forEach(param => {
+        if (param.key.toLowerCase().includes('budget')) {
+          const defaultValue = typeof param.default === 'number' ? param.default : 
+                              typeof param.min === 'number' ? param.min : 10000
+          suggestions[param.key] = Math.round(defaultValue * 0.8)
+        } else if (param.key.toLowerCase().includes('timeline')) {
+          const defaultValue = typeof param.default === 'number' ? param.default : 6
+          suggestions[param.key] = Math.max(defaultValue, 3)
+        }
+      })
+    } else if (context.complexityLevel === 'advanced') {
+      // Use more aggressive defaults
+      template.config.parameters.forEach(param => {
+        if (param.key.toLowerCase().includes('growth') || param.key.toLowerCase().includes('productivity')) {
+          const defaultValue = typeof param.default === 'number' ? param.default : 10
+          suggestions[param.key] = Math.round(defaultValue * 1.3)
+        }
+      })
+    }
+    
+    // Apply industry-specific defaults
+    if (context.industryContext === 'Software' || context.industryContext === 'Technology') {
+      template.config.parameters.forEach(param => {
+        if (param.key.toLowerCase().includes('productivity')) {
+          const defaultValue = typeof param.default === 'number' ? param.default : 15
+          suggestions[param.key] = Math.max(defaultValue, 20) // Higher productivity gains for software
+        }
+      })
+    }
+    
+    return suggestions
+  }
+  
+  /**
+   * Validate agent context and provide structured feedback
+   */
+  validateContext(context: AgentContext): { valid: boolean; suggestions: string[]; warnings: string[] } {
+    const suggestions: string[] = []
+    const warnings: string[] = []
+    
+    // Check for missing critical context
+    if (!context.businessContext || context.businessContext.length < 10) {
+      suggestions.push('Provide more detailed business context for better simulation accuracy')
+    }
+    
+    if (!context.expectedOutputs || context.expectedOutputs.length === 0) {
+      suggestions.push('Specify expected outputs to ensure simulation meets your analytical needs')
+    }
+    
+    if (!context.industryContext) {
+      suggestions.push('Include industry context for more relevant parameter recommendations')
+    }
+    
+    // Warn about complexity mismatches
+    if (context.complexityLevel === 'simple' && context.keyParameters.length > 5) {
+      warnings.push('Many parameters specified for simple analysis - consider moderate complexity level')
+    }
+    
+    if (context.complexityLevel === 'advanced' && context.keyParameters.length < 3) {
+      warnings.push('Few parameters for advanced analysis - consider including more business variables')
+    }
+    
+    return {
+      valid: suggestions.length <= 2, // Allow up to 2 suggestions for agent-generated contexts
+      suggestions,
+      warnings
+    }
+  }
+}
+
+/**
  * Agent-optimized entry point for natural language integration
  */
-export async function generateFromIntent(_context: AgentContext): Promise<string> {
-  const studio = new InteractiveDefinitionStudio()
-  return studio.createSimulation({ agentMode: true })
+export async function generateFromIntent(context: AgentContext): Promise<string> {
+  const agentStudio = new AgentOptimizedStudio()
+  
+  try {
+    // Validate agent context
+    const validation = agentStudio.validateContext(context)
+    if (!validation.valid) {
+      throw new Error(`Context validation failed: ${validation.suggestions.join(', ')}`)
+    }
+    
+    // Find optimal template for agent context
+    const template = await agentStudio.findBestTemplate(context)
+    if (!template) {
+      throw new Error(`No suitable template found for intent: ${context.intent}`)
+    }
+    
+    // Generate context-aware parameter suggestions
+    const parameterSuggestions = agentStudio.generateParameterSuggestions(template, context)
+    
+    // Create simulation configuration with agent optimizations
+    const config: SimulationConfig = {
+      ...template.config,
+      name: `${template.config.name} (Agent Generated)`,
+      description: `${template.config.description} | Generated from: ${context.naturalLanguageQuery || context.businessContext}`,
+      parameters: template.config.parameters.map(param => ({
+        ...param,
+        default: parameterSuggestions[param.key] !== undefined ? parameterSuggestions[param.key] : param.default
+      }))
+    }
+    
+    // Return YAML configuration
+    const yaml = await import('yaml')
+    return yaml.default.stringify(config)
+    
+  } catch (error) {
+    throw new Error(`Agent simulation generation failed: ${error instanceof Error ? error.message : String(error)}`)
+  }
+}
+
+/**
+ * Enhanced agent entry point with natural language processing
+ */
+export async function generateFromNaturalLanguage(query: string, options?: { validate?: boolean }): Promise<string> {
+  const agentStudio = new AgentOptimizedStudio()
+  
+  // Parse natural language into structured context
+  const parsedContext = agentStudio.parseIntent(query)
+  
+  // Ensure all required fields are present
+  const fullContext: AgentContext = {
+    intent: parsedContext.intent || 'roi_analysis',
+    businessContext: parsedContext.businessContext || query,
+    keyParameters: parsedContext.keyParameters || [],
+    expectedOutputs: parsedContext.expectedOutputs || ['roi'],
+    industryContext: parsedContext.industryContext,
+    timeHorizon: 'annual',
+    naturalLanguageQuery: query,
+    targetAudience: 'business',
+    complexityLevel: parsedContext.complexityLevel || 'moderate'
+  }
+  
+  const yamlResult = await generateFromIntent(fullContext)
+  
+  // Add real-time validation if requested
+  if (options?.validate) {
+    const validator = new RealTimeValidator()
+    const yamlValidation = validator.validateYaml(yamlResult)
+    
+    if (!yamlValidation.valid) {
+      console.log(chalk.yellow(`⚠️  YAML Validation Warning: ${yamlValidation.error}`))
+    }
+    
+    try {
+      const config = yaml.parse(yamlResult) as SimulationConfig
+      const configValidation = validator.validateConfig(config)
+      
+      if (!configValidation.valid) {
+        console.log(chalk.red('❌ Configuration Validation Errors:'))
+        configValidation.errors.forEach(error => console.log(chalk.red(`   • ${error}`)))
+      } else {
+        console.log(chalk.green('✅ Configuration validated successfully'))
+        console.log(chalk.gray(`📝 Preview: ${validator.previewConfig(config)}`))
+      }
+    } catch (error) {
+      console.log(chalk.red(`❌ Failed to parse generated YAML: ${error instanceof Error ? error.message : error}`))
+    }
+  }
+  
+  return yamlResult
 }
