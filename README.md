@@ -88,6 +88,9 @@ npx github:rmurphey/monte-carlo-simulator interactive
 
 # Run specific examples  
 npx github:rmurphey/monte-carlo-simulator run examples/simple-roi-analysis.yaml
+
+
+
 ```
 
 ### **Natural Language Simulation Generation** ✨
