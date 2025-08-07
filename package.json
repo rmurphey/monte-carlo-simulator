@@ -1,7 +1,6 @@
 {
   "name": "monte-carlo-simulator",
   "version": "1.0.0",
-  "type": "module",
   "description": "Business decision framework with Monte Carlo risk analysis - instant via npx",
   "keywords": [
     "monte-carlo", "business-analysis", "roi", "risk-assessment", 

@@ -1,5 +1,4 @@
-import { fileURLToPath } from 'url'
-import { dirname, join } from 'path'
+import * as path from 'path'
 import { existsSync } from 'fs'
 
 /**
@@ -7,23 +6,24 @@ import { existsSync } from 'fs'
  * Works in both development and NPX installation contexts.
  */
 export function getResourcePaths() {
-  const __filename = fileURLToPath(import.meta.url)
-  const __dirname = dirname(__filename)
+  // In CommonJS compiled output, __dirname will be available
+  // This will be compiled to use the CommonJS __dirname
+  const currentDir = __dirname
   
   // When installed via npm/npx, we're in node_modules/monte-carlo-simulator/dist/cli/utils/
   // When in development, we're in src/cli/utils/
   
   // Try to find package root by looking for package.json
-  let packageRoot = __dirname
+  let packageRoot = currentDir
   let attempts = 0
   const maxAttempts = 10
   
   while (attempts < maxAttempts) {
-    const packageJsonPath = join(packageRoot, 'package.json')
+    const packageJsonPath = path.join(packageRoot, 'package.json')
     if (existsSync(packageJsonPath)) {
       break
     }
-    packageRoot = join(packageRoot, '..')
+    packageRoot = path.join(packageRoot, '..')
     attempts++
   }
   
@@ -32,10 +32,10 @@ export function getResourcePaths() {
   }
   
   const paths = {
-    templates: join(packageRoot, 'templates'),
-    examples: join(packageRoot, 'examples'),
-    docs: join(packageRoot, 'docs'),
-    schemas: join(packageRoot, 'dist', 'schemas')
+    templates: path.join(packageRoot, 'templates'),
+    examples: path.join(packageRoot, 'examples'),
+    docs: path.join(packageRoot, 'docs'),
+    schemas: path.join(packageRoot, 'dist', 'schemas')
   }
   
   // Validate that critical paths exist
@@ -55,7 +55,7 @@ export function getResourcePaths() {
  */
 export function getPackageRoot(): string {
   const paths = getResourcePaths()
-  return dirname(paths.templates) // templates is in package root
+  return path.dirname(paths.templates) // templates is in package root
 }
 
 /**
@@ -68,14 +68,14 @@ export function resolveResourceFile(filename: string, category: 'templates' | 'e
   const categoryPath = paths[category]
   
   // Direct file in category directory
-  const directPath = join(categoryPath, filename)
+  const directPath = path.join(categoryPath, filename)
   if (existsSync(directPath)) {
     return directPath
   }
   
   // For examples, also check simulations subdirectory
   if (category === 'examples') {
-    const simulationsPath = join(categoryPath, 'simulations', filename)
+    const simulationsPath = path.join(categoryPath, 'simulations', filename)
     if (existsSync(simulationsPath)) {
       return simulationsPath
     }
@@ -107,7 +107,7 @@ export function listResourceFiles(category: 'templates' | 'examples' | 'docs'): 
   
   // For examples, also check simulations subdirectory
   if (category === 'examples') {
-    const simulationsPath = join(categoryPath, 'simulations')
+    const simulationsPath = path.join(categoryPath, 'simulations')
     if (existsSync(simulationsPath)) {
       const simulationFiles = fs.readdirSync(simulationsPath)
         .filter((f: string) => f.endsWith('.yaml'))
