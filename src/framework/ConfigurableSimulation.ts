@@ -1,5 +1,5 @@
 import { MonteCarloEngine } from './MonteCarloEngine'
-import { SimulationMetadata, ParameterDefinition } from './types'
+import { SimulationMetadata, ParameterDefinition, SimulationResults } from './types'
 import { SimulationConfig, ParameterConfig } from '../cli/config/schema'
 import { toId } from '../cli/utils/name-converter'
 import { globalARRInjector, ARRBusinessContextInjector } from './ARRBusinessContext'
@@ -247,6 +247,65 @@ export class ConfigurableSimulation extends MonteCarloEngine {
     return {
       valid: errors.length === 0,
       errors
+    }
+  }
+
+  /**
+   * Run Monte Carlo simulation with multiple iterations and statistical analysis
+   */
+  async runSimulation(parameters: Record<string, unknown>, iterations: number = 1000, onProgress?: (_progress: number, _iteration: number) => void): Promise<SimulationResults> {
+    const startTime = new Date()
+    const results: any[] = []
+    
+    // Run simulation iterations
+    for (let i = 0; i < iterations; i++) {
+      const result = this.simulateScenario(parameters)
+      results.push(result)
+      
+      // Call progress callback if provided
+      if (onProgress && i % Math.max(1, Math.floor(iterations / 100)) === 0) {
+        onProgress(i / iterations, i)
+      }
+    }
+    
+    // Final progress callback
+    if (onProgress) {
+      onProgress(1, iterations)
+    }
+    
+    // Calculate statistical summary
+    const outputKeys = Object.keys(results[0] || {})
+    const summary: Record<string, any> = {}
+    
+    outputKeys.forEach(key => {
+      const values = results.map(r => Number(r[key])).filter(v => !isNaN(v))
+      
+      if (values.length > 0) {
+        const sorted = values.slice().sort((a, b) => a - b)
+        const mean = values.reduce((sum, val) => sum + val, 0) / values.length
+        const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length
+        
+        summary[key] = {
+          count: values.length,
+          mean,
+          median: sorted[Math.floor(sorted.length / 2)],
+          standardDeviation: Math.sqrt(variance),
+          percentile10: sorted[Math.floor(sorted.length * 0.1)],
+          percentile90: sorted[Math.floor(sorted.length * 0.9)]
+        }
+      }
+    })
+    
+    const endTime = new Date()
+    
+    return {
+      metadata: this.getMetadata(),
+      parameters,
+      results,
+      summary,
+      startTime,
+      endTime,
+      duration: endTime.getTime() - startTime.getTime()
     }
   }
 }
