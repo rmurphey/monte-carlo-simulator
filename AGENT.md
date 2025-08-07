@@ -1,17 +1,32 @@
 # Agent Guide - Monte Carlo Business Simulation Framework
 
-## 🎯 Interactive Studio (Planned)
+## 🎯 Interactive Studio ✅ **IMPLEMENTED**
 
-### Interactive Simulation Creation
+### Natural Language Simulation Generation
 ```bash
-# Coming: Interactive definition studio
-npm run cli studio define
+# Generate simulation from natural language
+npm run cli studio generate "I want to analyze ROI of software investment for my team"
 
-# Coming: Real-time parameter control
-npm run cli studio run simulation.yaml
+# With validation feedback
+npm run cli studio generate "Marketing campaign ROI analysis" --validate
+
+# Save to file
+npm run cli studio generate "Team scaling decision analysis" -o team-analysis.yaml
 ```
 
-**Agent Integration**: Full programmatic API for controlling interactive sessions, real-time parameter updates, and streaming results. See [docs/INTERACTIVE_STUDIO.md](docs/INTERACTIVE_STUDIO.md) for complete specifications.
+### Interactive Simulation Creation  
+```bash
+# Interactive guided creation
+npm run cli studio define
+
+# Template-based creation
+npm run cli studio define --template software-investment-roi
+
+# Agent-optimized workflow
+npm run cli studio define --agent-mode
+```
+
+**Agent Integration**: Complete programmatic API with natural language processing, context-aware validation, and template auto-selection. Real-time YAML validation prevents configuration errors.
 
 ## ✅ Working Commands (Tested)
 

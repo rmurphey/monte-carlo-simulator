@@ -54,6 +54,31 @@ cd monte-carlo-simulator
 # Install dependencies and build
 npm install
 npm run build
+```
+
+### 🆕 **NEW: Natural Language Simulation Generation** ✨
+
+Create business simulations directly from natural questions:
+
+```bash
+# Generate simulation from natural language
+npm run cli studio generate "I want to analyze the ROI of investing in AI tools for my development team"
+
+# With real-time validation feedback  
+npm run cli studio generate "Should we hire 5 more engineers or invest in automation?" --validate
+
+# Save directly to file
+npm run cli studio generate "Marketing campaign ROI analysis" -o marketing-roi.yaml
+```
+
+### **Interactive Studio**
+Create simulations with guided assistance:
+```bash  
+# Interactive guided creation
+npm run cli studio define
+
+# Start from business template
+npm run cli studio define --template software-investment-roi
 
 # Verify everything works
 npm test
