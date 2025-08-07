@@ -106,7 +106,7 @@ Adjust parameters in real-time and see results update instantly:
 npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --interactive
 
 # Override specific parameters from command line
-npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --set initialInvestment=300000 --set affectedEmployees=75
+npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --set initialInvestment=300000 --set monthlyBenefit=8000
 
 # Discover available parameters for any simulation  
 npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --list-params
