@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -35,6 +68,11 @@ async function runSimulation(simulationName, options = {}) {
             displayConfiguration(parameters, options.iterations || 1000);
         }
         const iterations = options.iterations || 1000;
+        // Handle interactive mode
+        if (options.interactive) {
+            await runInteractiveMode(simulation, enhancedConfig, parameters, iterations);
+            return;
+        }
         if (!options.quiet) {
             console.log(chalk_1.default.yellow(`🚀 Running ${iterations.toLocaleString()} iterations...`));
         }
@@ -416,5 +454,123 @@ function convertComparisonToCSV(results) {
         });
     });
     return rows.join('\n');
+}
+async function runInteractiveMode(simulation, config, initialParams, iterations) {
+    const inquirer = await Promise.resolve().then(() => __importStar(require('inquirer')));
+    let currentParams = { ...initialParams };
+    let previousResults = null;
+    console.log(chalk_1.default.cyan.bold('\n🎛️  Interactive Parameter Exploration'));
+    console.log(chalk_1.default.gray(`Adjust parameters for: ${config.name}\n`));
+    while (true) {
+        // Run simulation with current parameters
+        console.log(chalk_1.default.yellow(`🚀 Running ${iterations.toLocaleString()} iterations...`));
+        const startTime = Date.now();
+        const results = await simulation.runSimulation(currentParams, iterations);
+        const executionTime = ((Date.now() - startTime) / 1000).toFixed(1);
+        console.log(chalk_1.default.green(`✅ Completed (${executionTime}s)\n`));
+        // Display results
+        console.log(chalk_1.default.green.bold('📈 RESULTS'));
+        console.log(chalk_1.default.gray('═'.repeat(50)));
+        Object.entries(results.summary).forEach(([key, stats]) => {
+            const output = config.outputs.find((o) => o.key === key);
+            const label = output?.label || key;
+            const mean = stats.mean?.toLocaleString() || 'N/A';
+            const stdDev = stats.standardDeviation?.toLocaleString() || 'N/A';
+            console.log(`${chalk_1.default.cyan(label.padEnd(25))}: ${chalk_1.default.white(mean)} ${chalk_1.default.gray(`(±${stdDev})`)}`);
+        });
+        // Show comparison if we have previous results
+        if (previousResults) {
+            console.log(chalk_1.default.blue.bold('\n📊 CHANGE FROM PREVIOUS'));
+            console.log(chalk_1.default.gray('─'.repeat(50)));
+            Object.entries(results.summary).forEach(([key, stats]) => {
+                const prevStats = previousResults.summary[key];
+                if (prevStats && typeof stats.mean === 'number' && typeof prevStats.mean === 'number') {
+                    const change = ((stats.mean - prevStats.mean) / prevStats.mean) * 100;
+                    const changeStr = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
+                    const arrow = change >= 0 ? '⬆️' : '⬇️';
+                    const output = config.outputs.find((o) => o.key === key);
+                    const label = output?.label || key;
+                    console.log(`${chalk_1.default.cyan(label.padEnd(25))}: ${chalk_1.default.white(changeStr)} ${arrow}`);
+                }
+            });
+        }
+        // Ask what to do next
+        const answer = await inquirer.default.prompt([{
+                type: 'list',
+                name: 'action',
+                message: 'What would you like to do?',
+                choices: [
+                    { name: 'Adjust parameters', value: 'adjust' },
+                    { name: 'Run again with same parameters', value: 'rerun' },
+                    { name: 'Exit interactive mode', value: 'exit' }
+                ]
+            }]);
+        if (answer.action === 'exit') {
+            console.log(chalk_1.default.green('\n✅ Interactive session ended'));
+            break;
+        }
+        if (answer.action === 'rerun') {
+            previousResults = results;
+            continue;
+        }
+        if (answer.action === 'adjust') {
+            // Show current parameters and let user pick which to change
+            const paramChoices = config.parameters.map((param) => ({
+                name: `${param.key}: ${currentParams[param.key]} ${param.description ? `(${param.description})` : ''}`,
+                value: param.key
+            }));
+            paramChoices.push({ name: 'Back to results', value: 'back' });
+            const paramAnswer = await inquirer.default.prompt([{
+                    type: 'list',
+                    name: 'param',
+                    message: 'Which parameter would you like to adjust?',
+                    choices: paramChoices
+                }]);
+            if (paramAnswer.param === 'back') {
+                continue;
+            }
+            const paramDef = config.parameters.find((p) => p.key === paramAnswer.param);
+            const currentValue = currentParams[paramAnswer.param];
+            let newValue;
+            if (paramDef.type === 'number') {
+                const numberAnswer = await inquirer.default.prompt([{
+                        type: 'input',
+                        name: 'value',
+                        message: `Enter new value for ${paramDef.key} (current: ${currentValue}):`,
+                        validate: (input) => {
+                            const num = Number(input);
+                            if (isNaN(num))
+                                return 'Please enter a valid number';
+                            if (paramDef.min !== undefined && num < paramDef.min)
+                                return `Value must be >= ${paramDef.min}`;
+                            if (paramDef.max !== undefined && num > paramDef.max)
+                                return `Value must be <= ${paramDef.max}`;
+                            return true;
+                        }
+                    }]);
+                newValue = Number(numberAnswer.value);
+            }
+            else if (paramDef.type === 'boolean') {
+                const boolAnswer = await inquirer.default.prompt([{
+                        type: 'confirm',
+                        name: 'value',
+                        message: `${paramDef.key}:`,
+                        default: currentValue
+                    }]);
+                newValue = boolAnswer.value;
+            }
+            else {
+                const textAnswer = await inquirer.default.prompt([{
+                        type: 'input',
+                        name: 'value',
+                        message: `Enter new value for ${paramDef.key} (current: ${currentValue}):`
+                    }]);
+                newValue = textAnswer.value;
+            }
+            previousResults = results;
+            currentParams[paramAnswer.param] = newValue;
+            console.log(chalk_1.default.green(`✅ Updated ${paramAnswer.param} to ${newValue}\n`));
+        }
+    }
 }
 //# sourceMappingURL=run-simulation.js.map
