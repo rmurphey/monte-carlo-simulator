@@ -7,6 +7,7 @@ interface RunOptions {
     format?: 'table' | 'json' | 'csv' | 'quiet';
     verbose?: boolean;
     quiet?: boolean;
+    set?: string[];
     [key: string]: any;
 }
 export declare function runSimulation(simulationName: string, options?: RunOptions): Promise<void>;

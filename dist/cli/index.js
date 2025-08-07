@@ -39,6 +39,10 @@ const create_simulation_1 = require("./commands/create-simulation");
 const list_simulations_1 = require("./commands/list-simulations");
 const validate_simulation_1 = require("./commands/validate-simulation");
 const run_simulation_1 = require("./commands/run-simulation");
+// Helper function for collecting repeatable --set options
+function collect(value, previous) {
+    return previous.concat([value]);
+}
 const program = new commander_1.Command();
 program
     .name('monte-carlo-cli')
@@ -159,14 +163,36 @@ program
     .argument('<simulation>', 'simulation name or path')
     .option('-s, --scenario <scenario>', 'scenario to run (conservative, neutral, aggressive)')
     .option('-c, --compare <scenarios>', 'compare multiple scenarios (comma-separated)')
-    .option('-p, --params <file>', 'custom parameter file')
+    .option('-p, --params <file>', 'custom parameter file (JSON/YAML)')
     .option('-i, --iterations <number>', 'number of iterations', '1000')
     .option('-o, --output <file>', 'save results to file')
     .option('-f, --format <format>', 'output format (table, json, csv, quiet)', 'table')
     .option('-v, --verbose', 'show detailed output')
     .option('-q, --quiet', 'minimal output')
     .option('--interactive', 'launch interactive mode with real-time parameter adjustment')
+    .option('--list-params', 'list available parameters for the simulation and exit')
+    .option('--set <param=value>', 'set parameter value (repeatable)', collect, [])
+    .addHelpText('after', `
+Parameter Override Examples:
+  Single parameter:       --set initialInvestment=300000
+  Multiple parameters:    --set initialInvestment=300000 --set affectedEmployees=75
+  Parameter file:         --params custom-scenario.json
+  Combined approach:      --params base.json --set productivityGain=25
+  
+Quick Examples:
+  Basic run:             run ai-investment-roi
+  Override investment:   run ai-investment-roi --set initialInvestment=500000
+  Test small team:       run ai-investment-roi --set affectedEmployees=10 --iterations 500
+  Compare scenarios:     run ai-investment-roi --compare conservative,aggressive
+  
+Use --list-params to see all available parameters for any simulation`)
     .action(async (simulation, options) => {
+    // Handle --list-params option
+    if (options.listParams) {
+        const { listSimulationParameters } = await Promise.resolve().then(() => __importStar(require('./commands/list-simulation-parameters')));
+        await listSimulationParameters(simulation);
+        return;
+    }
     // Convert iterations to number
     if (options.iterations) {
         options.iterations = parseInt(options.iterations, 10);

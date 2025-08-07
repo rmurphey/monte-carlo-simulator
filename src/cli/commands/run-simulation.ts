@@ -13,7 +13,8 @@ interface RunOptions {
   format?: 'table' | 'json' | 'csv' | 'quiet'
   verbose?: boolean
   quiet?: boolean
-  [key: string]: any // For parameter overrides
+  set?: string[] // For --set param=value options
+  [key: string]: any // For additional parameter overrides
 }
 
 export async function runSimulation(simulationName: string, options: RunOptions = {}): Promise<void> {
@@ -172,16 +173,61 @@ async function resolveParameters(config: any, options: RunOptions): Promise<Reco
     try {
       const loader = new ConfigurationLoader()
       const customConfig = await loader.loadConfig(options.params)
-      Object.assign(parameters, customConfig.parameters)
+      
+      // Parameter files support two formats:
+      // 1. Full simulation config with parameters array: { parameters: [{ key: "foo", default: 123 }] }
+      // 2. Simple parameter object: { "foo": 123, "bar": "value" }
+      // 
+      // For format 1, we extract parameter defaults from the parameters array
+      // For format 2, we use the object directly as key-value parameter overrides
+      const customParams = customConfig.parameters 
+        ? customConfig.parameters.reduce((acc: Record<string, any>, param: any) => {
+            if (param.key && param.default !== undefined) {
+              acc[param.key] = param.default
+            }
+            return acc
+          }, {})
+        : customConfig
+      
+      Object.assign(parameters, customParams)
     } catch (error) {
       throw new Error(`Failed to load parameter file '${options.params}': ${error instanceof Error ? error.message : String(error)}`)
     }
   }
   
-  // 3. Apply command line parameter overrides
+  // 3. Apply --set parameter overrides
+  if (options.set) {
+    for (const setParam of options.set) {
+      const [key, value] = setParam.split('=', 2)
+      if (!key || value === undefined) {
+        throw new Error(`Invalid --set format: '${setParam}'. Use --set paramName=value`)
+      }
+      
+      // Check if this is a valid parameter for the simulation
+      const paramDef = config.parameters.find((p: any) => p.key === key)
+      if (!paramDef) {
+        throw new Error(`Unknown parameter '${key}' for simulation '${config.name}'. Use --list-params to see available parameters.`)
+      }
+      
+      // Convert value to appropriate type
+      let convertedValue: any = value
+      if (paramDef.type === 'number') {
+        convertedValue = Number(value)
+        if (isNaN(convertedValue)) {
+          throw new Error(`Parameter '${key}' must be a number, got: ${value}`)
+        }
+      } else if (paramDef.type === 'boolean') {
+        convertedValue = value === 'true' || value === 'yes' || value === '1'
+      }
+      
+      parameters[key] = convertedValue
+    }
+  }
+
+  // 4. Apply any additional command line parameter overrides (legacy support)
   for (const [key, value] of Object.entries(options)) {
     // Skip known CLI options
-    if (['scenario', 'params', 'iterations', 'output', 'format', 'verbose', 'quiet', 'compare'].includes(key)) {
+    if (['scenario', 'params', 'iterations', 'output', 'format', 'verbose', 'quiet', 'compare', 'set', 'listParams', 'interactive'].includes(key)) {
       continue
     }
     
