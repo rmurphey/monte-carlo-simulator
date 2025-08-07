@@ -72,6 +72,8 @@ This project is set up for AI-assisted development with Claude Code.
   - `documentation-restructure-2025.md` - Human/agent documentation separation
   - `working-examples-system-2025.md` - Professional example system implementation
   - `agent-friendly-framework-implementation-2025.md` - Config-driven simulation architecture
+  - `phase-2-business-intelligence-template-system-2025.md` - BI metadata and intelligent template selection
+  - `directory-architecture-restructure-2025.md` - Proper directory separation and documentation
 
 
 # important-instruction-reminders
