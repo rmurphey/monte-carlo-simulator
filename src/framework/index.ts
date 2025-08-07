@@ -3,4 +3,6 @@ export { SimulationRegistry, type SimulationRegistryEntry, type SearchOptions } 
 export { StatisticalAnalyzer } from './StatisticalAnalyzer'
 export { ParameterSchema, type ValidationResult, type ParameterGroup } from './ParameterSchema'
 export { ConfigurableSimulation } from './ConfigurableSimulation'
+export { BusinessSimulation, type ParameterValues, type ScenarioResults, type BusinessKPIs } from './base/BusinessSimulation'
+export { BaseSimulation } from './base/BaseSimulation'
 export * from './types'
