@@ -52,7 +52,7 @@
     "*.ts": [
       "eslint --fix"
     ],
-    "*.{yaml,yml}": [
+    "{examples,templates,simulations}/**/*.{yaml,yml}": [
       "npm run cli validate"
     ],
     "*.json": [

@@ -1,0 +1,61 @@
+name: Build and Update Distribution
+
+on:
+  push:
+    branches: [ main ]
+    paths: 
+      - 'src/**'
+      - 'package.json'
+      - 'tsconfig.json'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  build-dist:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build TypeScript
+        run: npm run build
+        
+      - name: Check for dist changes
+        id: dist-changes
+        run: |
+          if git diff --quiet dist/; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+        
+      - name: Commit dist changes
+        if: steps.dist-changes.outputs.changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add dist/
+          git commit -m "build: update dist files for NPX distribution
+
+          🤖 Generated with [Claude Code](https://claude.ai/code)
+          
+          Co-Authored-By: Claude <noreply@anthropic.com>"
+          
+      - name: Push changes
+        if: steps.dist-changes.outputs.changes == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
