@@ -3,8 +3,14 @@
   "version": "1.0.0",
   "description": "Business decision framework with Monte Carlo risk analysis - instant via npx",
   "keywords": [
-    "monte-carlo", "business-analysis", "roi", "risk-assessment", 
-    "decision-making", "simulation", "business-intelligence", "npx"
+    "monte-carlo",
+    "business-analysis",
+    "roi",
+    "risk-assessment",
+    "decision-making",
+    "simulation",
+    "business-intelligence",
+    "npx"
   ],
   "bin": {
     "monte-carlo-simulator": "./dist/cli/index.js",
@@ -36,10 +42,22 @@
     "validate:json": "find . -name '*.json' -not -path './node_modules/*' -not -path './coverage/*' -exec node -e 'JSON.parse(require(\"fs\").readFileSync(\"{}\", \"utf8\"))' \\;",
     "test:agent-apis": "npm run cli list >/dev/null && npm run cli -- run examples/simulations/simple-roi-analysis.yaml --iterations 5 >/dev/null && npm run cli -- run examples/simulations/simple-roi-analysis.yaml --list-params >/dev/null",
     "check:formatting": "npm run lint",
-    "check:file-sizes": "git diff --cached --name-only | xargs -I {} sh -c 'test -f \"{}\" && test $(wc -c < \"{}\") -le 1048576 || (echo \"Large file: {} ($(du -h \"{}\" | cut -f1))\" && exit 1)' || true",
-    "check:secrets": "git diff --cached | grep -E -i '(api[_-]?key|password|secret|token|database_url)\\s*[=:]\\s*['\\\"][^'\\\"]{8,}['\\\"]' && echo 'Potential secrets detected!' && exit 1 || true",
+    "check:file-sizes": "git diff --cached --name-only | head -20 | while read file; do [ -f \"$file\" ] && [ $(wc -c < \"$file\") -gt 1048576 ] && echo \"Large file: $file\"; done || true",
+    "check:secrets": "./scripts/check-secrets.sh",
     "push": "npm run build && git add dist/ && git push",
-    "push-force": "npm run build && git add dist/ && git commit -m 'build: update dist/ for NPX compatibility' && git push"
+    "push-force": "npm run build && git add dist/ && git commit -m 'build: update dist/ for NPX compatibility' && git push",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix"
+    ],
+    "*.{yaml,yml}": [
+      "npm run cli validate"
+    ],
+    "*.json": [
+      "node -e \"JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8'))\""
+    ]
   },
   "dependencies": {
     "ajv": "^8.17.1",
@@ -57,7 +75,9 @@
     "@vitest/coverage-v8": "^1.1.0",
     "@vitest/ui": "^1.1.0",
     "eslint": "^8.55.0",
+    "husky": "^9.1.7",
     "jsdom": "^26.1.0",
+    "lint-staged": "^16.1.4",
     "prettier": "^3.1.1",
     "tsx": "^4.20.3",
     "typescript": "^5.2.2",
