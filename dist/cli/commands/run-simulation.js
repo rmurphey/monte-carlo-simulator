@@ -461,6 +461,11 @@ async function runInteractiveMode(simulation, config, initialParams, iterations)
     let previousResults = null;
     console.log(chalk_1.default.cyan.bold('\n🎛️  Interactive Parameter Exploration'));
     console.log(chalk_1.default.gray(`Adjust parameters for: ${config.name}\n`));
+    // Interactive menu loop: while(true) is correct pattern for CLI applications
+    // - Blocks on await inquirer.prompt() (no CPU/memory consumption)
+    // - User explicitly chooses "Exit" to break loop
+    // - Standard pattern used by npm init, create-react-app, etc.
+    // eslint-disable-next-line no-constant-condition
     while (true) {
         // Run simulation with current parameters
         console.log(chalk_1.default.yellow(`🚀 Running ${iterations.toLocaleString()} iterations...`));

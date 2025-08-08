@@ -525,6 +525,7 @@ async function runInteractiveMode(
   console.log(chalk.cyan.bold('\n🎛️  Interactive Parameter Exploration'))
   console.log(chalk.gray(`Adjust parameters for: ${config.name}\n`))
   
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     // Run simulation with current parameters
     console.log(chalk.yellow(`🚀 Running ${iterations.toLocaleString()} iterations...`))

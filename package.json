@@ -33,7 +33,11 @@
     "run": "tsx src/cli/index.ts run",
     "test:docs": "tsx scripts/test-docs.ts",
     "validate:yaml": "find examples/ templates/ simulations/ -name '*.yaml' -exec npm run cli validate {} \\; 2>/dev/null || true",
+    "validate:json": "find . -name '*.json' -not -path './node_modules/*' -not -path './coverage/*' -exec node -e 'JSON.parse(require(\"fs\").readFileSync(\"{}\", \"utf8\"))' \\;",
     "test:agent-apis": "npm run cli list >/dev/null && npm run cli -- run examples/simulations/simple-roi-analysis.yaml --iterations 5 >/dev/null && npm run cli -- run examples/simulations/simple-roi-analysis.yaml --list-params >/dev/null",
+    "check:formatting": "npm run lint",
+    "check:file-sizes": "git diff --cached --name-only | xargs -I {} sh -c 'test -f \"{}\" && test $(wc -c < \"{}\") -le 1048576 || (echo \"Large file: {} ($(du -h \"{}\" | cut -f1))\" && exit 1)' || true",
+    "check:secrets": "git diff --cached | grep -E -i '(api[_-]?key|password|secret|token|database_url)\\s*[=:]\\s*['\\\"][^'\\\"]{8,}['\\\"]' && echo 'Potential secrets detected!' && exit 1 || true",
     "push": "npm run build && git add dist/ && git push",
     "push-force": "npm run build && git add dist/ && git commit -m 'build: update dist/ for NPX compatibility' && git push"
   },
