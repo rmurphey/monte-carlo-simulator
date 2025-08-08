@@ -324,6 +324,138 @@ npm run cli validate my-analysis.yaml
 npm run cli run my-analysis.yaml
 ```
 
+## 🎛️ Interactive Parameter Exploration
+
+### Real-Time Parameter Adjustment
+```bash
+# Launch interactive mode for any simulation
+npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --interactive
+
+# Override specific parameters from command line
+npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --set initialInvestment=300000 --set monthlyBenefit=8000
+
+# Discover available parameters for any simulation  
+npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --list-params
+```
+
+**Interactive Features:**
+- **Real-time parameter adjustment** - Change values and see immediate impact on results  
+- **Before/after comparison** - Track how parameter changes affect outcomes
+- **Parameter validation** - Type checking and range enforcement with helpful error messages
+- **Dynamic parameter discovery** - No static documentation to maintain
+
+### Exploration Workflow
+
+#### Step 1: Generate and Save Your Simulation
+```bash
+# Generate but don't just test - SAVE it so you can modify it
+npx github:rmurphey/monte-carlo-simulator studio generate "Should we invest $200K in AI tools for 50 developers?" --output ai-investment.yaml
+```
+
+#### Step 2: Examine the Generated Model
+```bash
+# Look at what the AI created for you
+cat ai-investment.yaml
+```
+
+You'll see a complete business model with:
+- **Parameters you can adjust**: budget, team size, productivity gains, adoption rates
+- **Business logic**: the actual calculations and assumptions
+- **Risk factors**: implementation timeline, execution variance
+
+#### Step 3: Run Interactive Exploration
+```bash
+# Run the simulation interactively - you can change parameters in real-time
+npx github:rmurphey/monte-carlo-simulator run ai-investment.yaml --interactive
+```
+
+**This lets you:**
+- Adjust the investment amount and see immediate impact
+- Change team size assumptions 
+- Modify productivity gain estimates
+- Adjust adoption rates and timelines
+- See results update in real-time as you explore
+
+#### Step 4: Modify the Simulation File Directly
+
+Edit `ai-investment.yaml` to change:
+
+```yaml
+parameters:
+  - key: initialInvestment
+    default: 200000    # Change this to explore different budgets
+    min: 50000         # Set your own ranges
+    max: 1000000
+    
+  - key: affectedEmployees  
+    default: 50        # Try different team sizes
+    min: 10
+    max: 200
+    
+  - key: productivityGain
+    default: 15        # Adjust expected productivity improvement  
+    min: 5             # Conservative estimate
+    max: 40            # Optimistic estimate
+```
+
+#### Step 5: Compare Scenarios Side by Side
+```bash
+# Create multiple versions to compare
+cp ai-investment.yaml conservative-scenario.yaml
+cp ai-investment.yaml aggressive-scenario.yaml
+
+# Edit each file with different assumptions, then compare:
+npx github:rmurphey/monte-carlo-simulator run conservative-scenario.yaml
+npx github:rmurphey/monte-carlo-simulator run aggressive-scenario.yaml
+```
+
+## 📊 Business Question Patterns
+
+### Technology Investment Decisions
+```bash
+# Team scaling analysis
+"Should we hire 8 developers or invest $600K in automation tools?"
+
+# Technology investment 
+"ROI analysis of migrating to microservices architecture for 40-person team"
+
+# Infrastructure decisions
+"Cost-benefit analysis of moving to serverless vs scaling existing infrastructure"
+
+# Implementation with uncertainty
+npx github:rmurphey/monte-carlo-simulator studio generate "ROI of implementing CI/CD pipeline for 20 developers" --test
+```
+
+### Resource Allocation Decisions
+```bash  
+# Resource allocation
+"Should we spend $300K on marketing or hire 4 additional developers?"
+
+# Product decisions
+"ROI of building internal analytics vs using third-party tools"
+
+# Growth strategy
+"Should we expand to 2 new markets or focus on growing current market?"
+
+# Implementation with validation
+npx github:rmurphey/monte-carlo-simulator studio generate "Marketing campaign ROI with $75K budget targeting B2B SaaS" --validate
+```
+
+### Feature and Product Decisions
+```bash
+# Feature prioritization
+"ROI analysis of building mobile app vs improving web experience"
+
+# Market expansion
+"Should we target enterprise customers or continue focusing on SMB?"
+
+# Platform decisions
+"Cost-benefit of building API platform vs focusing on core product"
+
+# Save for further analysis
+npx github:rmurphey/monte-carlo-simulator studio generate "Should we invest $500K in automation vs manual processes?" --output automation-analysis.yaml
+```
+
 ## 📈 Output Format
 
 ### Standard Results
@@ -346,6 +478,87 @@ npm run cli run my-analysis.yaml
 - **Technical details**: [TECHNICAL.md](TECHNICAL.md) 
 - **Example patterns**: [examples/README.md](examples/README.md)
 - **Test cases**: `src/test/` directory
+
+## 🔍 Real Example: Exploring an AI Tool Investment
+
+### Complete Exploration Workflow
+
+#### 1. Generate Your Starting Point
+```bash
+npx github:rmurphey/monte-carlo-simulator studio generate "ROI of $150K AI coding assistant for 30 developers" --output ai-tools.yaml
+```
+
+#### 2. Examine Generated Parameters
+The AI creates a complete model with parameters like:
+- `initialInvestment: 150000` (your budget)
+- `affectedEmployees: 30` (team size) 
+- `productivityGain: 15` (expected 15% productivity boost)
+- `adoptionRate: 85` (85% of developers will use it effectively)
+- `implementationMonths: 6` (rollout timeline)
+
+#### 3. Test "What If" Scenarios
+
+**What if adoption is lower?**
+```bash
+# Edit ai-tools.yaml, change adoptionRate from 85 to 60
+npx github:rmurphey/monte-carlo-simulator run ai-tools.yaml
+# Result: ROI drops from 280% to 180%
+```
+
+**What if we invest more in training?**
+```bash
+# Change initialInvestment to 200000, implementationMonths to 4  
+npx github:rmurphey/monte-carlo-simulator run ai-tools.yaml
+# Result: Higher upfront cost but faster payback
+```
+
+**What if productivity gains are higher?**
+```bash
+# Change productivityGain from 15 to 25
+npx github:rmurphey/monte-carlo-simulator run ai-tools.yaml  
+# Result: See how much ROI improves with better tools
+```
+
+#### 4. Interactive Real-Time Exploration
+```bash
+# Launch interactive mode to adjust parameters with immediate feedback
+npx github:rmurphey/monte-carlo-simulator run ai-tools.yaml --interactive
+```
+
+In interactive mode, you can:
+- Move sliders to change investment amount
+- Adjust team size and see breakeven points  
+- Modify productivity assumptions in real-time
+- Find the optimal investment level for your situation
+
+#### 5. Compare Different Strategies
+```bash
+# Conservative approach: lower expectations
+# Edit: productivityGain: 10, adoptionRate: 70, implementationMonths: 8
+npx github:rmurphey/monte-carlo-simulator run ai-tools.yaml --output conservative-results.json
+
+# Aggressive approach: higher expectations  
+# Edit: productivityGain: 25, adoptionRate: 95, implementationMonths: 3
+npx github:rmurphey/monte-carlo-simulator run ai-tools.yaml --output aggressive-results.json
+
+# Compare the risk/reward profiles
+```
+
+## 🚨 Troubleshooting
+
+### "Simulation seems wrong"
+More specific questions get better results:
+- ❌ *"Should we hire people?"*
+- ✅ *"Should we hire 3 senior developers at $150K each for our 50-person SaaS startup?"*
+
+### "Results don't make sense"
+Remember: this shows probability ranges, not guarantees. A 70% chance of success means 30% chance of problems.
+
+### Parameter Validation Errors
+Use `--list-params` to see available parameters:
+```bash
+npx github:rmurphey/monte-carlo-simulator run simulation.yaml --list-params
+```
 
 ## ✅ Validation Checklist
 
