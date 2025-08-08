@@ -15,16 +15,18 @@ async function listSimulationParameters(simulationName) {
         const configPath = await discoverSimulation(simulationName);
         const loader = new loader_1.ConfigurationLoader();
         const config = await loader.loadConfig(configPath);
-        // Create simulation to get ARR-enhanced parameters
-        const simulation = new ConfigurableSimulation_1.ConfigurableSimulation(config);
-        const enhancedConfig = simulation.getConfiguration();
-        console.log(chalk_1.default.cyan.bold(`📋 Parameters for ${enhancedConfig.name}\n`));
-        if (enhancedConfig.description) {
-            console.log(chalk_1.default.gray(`${enhancedConfig.description}\n`));
+        // For parameter listing, show original parameters unless business context was explicitly requested
+        // This prevents confusion when ARR parameters are auto-injected based on keywords
+        const displayConfig = config.businessContext === true ?
+            new ConfigurableSimulation_1.ConfigurableSimulation(config).getConfiguration() :
+            config;
+        console.log(chalk_1.default.cyan.bold(`📋 Parameters for ${displayConfig.name}\n`));
+        if (displayConfig.description) {
+            console.log(chalk_1.default.gray(`${displayConfig.description}\n`));
         }
         console.log(chalk_1.default.blue.bold('Available Parameters:'));
         console.log(chalk_1.default.gray('═'.repeat(80)));
-        enhancedConfig.parameters.forEach((param) => {
+        displayConfig.parameters.forEach((param) => {
             const name = chalk_1.default.cyan(param.key.padEnd(20));
             const type = chalk_1.default.yellow(`(${param.type})`.padEnd(10));
             const defaultVal = chalk_1.default.white(String(param.default).padEnd(15));
@@ -38,14 +40,14 @@ async function listSimulationParameters(simulationName) {
         console.log(chalk_1.default.blue.bold('\nUsage Examples:'));
         console.log(chalk_1.default.gray('─'.repeat(50)));
         // Generate some example overrides
-        const examples = generateParameterExamples(enhancedConfig);
+        const examples = generateParameterExamples(displayConfig);
         examples.forEach(example => {
             console.log(chalk_1.default.green(`  ${example}`));
         });
         console.log(chalk_1.default.blue.bold('\nParameter File Example:'));
         console.log(chalk_1.default.gray('─'.repeat(30)));
         console.log(chalk_1.default.dim('// custom-params.json'));
-        const paramFile = generateParameterFileExample(enhancedConfig);
+        const paramFile = generateParameterFileExample(displayConfig);
         console.log(chalk_1.default.white(paramFile));
         console.log('');
         console.log(chalk_1.default.green(`  run ${simulationName} --params custom-params.json`));
