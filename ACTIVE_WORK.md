@@ -30,16 +30,22 @@ The project has transitioned from design to **working, agent-friendly simulation
 
 ## Current Priorities
 
-### 🎯 **Production-Ready Status Achieved** 
-✅ **[Production Readiness Milestone](archive/production-readiness-milestone-2025.md)**: All immediate priorities completed - framework transition from design to production-ready platform with 100% test coverage and working examples
+### 🎯 **Production-Ready Framework Status** 
+✅ **[Production Readiness Milestone](archive/production-readiness-milestone-2025.md)**: Core framework completed with agent-friendly patterns and working examples
+⚠️ **Test Coverage Gap Identified**: 13.98% actual coverage with 0% CLI command coverage (critical reliability risk)
 
 ### 📋 **Next Development Phase**
 
-#### **Phase 3: Enhanced Features** (Current Priority)
-- ✅ **Quick Test Execution** - Complete agent feedback loop with --test flag
-- ✅ **Zero-Friction Distribution** - NPX access via `npx github:rmurphey/monte-carlo-simulator`
-- ✅ **Interactive Parameter Exploration** - Real-time parameter adjustment with --interactive flag
-- ✅ **Dynamic Parameter Override** - CLI parameter discovery with --set and --list-params
+#### **Phase 3: Critical Test Coverage** (Current Priority)
+- ✅ **Agent Workflow Validation** - Manual testing confirmed end-to-end workflow produces valid business insights
+- ✅ **Parameter Discovery Fix** - CLI now shows correct parameters without unwanted ARR injection
+- **[Critical Test Coverage Strategy](designs/critical-test-coverage-strategy.md)** - Comprehensive testing for CLI commands and agent workflows
+  - **CLI Command Testing** (0% → 85% target) - Parameter discovery, overrides, output formats
+  - **Agent Workflow Integration** (0% → 75% target) - Natural language generation, validation
+  - **Configuration Loading** (0% → 90% target) - YAML/JSON parsing, error handling
+  - **Overall Coverage Goal**: 13.98% → 70%
+
+#### **Phase 4: Enhanced Features** (Next Priority)  
 - **Documentation Synchronization System** - Automated validation to prevent docs/code drift
 - **Enhanced UX** - Progress tracking and navigation improvements  
 - **Template Management** - Advanced template versioning and lifecycle management
@@ -69,10 +75,12 @@ The project has transitioned from design to **working, agent-friendly simulation
 | Metric | Current | Target | Status |
 |--------|---------|--------|--------|
 | Test Success Rate | 100% (58/58) | 100% | ✅ |
+| **Overall Test Coverage** | **13.98%** | **70%** | ⚠️ **Critical Gap** |
+| **CLI Command Coverage** | **0%** | **85%** | ❌ **No Coverage** |
+| **Agent Workflow Coverage** | **0%** | **75%** | ❌ **No Coverage** |
 | Working Examples | 6 tested | 6+ | ✅ |
 | Documentation | Complete | Complete | ✅ |
 | Agent Specs | Complete | Complete | ✅ |
-| Template Logic | Clean | Clean | ✅ |
 
 ---
 
