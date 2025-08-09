@@ -65,15 +65,10 @@ function getResourcePaths() {
         throw new Error('Could not find package root (package.json not found)');
     }
     const paths = {
-        templates: path.join(packageRoot, 'templates'),
         examples: path.join(packageRoot, 'examples'),
         docs: path.join(packageRoot, 'docs'),
         schemas: path.join(packageRoot, 'dist', 'schemas')
     };
-    // Validate that critical paths exist
-    if (!(0, fs_1.existsSync)(paths.templates)) {
-        throw new Error(`Templates directory not found at: ${paths.templates}`);
-    }
     if (!(0, fs_1.existsSync)(paths.examples)) {
         throw new Error(`Examples directory not found at: ${paths.examples}`);
     }
@@ -84,12 +79,12 @@ function getResourcePaths() {
  */
 function getPackageRoot() {
     const paths = getResourcePaths();
-    return path.dirname(paths.templates); // templates is in package root
+    return path.dirname(paths.examples); // examples is in package root
 }
 /**
  * Resolve a resource file path, checking multiple possible locations
  * @param filename - File to find (e.g., 'simple-roi-analysis.yaml')
- * @param category - Category of resource ('templates', 'examples', 'docs')
+ * @param category - Category of resource ('examples', 'docs')
  */
 function resolveResourceFile(filename, category) {
     const paths = getResourcePaths();

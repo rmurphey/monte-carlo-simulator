@@ -80,83 +80,8 @@ program
     .argument('<file>', 'path to simulation file')
     .option('-v, --verbose', 'verbose output')
     .action(validate_simulation_1.validateSimulation);
-program
-    .command('studio')
-    .description('Interactive simulation studio for guided creation')
-    .addCommand(new commander_1.Command('define')
-    .description('Create simulations with guided assistance')
-    .option('-q, --quick-start', 'quick start with business templates')
-    .option('-t, --template <template>', 'start from specific template')
-    .option('-o, --output <file>', 'output file path')
-    .option('-a, --agent-mode', 'agent-optimized creation workflow')
-    .option('-v, --verbose', 'detailed progress information')
-    .option('--no-interactive', 'skip interactive test during creation')
-    .action(async (options) => {
-    try {
-        const { InteractiveDefinitionStudio } = await Promise.resolve().then(() => __importStar(require('./interactive/definition-studio')));
-        const studio = new InteractiveDefinitionStudio();
-        await studio.createSimulation(options);
-    }
-    catch (error) {
-        console.error('❌ Studio command failed:', error instanceof Error ? error.message : String(error));
-        process.exit(1);
-    }
-}))
-    .addCommand(new commander_1.Command('generate')
-    .description('Generate simulation from natural language description')
-    .argument('<query>', 'natural language description of desired simulation')
-    .option('-o, --output <file>', 'output YAML file path')
-    .option('-v, --verbose', 'detailed generation information')
-    .option('--validate', 'enable real-time validation feedback')
-    .option('--test', 'run simulation with generated YAML')
-    .action(async (query, options) => {
-    try {
-        const { generateFromNaturalLanguage } = await Promise.resolve().then(() => __importStar(require('./interactive/definition-studio')));
-        const yamlContent = await generateFromNaturalLanguage(query, {
-            validate: options.validate || options.verbose
-        });
-        if (options.output) {
-            const fs = await Promise.resolve().then(() => __importStar(require('fs/promises')));
-            await fs.writeFile(options.output, yamlContent);
-            console.log(`✅ Generated simulation saved to: ${options.output}`);
-        }
-        else {
-            console.log('Generated YAML Configuration:');
-            console.log('─'.repeat(50));
-            console.log(yamlContent);
-        }
-        if (options.test) {
-            console.log('\n🧪 Running Quick Test...\n');
-            // Write to temp file and run existing simulation runner
-            const fs = await Promise.resolve().then(() => __importStar(require('fs/promises')));
-            const path = await Promise.resolve().then(() => __importStar(require('path')));
-            const os = await Promise.resolve().then(() => __importStar(require('os')));
-            const tempFile = path.join(os.tmpdir(), `test-${Date.now()}.yaml`);
-            await fs.writeFile(tempFile, yamlContent);
-            try {
-                // Use existing run-simulation command
-                const { runSimulation } = await Promise.resolve().then(() => __importStar(require('./commands/run-simulation')));
-                await runSimulation(tempFile, { iterations: 100 });
-            }
-            finally {
-                // Clean up temp file
-                try {
-                    await fs.unlink(tempFile);
-                }
-                catch (cleanupError) {
-                    // Ignore cleanup errors
-                }
-            }
-        }
-        if (options.verbose) {
-            console.log('\n🤖 Agent Analysis Complete');
-        }
-    }
-    catch (error) {
-        console.error('❌ Generation failed:', error instanceof Error ? error.message : String(error));
-        process.exit(1);
-    }
-}));
+// Removed studio commands - using examples-first approach
+// Users should copy from examples/simulations/ directory instead
 program
     .command('run')
     .description('Run a Monte Carlo simulation')
