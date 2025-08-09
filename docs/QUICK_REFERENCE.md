@@ -1,105 +1,285 @@
-# Quick Reference
+# Quick Reference - Creating Your Own Simulations
 
-## 🚀 Instant Start
+## 🚀 Getting Started
 
 ```bash
-# Zero setup (NPX) - works immediately
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
+# Zero setup testing (NPX)
+npx github:rmurphey/monte-carlo-simulator validate my-simulation.yaml
 
 # Local development (full features)
 git clone https://github.com/rmurphey/monte-carlo-simulator
 cd monte-carlo-simulator && npm install && npm run build
-npm run cli run examples/simulations/simple-roi-analysis.yaml
+npm run cli validate my-simulation.yaml
+npm run cli run my-simulation.yaml
 ```
 
-## 📊 Common Analysis Patterns
+## 📝 Create Your First Simulation
 
-### Quick Business ROI Analysis
+### Basic Business ROI Template
+```yaml
+# my-roi-analysis.yaml
+name: "My Investment Analysis"
+category: "Finance"
+description: "ROI analysis for my specific business decision with uncertainty modeling"
+version: "1.0.0"
+tags: [finance, roi, custom]
+
+parameters:
+  - key: initialInvestment
+    label: "Initial Investment ($)"
+    type: number
+    default: 50000
+    min: 1000
+    max: 1000000
+    description: "Upfront investment amount"
+    
+  - key: monthlyBenefit
+    label: "Expected Monthly Benefit ($)"
+    type: number
+    default: 5000
+    min: 100
+    max: 50000
+    description: "Expected monthly financial benefit"
+    
+  - key: riskFactor
+    label: "Risk Factor"
+    type: number
+    default: 0.2
+    min: 0.1
+    max: 0.5
+    description: "Uncertainty factor (0.1=low risk, 0.5=high risk)"
+
+outputs:
+  - key: roi
+    label: "ROI Percentage"
+    description: "Return on investment percentage"
+  
+  - key: paybackMonths
+    label: "Payback Period (Months)"
+    description: "Time to recover initial investment"
+
+simulation:
+  logic: |
+    // Add uncertainty to monthly benefit
+    const actualBenefit = monthlyBenefit * (1 + (random() - 0.5) * riskFactor * 2)
+    const annualBenefit = actualBenefit * 12
+    
+    // Calculate ROI and payback period
+    const roi = ((annualBenefit - initialInvestment) / initialInvestment) * 100
+    const paybackMonths = initialInvestment / actualBenefit
+    
+    return {
+      roi: Math.round(roi * 10) / 10,
+      paybackMonths: Math.round(paybackMonths * 10) / 10
+    }
+```
+
+### Test Your Simulation
 ```bash
-# Basic ROI simulation
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
+# Validate schema and business rules
+npm run cli validate my-roi-analysis.yaml
 
-# With custom parameters
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --set initialInvestment=75000 --set monthlyBenefit=6000
+# Run with default parameters
+npm run cli run my-roi-analysis.yaml
+
+# Test with custom parameters
+npm run cli run my-roi-analysis.yaml --set initialInvestment=100000 --set monthlyBenefit=8000
 ```
+
+## 🎯 Common Simulation Patterns
 
 ### Technology Investment Decision
-```bash
-# Technology investment analysis
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/technology-investment.yaml
+```yaml
+name: "Technology Investment Decision"
+category: "Technology"
+description: "Evaluate technology investment with adoption and productivity factors"
+version: "1.0.0"
+tags: [technology, productivity, investment]
 
-# Team scaling decision
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/team-scaling-decision.yaml
+parameters:
+  - key: toolCost
+    label: "Tool Cost ($)"
+    type: number
+    default: 25000
+  - key: teamSize
+    label: "Team Size"
+    type: number
+    default: 10
+  - key: productivityGain
+    label: "Expected Productivity Gain (%)"
+    type: number
+    default: 20
+    min: 5
+    max: 50
+  - key: adoptionRate
+    label: "Adoption Rate (%)"
+    type: number
+    default: 80
+    min: 30
+    max: 95
+
+outputs:
+  - key: annualSavings
+    label: "Annual Savings ($)"
+  - key: roi
+    label: "ROI (%)"
+
+simulation:
+  logic: |
+    const avgSalary = 100000
+    const actualAdoption = (adoptionRate / 100) * (0.7 + random() * 0.6)
+    const actualGain = (productivityGain / 100) * (0.8 + random() * 0.4)
+    
+    const annualSavings = teamSize * avgSalary * actualAdoption * actualGain
+    const roi = ((annualSavings - toolCost) / toolCost) * 100
+    
+    return {
+      annualSavings: Math.round(annualSavings),
+      roi: Math.round(roi * 10) / 10
+    }
 ```
 
-### AI Tool Adoption Analysis
-```bash
-# AI tool adoption scenarios
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/ai-tool-adoption/conservative.yaml
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/ai-tool-adoption/aggressive.yaml
+## 💡 Advanced Patterns
+
+### Risk Analysis with Multiple Scenarios
+```yaml
+name: "Marketing Campaign Risk Analysis"
+category: "Marketing"
+description: "Marketing campaign with multiple risk scenarios and budget constraints"
+version: "1.0.0"
+tags: [marketing, risk, budget]
+
+parameters:
+  - key: campaignBudget
+    label: "Campaign Budget ($)"
+    type: number
+    default: 50000
+  - key: expectedConversion
+    label: "Expected Conversion Rate (%)"
+    type: number
+    default: 2.5
+    min: 0.5
+    max: 10
+  - key: averageOrderValue
+    label: "Average Order Value ($)"
+    type: number
+    default: 150
+  - key: marketVolatility
+    label: "Market Volatility"
+    type: select
+    default: "medium"
+    options: ["low", "medium", "high"]
+
+simulation:
+  logic: |
+    // Risk factors based on market volatility
+    const volatilityMultipliers = { low: 0.1, medium: 0.3, high: 0.6 }
+    const volatility = volatilityMultipliers[marketVolatility] || 0.3
+    
+    // Add uncertainty to conversion and order value
+    const actualConversion = (expectedConversion / 100) * (1 + (random() - 0.5) * volatility)
+    const actualOrderValue = averageOrderValue * (1 + (random() - 0.5) * volatility)
+    
+    // Calculate results
+    const visitors = campaignBudget / 2 // Assume $2 per visitor
+    const conversions = visitors * actualConversion
+    const revenue = conversions * actualOrderValue
+    const roi = ((revenue - campaignBudget) / campaignBudget) * 100
+    
+    return {
+      revenue: Math.round(revenue),
+      conversions: Math.round(conversions),
+      roi: Math.round(roi * 10) / 10,
+      riskLevel: marketVolatility
+    }
 ```
 
-## 🔧 Essential Commands
+## 🔧 Development Workflow
 
+### 1. Create Your Simulation
 ```bash
-# Discover parameters for any simulation
-npx github:rmurphey/monte-carlo-simulator run <simulation> --list-params
+# Create your YAML file
+cat > my-analysis.yaml << EOF
+name: "My Business Decision"
+category: "Business"
+description: "Custom analysis for my specific business scenario"
+version: "1.0.0"
+tags: [business, custom]
 
-# Validate YAML with bulletproof checking
-npx github:rmurphey/monte-carlo-simulator validate <file>
+parameters:
+  - key: investment
+    label: "Investment Amount ($)"
+    type: number
+    default: 10000
 
-# Interactive mode (local only)  
-npm run cli run <simulation> --interactive
+outputs:
+  - key: result
+    label: "Analysis Result"
 
-# High-precision analysis
-npm run cli run <simulation> --iterations 5000 --verbose
+simulation:
+  logic: |
+    const result = investment * (0.8 + random() * 0.4)
+    return { result: Math.round(result) }
+EOF
 ```
 
-## 📋 Parameter Override Examples
-
+### 2. Validate Schema
 ```bash
-# Single parameter
---set initialInvestment=100000
-
-# Multiple parameters
---set initialInvestment=100000 --set monthlyBenefit=8000 --set riskEnabled=false
-
-# Parameter file
-echo '{"initialInvestment": 100000, "monthlyBenefit": 8000}' > params.json
---params params.json
-
-# Combined approach
---params base.json --set monthlyBenefit=12000
+# Check for errors before running
+npm run cli validate my-analysis.yaml
 ```
 
-## 📈 Output Formats
-
+### 3. Test and Iterate
 ```bash
-# Table (default) - human readable
-npm run cli run simulation.yaml
+# Quick test with low iterations
+npm run cli run my-analysis.yaml --iterations 100
 
-# JSON - programmatic processing  
-npm run cli run simulation.yaml --format json
+# Test parameter overrides
+npm run cli run my-analysis.yaml --set investment=25000
 
-# CSV - spreadsheet analysis
-npm run cli run simulation.yaml --format csv --output results.csv
-
-# Quiet - minimal output for scripting
-npm run cli run simulation.yaml --format quiet
+# Full analysis when satisfied
+npm run cli run my-analysis.yaml --iterations 5000 --verbose
 ```
 
-## 🎯 Quick Tips
+### 4. Parameter Discovery
+```bash
+# See all available parameters
+npm run cli run my-analysis.yaml --list-params
+```
 
-1. **Start with NPX** - No installation required for basic analysis
-2. **Use --list-params** - Discover available parameters quickly  
-3. **Validate first** - Check YAML syntax before running
-4. **Small iterations** - Use 100-500 for quick testing, 1000+ for final results
-5. **Save successful parameters** - Build reusable parameter files
+## 📊 Learning from Examples
+
+Use existing simulations as starting points:
+```bash
+# Copy and customize existing patterns
+cp examples/simulations/simple-roi-analysis.yaml my-custom-analysis.yaml
+
+# Study working patterns
+cat examples/simulations/technology-investment.yaml
+cat examples/simulations/team-scaling-decision.yaml
+```
+
+## 🎯 Quick Tips for Simulation Creation
+
+1. **Start simple** - Begin with basic parameters and outputs
+2. **Validate early** - Use `npm run cli validate` before running
+3. **Test incremental changes** - Small iterations during development
+4. **Use meaningful uncertainty** - `random()` should reflect real-world variability
+5. **Document parameters** - Clear descriptions help with parameter discovery
+6. **Test edge cases** - Use min/max parameter values to validate logic
+7. **Round outputs** - Use `Math.round()` for cleaner results
+
+## 🚨 Common Pitfalls to Avoid
+
+- **Missing required fields** - Validation will catch these
+- **Invalid simulation logic** - Must contain `return` statement
+- **Parameter constraint violations** - Default values outside min/max ranges
+- **Duplicate keys** - Parameter and output keys must be unique
+- **Type mismatches** - Ensure parameter defaults match their declared types
 
 ## 📚 Full Documentation
 
-- **[CLI_REFERENCE.md](CLI_REFERENCE.md)** - Complete CLI guide
-- **[VALIDATION.md](VALIDATION.md)** - Schema validation system  
-- **[AGENT.md](AGENT.md)** - Agent integration guide
-- **[examples/README.md](../examples/README.md)** - Simulation patterns
+- **[CLI_REFERENCE.md](CLI_REFERENCE.md)** - Complete CLI guide with all commands
+- **[VALIDATION.md](VALIDATION.md)** - Schema validation and error handling
+- **[AGENT.md](AGENT.md)** - Agent integration and advanced patterns
+- **[examples/README.md](../examples/README.md)** - Working simulation examples
