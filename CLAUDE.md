@@ -19,7 +19,7 @@ This project follows strict quality standards optimized for large team coordinat
 ## Custom Commands
 Use the following commands for structured development:
 - `/hygiene` - Code quality check
-- `/todo` - Task management
+- `/todo` - Update ACTIVE_WORK.md "Current Priorities" and "Recently Completed" sections
 - `/commit` - Structured commits
 - `/learn` - Knowledge capture
 - `/docs` - Documentation updates

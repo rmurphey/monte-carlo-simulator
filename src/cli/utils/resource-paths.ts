@@ -32,15 +32,9 @@ export function getResourcePaths() {
   }
   
   const paths = {
-    templates: path.join(packageRoot, 'templates'),
     examples: path.join(packageRoot, 'examples'),
     docs: path.join(packageRoot, 'docs'),
     schemas: path.join(packageRoot, 'dist', 'schemas')
-  }
-  
-  // Validate that critical paths exist
-  if (!existsSync(paths.templates)) {
-    throw new Error(`Templates directory not found at: ${paths.templates}`)
   }
   
   if (!existsSync(paths.examples)) {
@@ -55,7 +49,7 @@ export function getResourcePaths() {
  */
 export function getPackageRoot(): string {
   const paths = getResourcePaths()
-  return path.dirname(paths.templates) // templates is in package root
+  return path.dirname(paths.examples) // examples is in package root
 }
 
 /**

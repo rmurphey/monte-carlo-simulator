@@ -34,3 +34,7 @@ Focus on todos related to:
 - Code quality and testing
 - YAML configuration features
 - Strategic simulation generation
+
+**IMPORTANT**: Always edit ACTIVE_WORK.md directly. NEVER use TodoWrite tool for /todo command.
+
+ARGUMENTS: $ARGUMENTS
