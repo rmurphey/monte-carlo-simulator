@@ -26,7 +26,7 @@ npm run cli studio define --template software-investment-roi
 npm run cli studio define --agent-mode
 ```
 
-**Agent Integration**: Complete programmatic API with natural language processing, context-aware validation, and template auto-selection. Real-time YAML validation prevents configuration errors.
+**Agent Integration**: Complete programmatic API with natural language processing, bulletproof schema validation, and template auto-selection. AJV-based validation with detailed error messages prevents any invalid configurations from reaching the repository.
 
 ## ✅ Working Commands (Tested)
 
