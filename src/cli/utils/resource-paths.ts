@@ -55,9 +55,9 @@ export function getPackageRoot(): string {
 /**
  * Resolve a resource file path, checking multiple possible locations
  * @param filename - File to find (e.g., 'simple-roi-analysis.yaml')
- * @param category - Category of resource ('templates', 'examples', 'docs')
+ * @param category - Category of resource ('examples', 'docs')
  */
-export function resolveResourceFile(filename: string, category: 'templates' | 'examples' | 'docs'): string | null {
+export function resolveResourceFile(filename: string, category: 'examples' | 'docs'): string | null {
   const paths = getResourcePaths()
   const categoryPath = paths[category]
   
@@ -81,7 +81,7 @@ export function resolveResourceFile(filename: string, category: 'templates' | 'e
 /**
  * List available resources in a category
  */
-export function listResourceFiles(category: 'templates' | 'examples' | 'docs'): string[] {
+export function listResourceFiles(category: 'examples' | 'docs'): string[] {
   const paths = getResourcePaths()
   const fs = require('fs')
   

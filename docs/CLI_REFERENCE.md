@@ -26,8 +26,7 @@ Commands:
   validate    Bulletproof YAML validation with detailed error messages  
   list        List available simulations
   interactive Select and run simulations interactively
-  studio      Interactive simulation creation and modification
-  create      Create new simulation templates
+  create      Create new simulation configurations
   help        Command-specific help
 ```
 

@@ -4,27 +4,30 @@ This document explains the purpose and usage of each directory in the Monte Carl
 
 ## Core Directory Purposes
 
-### `/templates/` - System Templates
-**Purpose**: Business intelligence templates used by the TemplateLibrary for agent-driven simulation generation.
+### `/examples/simulations/` - Starting Point Patterns
+**Purpose**: Working simulation configurations that users copy and modify for their needs.
 
 **Used by**: 
-- `TemplateLibrary` class for intelligent template selection
-- Agent natural language → YAML generation
-- Interactive studio template-based creation
+- Copy-from-examples workflow (primary user pattern)
+- Agent simulation generation starting points
+- Documentation examples and testing
 
 **Contents**:
 - Production-ready YAML simulation configurations
-- Templates with comprehensive business intelligence metadata
-- Validated templates that pass schema and logic validation
+- Well-documented examples with business context
+- Validated configurations that pass schema validation
 
-**Do NOT**:
-- Modify these files directly without understanding BI impact
-- Use for learning examples (use `/examples/` instead)
-- Create user-specific simulations here (use `/simulations/` instead)
+**Usage Pattern**:
+```bash
+# Copy an example to start your simulation
+cp examples/simulations/simple-roi-analysis.yaml my-analysis.yaml
 
-```typescript
-// Code reference - TemplateLibrary constructor
-this.templatesPath = path.join(__dirname, '..', '..', '..', 'templates')
+# Modify parameters in your copy
+# Validate your changes
+npm run cli validate my-analysis.yaml
+
+# Run your simulation
+npm run cli run my-analysis.yaml
 ```
 
 ---
@@ -74,45 +77,46 @@ this.templatesPath = path.join(__dirname, '..', '..', '..', 'templates')
 
 ## Directory Usage Matrix
 
-| Directory | TemplateLibrary | Agent Generation | User Learning | User Creation | Production Use |
-|-----------|-----------------|------------------|---------------|---------------|----------------|
-| `/templates/` | ✅ Primary | ✅ Source | ❌ No | ❌ No | ✅ Yes |
-| `/examples/` | ❌ No | ❌ No | ✅ Primary | ✅ Reference | ❌ No |
-| `/simulations/` | ❌ No | ❌ No | ❌ No | ✅ Primary | ✅ Yes |
+| Directory | Agent Generation | User Learning | User Creation | Production Use |
+|-----------|------------------|---------------|---------------|----------------|
+| `/examples/simulations/` | ✅ Starting Point | ✅ Primary | ✅ Copy From | ✅ Reference |
+| `/simulations/` | ❌ No | ❌ No | ✅ Primary | ✅ Yes |
 
 ## Code Integration
 
 The framework code understands these directory purposes:
 
 ```typescript
-// Template system uses /templates/ for intelligent selection
-class TemplateLibrary {
-  constructor() {
-    this.templatesPath = path.join(__dirname, '..', '..', '..', 'templates')
-  }
+// Examples-first approach - simple file operations
+class ConfigBuilder {
+  // Users copy from /examples/simulations/ for starting points
+  // Creates new simulations in /simulations/ by default
+  // Simple copy-modify-validate-run workflow
 }
 
-// File generators respect directory purposes
-class FileGenerator {
-  // Creates new simulations in /simulations/ by default
-  // Uses /templates/ for template-based generation
-  // References /examples/ for documentation
+// Resource paths point to examples directory
+export function getResourcePaths() {
+  return {
+    examples: path.join(packageRoot, 'examples', 'simulations'),
+    docs: path.join(packageRoot, 'docs')
+  }
 }
 ```
 
 ## File Management Guidelines
 
-### Adding New Templates (`/templates/`)
+### Adding New Examples (`/examples/simulations/`)
 1. Must pass comprehensive validation (YAML + schema + business logic)
-2. Requires business intelligence metadata
-3. Should be tested with agent generation
-4. Must include proper industry/business model classification
-
-### Creating Examples (`/examples/`)
-1. Focus on educational value and documentation
-2. Include comprehensive comments and business context
+2. Should include comprehensive comments and business context
 3. Demonstrate specific framework features or use cases
-4. Should work out-of-the-box for new users
+4. Should work out-of-the-box for users to copy and modify
+5. Focus on educational value and clear documentation
+
+### Creating User Simulations (`/simulations/`)
+1. User workspace for custom simulations
+2. Copy from examples as starting points
+3. Modify parameters for specific use cases
+4. Validate before running
 
 ### User Simulations (`/simulations/`)
 1. Users have full control over content and structure

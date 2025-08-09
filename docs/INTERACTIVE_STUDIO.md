@@ -1,41 +1,41 @@
-# Interactive Simulation Studio
+# Interactive Simulation Creation
 
 ## Overview
 
-The Interactive Simulation Studio provides a conversational interface for creating and running Monte Carlo simulations with real-time parameter adjustment and live results visualization.
+The framework provides an examples-first approach for creating Monte Carlo simulations. Instead of complex studio interfaces, users copy working examples and modify them directly.
 
-## Architecture
+## Current Approach
 
-### Two-Phase System
-1. **Definition Phase**: Interactive simulation creation with guided questions
-2. **Execution Phase**: Real-time parameter control with streaming results
+### Copy-Modify-Validate-Run Workflow
+1. **Browse Examples**: Find a simulation similar to your use case
+2. **Copy Example**: Copy the YAML file to your workspace
+3. **Modify Parameters**: Edit the YAML directly with your values
+4. **Validate Configuration**: Ensure your changes are valid
+5. **Run Simulation**: Execute with real-time parameter control
 
 ## User Guide
 
-### Starting a Definition Session
+### Creating a New Simulation
 ```bash
-npm run cli studio define
+# 1. View available examples
+npm run cli list
+
+# 2. Copy a relevant example
+cp examples/simulations/simple-roi-analysis.yaml my-analysis.yaml
+
+# 3. Edit my-analysis.yaml with your parameters
+# 4. Validate your changes
+npm run cli validate my-analysis.yaml
+
+# 5. Run your simulation
+npm run cli run my-analysis.yaml
 ```
 
-**Interactive Flow:**
-```
-🎯 Interactive Simulation Studio
-┌─────────────────────────────────────────────────────┐
-│ What business decision are you analyzing?           │
-│ > "Should we adopt AI coding tools for our team"   │
-└─────────────────────────────────────────────────────┘
-
-📊 I'll help you build this simulation step by step...
-
-💡 Suggested parameters:
-   • Team size (developers)
-   • AI tool cost per developer  
-   • Productivity gain percentage
-   • Implementation timeline
-
-🔧 Would you like to:
-   [1] Accept suggestions  [2] Customize  [3] Add parameters
-```
+**Benefits of Examples-First Approach:**
+- ✅ **Simple**: Direct file editing, no complex UI
+- ✅ **Reliable**: Copy from known-working configurations
+- ✅ **Fast**: No guided questionnaires or complex workflows  
+- ✅ **Agent-Friendly**: Easy programmatic generation
 
 ### Parameter Definition Process
 1. **Business Context Selection** - Choose ARR framework integration

@@ -14,7 +14,7 @@ description: commit command
 ## Your task
 Create structured commits following conventional commit standards for the agent-friendly Monte Carlo simulation framework.
 
-This command ensures atomic, well-documented commits that support large team coordination.
+This command ensures atomic, well-documented commits that support large team coordination. This command MAY create multiple commits if needed for good hygiene.
 
 ## Commit Standards
 Follow [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) format:

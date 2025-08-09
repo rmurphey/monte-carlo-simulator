@@ -6,13 +6,13 @@
 
 ```bash
 # Option 1: Instant NPX (Zero Setup) ⚡
-npx github:rmurphey/monte-carlo-simulator studio generate "Should we invest $100K in AI tools?" --test
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
 npx github:rmurphey/monte-carlo-simulator interactive
 
 # Option 2: Local Development
 git clone https://github.com/rmurphey/monte-carlo-simulator
 cd monte-carlo-simulator && npm install && npm run build
-npm run sim    # Interactive simulation selection
+npm run cli run examples/simulations/simple-roi-analysis.yaml
 ```
 
 **Result**: Get confidence intervals like *"75% chance of $200K+ savings, 15% chance of breaking even, 10% chance of loss"* instead of *"AI tools will probably save money"*.
@@ -118,33 +118,26 @@ npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-an
 - **Parameter validation** - Type checking and range enforcement with helpful error messages
 - **Dynamic parameter discovery** - No static documentation to maintain
 
-### **Natural Language Simulation Generation** ✨
+### **Examples-First Simulation Creation** ✨
 
-Create business simulations directly from natural questions:
+Create business simulations by copying and modifying working examples:
 
 ```bash
-# Generate simulation from natural language
-npx github:rmurphey/monte-carlo-simulator studio generate "I want to analyze the ROI of investing in AI tools for my development team"
+# Copy a relevant example to start
+cp examples/simulations/simple-roi-analysis.yaml YOUR_SIMULATION.yaml
 
-# With real-time validation feedback  
-npx github:rmurphey/monte-carlo-simulator studio generate "Should we hire 5 more engineers or invest in automation?" --validate
+# Validate your changes
+npx github:rmurphey/monte-carlo-simulator validate YOUR_SIMULATION.yaml
 
-# Save directly to file
-npx github:rmurphey/monte-carlo-simulator studio generate "Marketing campaign ROI analysis" -o marketing-roi.yaml
+# Run your custom simulation
+npx github:rmurphey/monte-carlo-simulator run YOUR_SIMULATION.yaml
 ```
 
-### **Interactive Studio**
-Create simulations with guided assistance:
-```bash  
-# Interactive guided creation
-npm run cli studio define
-
-# Start from business template
-npm run cli studio define --template software-investment-roi
-
-# Verify everything works
-npm test
-```
+**Benefits:**
+- **Simple**: Direct file editing, no complex interfaces
+- **Reliable**: Start from known-working configurations  
+- **Fast**: No guided questionnaires or wizards
+- **Agent-Friendly**: Easy programmatic generation
 
 ### Run Your First Analysis
 ```bash
@@ -279,11 +272,11 @@ All examples are **tested and working**.
 ### Working with Examples
 ```bash
 # Copy and modify existing examples
-cp examples/simulations/simple-roi-analysis.yaml my-analysis.yaml
+cp examples/simulations/simple-roi-analysis.yaml YOUR_SIMULATION.yaml
 
 # Edit parameters and simulation logic
 # Then run your custom simulation
-npm run cli run my-analysis.yaml
+npm run cli run YOUR_SIMULATION.yaml
 ```
 
 ### Advanced CLI Features
@@ -318,7 +311,7 @@ npm run cli run simulation.yaml --params scenario.json --output results.json --i
 ```bash
 npm test                    # Run full test suite (87 tests - all passing)
 npm run build              # Compile TypeScript  
-npm run cli validate my-analysis.yaml  # Bulletproof YAML validation with detailed errors
+npm run cli validate YOUR_SIMULATION.yaml  # Bulletproof YAML validation with detailed errors
 npm run cli list           # List available simulations
 ```
 

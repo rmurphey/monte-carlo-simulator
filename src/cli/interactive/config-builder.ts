@@ -2,7 +2,7 @@ import inquirer from 'inquirer'
 import { SimulationConfig, ParameterType } from '../config/schema'
 import { ConfigurationLoader } from '../config/loader'
 import { ConfigurableSimulation } from '../../framework/ConfigurableSimulation'
-import { TemplateLibrary, BusinessTemplate } from './template-library'
+// Remove template library import - using examples-first approach
 
 interface ParameterInput {
   key: string
@@ -24,25 +24,12 @@ interface OutputInput {
 
 export class InteractiveConfigBuilder {
   private loader = new ConfigurationLoader()
-  private templateLibrary = new TemplateLibrary()
   
   async buildConfiguration(): Promise<SimulationConfig> {
     console.log('🚀 Monte Carlo Simulation Configuration Builder\n')
+    console.log('💡 Tip: You can also copy and modify examples from examples/simulations/ directory\n')
     
-    // Load templates
-    await this.templateLibrary.loadTemplates()
-    
-    // Check if user wants to start from template
-    const useTemplate = await this.promptTemplateUsage()
-    
-    if (useTemplate) {
-      const template = await this.selectTemplate()
-      if (template) {
-        return await this.customizeTemplate(template)
-      }
-    }
-    
-    // Build from scratch
+    // Build from scratch - examples-first approach
     return await this.buildFromScratch()
   }
   
@@ -79,255 +66,19 @@ export class InteractiveConfigBuilder {
     return config
   }
   
-  private async promptTemplateUsage(): Promise<boolean> {
-    const templates = this.templateLibrary.getAllTemplates()
-    
-    if (templates.length === 0) {
-      console.log('ℹ️  No business templates available. Building from scratch.\n')
-      return false
-    }
-    
-    const { useTemplate } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'useTemplate',
-        message: 'How would you like to create your simulation?',
-        choices: [
-          { name: '📋 Start from business template (recommended)', value: true },
-          { name: '🛠️  Build from scratch', value: false },
-          { name: '🔍 Browse available templates first', value: 'browse' }
-        ]
-      }
-    ])
-    
-    if (useTemplate === 'browse') {
-      await this.browseTemplates()
-      return await this.promptTemplateUsage()
-    }
-    
-    return useTemplate
-  }
+  // Removed template usage prompting - using examples-first approach
   
-  private async selectTemplate(): Promise<BusinessTemplate | null> {
-    const templates = this.templateLibrary.getAllTemplates()
-    
-    console.log('\n📁 Available Business Templates:')
-    console.log('These templates include industry-standard parameters, proven formulas, and business intelligence metrics.\n')
-    
-    const choices = templates.map(template => ({
-      name: `${template.info.name} - ${template.info.businessContext}`,
-      value: template.info.id,
-      short: template.info.name
-    }))
-    
-    if (choices.length > 0) {
-      choices.push({ name: '─'.repeat(40), value: '', short: '' } as any)
-    }
-    choices.push({ name: '🔍 Search templates', value: 'search', short: 'Search' })
-    choices.push({ name: '📊 Filter by category', value: 'filter', short: 'Filter' })
-    choices.push({ name: '❌ Cancel - build from scratch', value: 'cancel', short: 'Cancel' })
-    
-    const { templateId } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'templateId',
-        message: 'Select a business template:',
-        choices,
-        pageSize: 12
-      }
-    ])
-    
-    if (templateId === 'search') {
-      return await this.searchTemplates()
-    } else if (templateId === 'filter') {
-      return await this.filterTemplatesByCategory()
-    } else if (templateId === 'cancel') {
-      return null
-    }
-    
-    const template = this.templateLibrary.getTemplate(templateId)
-    if (template) {
-      this.displayTemplateGuidance(template)
-    }
-    
-    return template || null
-  }
+  // Removed template selection - using examples-first approach
   
-  private async searchTemplates(): Promise<BusinessTemplate | null> {
-    const { query } = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'query',
-        message: 'Search templates (name, description, tags):',
-        validate: (input: string) => input.trim().length > 0 || 'Search query is required'
-      }
-    ])
-    
-    const results = this.templateLibrary.searchTemplates(query)
-    
-    if (results.length === 0) {
-      console.log('❌ No templates found matching your search.')
-      return await this.selectTemplate()
-    }
-    
-    const choices = results.map(template => ({
-      name: `${template.info.name} - ${template.info.businessContext}`,
-      value: template.info.id,
-      short: template.info.name
-    }))
-    
-    choices.push({ name: '🔙 Back to template selection', value: 'back', short: 'Back' })
-    
-    const { templateId } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'templateId',
-        message: `Found ${results.length} template(s):`,
-        choices
-      }
-    ])
-    
-    if (templateId === 'back') {
-      return await this.selectTemplate()
-    }
-    
-    const template = this.templateLibrary.getTemplate(templateId)
-    if (template) {
-      this.displayTemplateGuidance(template)
-    }
-    
-    return template || null
-  }
+  // Removed template search - using examples-first approach
   
-  private async filterTemplatesByCategory(): Promise<BusinessTemplate | null> {
-    const categories = this.templateLibrary.getTemplateCategories()
-    
-    const { category } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'category',
-        message: 'Filter by category:',
-        choices: [
-          ...categories.map(cat => ({ name: cat, value: cat })),
-          { name: '🔙 Back to template selection', value: 'back' }
-        ]
-      }
-    ])
-    
-    if (category === 'back') {
-      return await this.selectTemplate()
-    }
-    
-    const templates = this.templateLibrary.getTemplatesByCategory(category)
-    
-    const choices = templates.map(template => ({
-      name: `${template.info.name} - ${template.info.businessContext}`,
-      value: template.info.id,
-      short: template.info.name
-    }))
-    
-    choices.push({ name: '🔙 Back to template selection', value: 'back', short: 'Back' })
-    
-    const { templateId } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'templateId',
-        message: `${category} templates:`,
-        choices
-      }
-    ])
-    
-    if (templateId === 'back') {
-      return await this.selectTemplate()
-    }
-    
-    const template = this.templateLibrary.getTemplate(templateId)
-    if (template) {
-      this.displayTemplateGuidance(template)
-    }
-    
-    return template || null
-  }
+  // Removed template filtering - using examples-first approach
   
-  private displayTemplateGuidance(template: BusinessTemplate): void {
-    console.log('\n' + '='.repeat(60))
-    console.log(this.templateLibrary.generateBusinessGuidance(template))
-    console.log('='.repeat(60) + '\n')
-  }
+  // Removed template guidance display - using examples-first approach
   
-  private async browseTemplates(): Promise<void> {
-    const templates = this.templateLibrary.getAllTemplates()
-    
-    for (const template of templates) {
-      console.log('\n' + '─'.repeat(50))
-      console.log(`📋 ${template.info.name}`)
-      console.log(`🏢 Category: ${template.info.category}`)
-      console.log(`📝 ${template.info.description}`)
-      console.log(`🎯 Industries: ${template.info.industryRelevance.join(', ')}`)
-      console.log(`🏷️  Tags: ${template.info.tags.join(', ')}`)
-    }
-    
-    console.log('\n' + '─'.repeat(50))
-    
-    await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'continue',
-        message: 'Press Enter to continue...',
-      }
-    ])
-  }
+  // Removed template browsing - using examples-first approach
   
-  private async customizeTemplate(template: BusinessTemplate): Promise<SimulationConfig> {
-    console.log(`🎨 Customizing: ${template.info.name}\n`)
-    
-    const { customizationLevel } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'customizationLevel',
-        message: 'How much do you want to customize this template?',
-        choices: [
-          { name: '⚡ Use as-is (recommended for testing)', value: 'none' },
-          { name: '🔧 Light customization (name, description, basic parameters)', value: 'light' },
-          { name: '🛠️  Full customization (modify all aspects)', value: 'full' }
-        ]
-      }
-    ])
-    
-    if (customizationLevel === 'none') {
-      return { ...template.config }
-    }
-    
-    let config = { ...template.config }
-    
-    if (customizationLevel === 'light' || customizationLevel === 'full') {
-      config = await this.customizeBasicInfo(config)
-      config = await this.customizeKeyParameters(config, template)
-    }
-    
-    if (customizationLevel === 'full') {
-      config = await this.customizeAllParameters(config, template)
-      config = await this.customizeOutputs(config)
-      
-      const { modifyLogic } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'modifyLogic',
-          message: 'Modify simulation logic? (Advanced)',
-          default: false
-        }
-      ])
-      
-      if (modifyLogic) {
-        const parametersInput = config.parameters.map(p => ({ ...p, description: p.description || '' }))
-        const outputsInput = (config.outputs || []).map(o => ({ ...o, description: o.description || '' }))
-        const logic = await this.promptSimulationLogic(parametersInput, outputsInput)
-        config.simulation = { logic }
-      }
-    }
-    
-    return config
-  }
+  // Removed template customization - using examples-first approach
   
   private async customizeBasicInfo(config: SimulationConfig): Promise<SimulationConfig> {
     const answers = await inquirer.prompt([
@@ -354,97 +105,9 @@ export class InteractiveConfigBuilder {
     }
   }
   
-  private async customizeKeyParameters(config: SimulationConfig, template: BusinessTemplate): Promise<SimulationConfig> {
-    console.log('\n🔧 Key Parameter Customization')
-    console.log('Adjust the most important parameters for your specific use case.\n')
-    
-    const keyParams = config.parameters.filter(param => 
-      template.guidance.parameterTips[param.key] || 
-      param.key.toLowerCase().includes('arr') ||
-      param.key.toLowerCase().includes('budget') ||
-      param.key.toLowerCase().includes('target') ||
-      param.key.toLowerCase().includes('rate')
-    )
-    
-    const updatedParams = [...config.parameters]
-    
-    for (const param of keyParams.slice(0, 5)) { // Limit to top 5 most important
-      const tip = template.guidance.parameterTips[param.key]
-      if (tip) {
-        console.log(`💡 ${param.label}: ${tip}`)
-      }
-      
-      if (param.type === 'number') {
-        const { newValue } = await inquirer.prompt({
-            type: 'number',
-            name: 'newValue',
-            message: `${param.label}:`,
-            default: Number(param.default),
-            validate: (input?: number) => {
-              if (input === undefined || isNaN(input)) return 'Must be a valid number'
-              if (param.min !== undefined && input < param.min) return `Must be at least ${param.min}`
-              if (param.max !== undefined && input > param.max) return `Must be at most ${param.max}`
-              return true
-            }
-          })
-        
-        const paramIndex = updatedParams.findIndex(p => p.key === param.key)
-        if (paramIndex !== -1) {
-          updatedParams[paramIndex] = { ...param, default: newValue }
-        }
-      } else if (param.type === 'select') {
-        const { newValue } = await inquirer.prompt([
-          {
-            type: 'list',
-            name: 'newValue',
-            message: `${param.label}:`,
-            choices: param.options || [],
-            default: param.default
-          }
-        ])
-        
-        const paramIndex = updatedParams.findIndex(p => p.key === param.key)
-        if (paramIndex !== -1) {
-          updatedParams[paramIndex] = { ...param, default: newValue }
-        }
-      }
-      
-      console.log() // Add spacing
-    }
-    
-    return {
-      ...config,
-      parameters: updatedParams
-    }
-  }
+  // Removed template-specific parameter customization - using examples-first approach
   
-  private async customizeAllParameters(config: SimulationConfig, template: BusinessTemplate): Promise<SimulationConfig> {
-    const { customizeAll } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'customizeAll',
-        message: 'Customize all parameters individually?',
-        default: false
-      }
-    ])
-    
-    if (!customizeAll) {
-      return config
-    }
-    
-    const updatedParams = []
-    
-    for (const param of config.parameters) {
-      const paramInput = { ...param, description: param.description || '' }
-      const customized = await this.promptSingleParameter(paramInput, template.guidance.parameterTips[param.key])
-      updatedParams.push(customized)
-    }
-    
-    return {
-      ...config,
-      parameters: updatedParams
-    }
-  }
+  // Removed template-specific all parameter customization - using examples-first approach
   
   private async customizeOutputs(config: SimulationConfig): Promise<SimulationConfig> {
     const { customizeOutputs } = await inquirer.prompt([
@@ -526,10 +189,8 @@ export class InteractiveConfigBuilder {
     return parameters
   }
   
-  private async promptSingleParameter(existingParam?: ParameterInput, businessTip?: string): Promise<ParameterInput> {
-    if (businessTip) {
-      console.log(`💡 Business Tip: ${businessTip}\n`)
-    }
+  private async promptSingleParameter(existingParam?: ParameterInput, _businessTip?: string): Promise<ParameterInput> {
+    // Removed business tip display - using examples-first approach
     
     const basic = await inquirer.prompt([
       {

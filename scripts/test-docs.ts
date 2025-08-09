@@ -10,6 +10,18 @@ import { readFile } from 'fs/promises'
 import { execSync } from 'child_process'
 import chalk from 'chalk'
 
+// Documentation placeholder patterns that should NOT be tested as real commands
+const PLACEHOLDER_PATTERNS = [
+  'simulation.yaml',
+  '[YOUR',
+  '<simulation>',
+  '<file>',
+  'YOUR_SIMULATION.yaml',
+  'your-simulation.yaml',
+  'my-simulation.yaml',
+  'my-analysis.yaml'
+] as const
+
 interface TestResult {
   example: string
   success: boolean
@@ -19,6 +31,13 @@ interface TestResult {
 
 class DocumentationTester {
   private results: TestResult[] = []
+  private driftErrors: string[] = []
+  
+  async runAllTests(): Promise<void> {
+    await this.testReadmeExamples()
+    await this.testForDocumentationDrift()
+    this.displayResults()
+  }
   
   async testReadmeExamples(): Promise<void> {
     console.log(chalk.cyan.bold('🧪 Testing README.md Examples\n'))
@@ -34,8 +53,114 @@ class DocumentationTester {
       
       await this.testExample(example)
     }
+  }
+  
+  async testForDocumentationDrift(): Promise<void> {
+    console.log(chalk.cyan.bold('\n🔍 Testing for Documentation Drift\n'))
     
-    this.displayResults()
+    await this.testForBrokenCommands()
+    await this.testForMissingFiles()
+    await this.testForInconsistentTerminology()
+  }
+  
+  private async testForBrokenCommands(): Promise<void> {
+    console.log(chalk.yellow('📋 Checking for non-existent commands...'))
+    
+    const docFiles = [
+      'README.md',
+      'docs/AGENT.md', 
+      'docs/CLI_REFERENCE.md',
+      'docs/INTERACTIVE_STUDIO.md',
+      'docs/DIRECTORY_STRUCTURE.md'
+    ]
+    
+    const brokenCommands = [
+      'studio generate',
+      'studio define',
+      'studio create',
+      '--template'
+    ]
+    
+    for (const file of docFiles) {
+      try {
+        const content = await readFile(file, 'utf-8')
+        
+        for (const cmd of brokenCommands) {
+          if (content.includes(cmd)) {
+            this.driftErrors.push(`${file} still references removed command: "${cmd}"`)
+          }
+        }
+      } catch (error) {
+        console.log(chalk.gray(`   Skipping ${file} (not found)`))
+      }
+    }
+    
+    console.log(chalk.green('   ✅ Broken command check complete'))
+  }
+  
+  private async testForMissingFiles(): Promise<void> {
+    console.log(chalk.yellow('📁 Checking for references to deleted files...'))
+    
+    const docFiles = [
+      'README.md',
+      'docs/AGENT.md',
+      'docs/DIRECTORY_STRUCTURE.md', 
+      'ACTIVE_WORK.md'
+    ]
+    
+    const deletedPaths = [
+      'templates/',
+      'src/cli/interactive/definition-studio.ts',
+      'src/cli/interactive/template-library.ts'
+    ]
+    
+    for (const file of docFiles) {
+      try {
+        const content = await readFile(file, 'utf-8')
+        
+        for (const path of deletedPaths) {
+          if (content.includes(path) && !content.includes('removed') && !content.includes('deleted')) {
+            this.driftErrors.push(`${file} references deleted path: "${path}" (should note removal)`)
+          }
+        }
+      } catch (error) {
+        console.log(chalk.gray(`   Skipping ${file} (not found)`))
+      }
+    }
+    
+    console.log(chalk.green('   ✅ Missing file check complete'))
+  }
+  
+  private async testForInconsistentTerminology(): Promise<void> {
+    console.log(chalk.yellow('🏷️  Checking for terminology consistency...'))
+    
+    const docFiles = [
+      'README.md',
+      'docs/AGENT.md',
+      'docs/CLI_REFERENCE.md'
+    ]
+    
+    // Should use "examples" not "templates" now
+    for (const file of docFiles) {
+      try {
+        const content = await readFile(file, 'utf-8')
+        
+        // Check for template references that should be examples
+        if (content.includes('template-based') || content.includes('Template Library')) {
+          this.driftErrors.push(`${file} uses old template terminology (should use examples-first approach)`)
+        }
+        
+        // Check for broken workflow descriptions
+        if (content.includes('Interactive Studio') && !content.includes('removed')) {
+          this.driftErrors.push(`${file} references Interactive Studio without noting it was simplified`)
+        }
+        
+      } catch (error) {
+        console.log(chalk.gray(`   Skipping ${file} (not found)`))
+      }
+    }
+    
+    console.log(chalk.green('   ✅ Terminology check complete'))
   }
   
   private extractBashExamples(content: string): string[] {
@@ -86,8 +211,11 @@ class DocumentationTester {
       return false
     }
     
-    // Skip examples that are just showing syntax
-    if (command.includes('simulation.yaml') || command.includes('[YOUR')) {
+    // Skip examples that contain placeholder patterns
+    const hasPlaceholder = PLACEHOLDER_PATTERNS.some(pattern => 
+      command.includes(pattern)
+    )
+    if (hasPlaceholder) {
       return false
     }
     
@@ -155,12 +283,14 @@ class DocumentationTester {
   private displayResults(): void {
     const successful = this.results.filter(r => r.success)
     const failed = this.results.filter(r => !r.success)
+    const hasErrors = failed.length > 0 || this.driftErrors.length > 0
     
-    console.log(chalk.cyan.bold('📊 TEST RESULTS'))
+    console.log(chalk.cyan.bold('\n📊 DOCUMENTATION TEST RESULTS'))
     console.log(chalk.gray('═'.repeat(50)))
-    console.log(`${chalk.green('✅ Passed:')} ${successful.length}`)
-    console.log(`${chalk.red('❌ Failed:')} ${failed.length}`)
-    console.log(`${chalk.blue('📝 Total:')} ${this.results.length}`)
+    console.log(`${chalk.green('✅ Examples Passed:')} ${successful.length}`)
+    console.log(`${chalk.red('❌ Examples Failed:')} ${failed.length}`)
+    console.log(`${chalk.yellow('⚠️  Drift Issues:')} ${this.driftErrors.length}`)
+    console.log(`${chalk.blue('📝 Total Tests:')} ${this.results.length}`)
     
     if (failed.length > 0) {
       console.log(chalk.red.bold('\n🚨 FAILED EXAMPLES:'))
@@ -171,11 +301,27 @@ class DocumentationTester {
         console.log(chalk.red(`   Error: ${result.error?.split('\n')[0]}`))
         console.log()
       })
+    }
+    
+    if (this.driftErrors.length > 0) {
+      console.log(chalk.yellow.bold('\n⚠️  DOCUMENTATION DRIFT DETECTED:'))
+      console.log(chalk.gray('─'.repeat(50)))
       
-      console.log(chalk.red.bold('💡 Fix these examples before committing!'))
+      this.driftErrors.forEach((error, index) => {
+        console.log(chalk.yellow(`${index + 1}. ${error}`))
+      })
+      console.log()
+    }
+    
+    if (hasErrors) {
+      console.log(chalk.red.bold('💡 Fix these issues before committing!'))
+      console.log(chalk.gray('Documentation must stay in sync with implementation.'))
       process.exit(1)
     } else {
-      console.log(chalk.green.bold('\n🎉 All documentation examples work!'))
+      console.log(chalk.green.bold('\n🎉 All documentation tests passed!'))
+      console.log(chalk.green('✅ Examples work'))
+      console.log(chalk.green('✅ No drift detected'))
+      console.log(chalk.green('✅ Terminology consistent'))
     }
   }
 }
@@ -183,8 +329,11 @@ class DocumentationTester {
 // Run the tests
 async function main() {
   try {
+    console.log(chalk.cyan.bold('🧪 Documentation Drift Prevention Tests'))
+    console.log(chalk.gray('Ensuring docs stay synchronized with implementation\n'))
+    
     const tester = new DocumentationTester()
-    await tester.testReadmeExamples()
+    await tester.runAllTests()
   } catch (error) {
     console.error(chalk.red.bold('❌ Documentation testing failed:'), error)
     process.exit(1)

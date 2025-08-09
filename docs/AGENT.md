@@ -1,32 +1,36 @@
 # Agent Guide - Monte Carlo Business Simulation Framework
 
-## 🎯 Interactive Studio ✅ **IMPLEMENTED**
+## 🎯 Examples-First Simulation Creation ✅ **IMPLEMENTED**
 
-### Natural Language Simulation Generation
+### Copy-From-Examples Workflow
 ```bash
-# Generate simulation from natural language
-npm run cli studio generate "I want to analyze ROI of software investment for my team"
+# View available examples
+npm run cli list
 
-# With validation feedback
-npm run cli studio generate "Marketing campaign ROI analysis" --validate
+# Copy an example to modify
+cp examples/simulations/simple-roi-analysis.yaml my-analysis.yaml
 
-# Save to file
-npm run cli studio generate "Team scaling decision analysis" -o team-analysis.yaml
+# Validate your configuration
+npm run cli validate my-analysis.yaml
+
+# Run your simulation
+npm run cli run my-analysis.yaml
 ```
 
-### Interactive Simulation Creation  
+### Agent-Optimized Pattern  
 ```bash
-# Interactive guided creation
-npm run cli studio define
+# 1. Start with working example
+cp examples/simulations/technology-investment.yaml my-investment.yaml
 
-# Template-based creation
-npm run cli studio define --template software-investment-roi
+# 2. Modify YAML parameters directly (no complex UI needed)
+# 3. Validate configuration
+npm run cli validate my-investment.yaml
 
-# Agent-optimized workflow
-npm run cli studio define --agent-mode
+# 4. Run simulation with validation
+npm run cli run my-investment.yaml
 ```
 
-**Agent Integration**: Complete programmatic API with natural language processing, bulletproof schema validation, and template auto-selection. AJV-based validation with detailed error messages prevents any invalid configurations from reaching the repository.
+**Agent Integration**: Simple copy-modify-validate-run workflow with bulletproof YAML validation. AJV-based schema validation prevents any invalid configurations. No complex studio commands - just direct file manipulation.
 
 ## ✅ Working Commands (Tested)
 
@@ -49,7 +53,7 @@ npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-an
 ```bash
 # Full feature access (requires git clone + npm install)
 npm run cli run examples/simulations/simple-roi-analysis.yaml --interactive
-npm run cli studio generate "ROI analysis for AI tools"
+npm run cli validate my-simulation.yaml
 npm run cli --help
 npm run cli list
 ```
@@ -390,7 +394,8 @@ npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --list-params
 #### Step 1: Generate and Save Your Simulation
 ```bash
 # Generate but don't just test - SAVE it so you can modify it
-npx github:rmurphey/monte-carlo-simulator studio generate "Should we invest $200K in AI tools for 50 developers?" --output ai-investment.yaml
+cp examples/simulations/technology-investment.yaml ai-investment.yaml
+npx github:rmurphey/monte-carlo-simulator run ai-investment.yaml
 ```
 
 #### Step 2: Examine the Generated Model
@@ -464,7 +469,7 @@ npx github:rmurphey/monte-carlo-simulator run aggressive-scenario.yaml
 "Cost-benefit analysis of moving to serverless vs scaling existing infrastructure"
 
 # Implementation with uncertainty
-npx github:rmurphey/monte-carlo-simulator studio generate "ROI of implementing CI/CD pipeline for 20 developers" --test
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/technology-investment.yaml
 ```
 
 ### Resource Allocation Decisions
@@ -479,7 +484,7 @@ npx github:rmurphey/monte-carlo-simulator studio generate "ROI of implementing C
 "Should we expand to 2 new markets or focus on growing current market?"
 
 # Implementation with validation
-npx github:rmurphey/monte-carlo-simulator studio generate "Marketing campaign ROI with $75K budget targeting B2B SaaS" --validate
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/marketing-campaign-roi.yaml --set budget=75000
 ```
 
 ### Feature and Product Decisions
@@ -494,7 +499,8 @@ npx github:rmurphey/monte-carlo-simulator studio generate "Marketing campaign RO
 "Cost-benefit of building API platform vs focusing on core product"
 
 # Save for further analysis
-npx github:rmurphey/monte-carlo-simulator studio generate "Should we invest $500K in automation vs manual processes?" --output automation-analysis.yaml
+cp examples/simulations/technology-investment.yaml automation-analysis.yaml
+npx github:rmurphey/monte-carlo-simulator validate automation-analysis.yaml
 ```
 
 ## 📈 Output Format
@@ -526,7 +532,8 @@ npx github:rmurphey/monte-carlo-simulator studio generate "Should we invest $500
 
 #### 1. Generate Your Starting Point
 ```bash
-npx github:rmurphey/monte-carlo-simulator studio generate "ROI of $150K AI coding assistant for 30 developers" --output ai-tools.yaml
+cp examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml ai-tools.yaml
+npx github:rmurphey/monte-carlo-simulator validate ai-tools.yaml
 ```
 
 #### 2. Examine Generated Parameters
