@@ -141,13 +141,12 @@ npx github:rmurphey/monte-carlo-simulator run YOUR_SIMULATION.yaml
 
 ### Run Your First Analysis
 ```bash
-# Interactive AI investment analysis (recommended)
-npm run ai:i
+# Run example simulations
+npm run cli run examples/simulations/simple-roi-analysis.yaml
+npm run cli run examples/simulations/technology-investment.yaml
 
-# Quick AI investment scenarios
-npm run ai                # Baseline scenario
-npm run ai:conservative   # Low-risk scenario  
-npm run ai:aggressive     # High-risk scenario
+# Interactive parameter exploration
+npm run cli run examples/simulations/simple-roi-analysis.yaml --interactive
 
 # See all available commands
 npm run cli --help
@@ -283,13 +282,9 @@ npm run cli run YOUR_SIMULATION.yaml
 
 **Interactive Mode** - Real-time parameter adjustment:
 ```bash
-# Super short command for interactive AI investment analysis
-npm run ai:i
-
-# Other quick commands
-npm run ai              # Run baseline AI ROI analysis  
-npm run ai:conservative # Run conservative scenario
-npm run ai:aggressive   # Run aggressive scenario
+# Interactive parameter exploration
+npm run cli run examples/simulations/simple-roi-analysis.yaml --interactive
+npm run cli run examples/simulations/technology-investment.yaml --interactive
 
 # Adjust parameters → See results instantly → Save scenarios
 # Perfect for exploring "what-if" scenarios in real-time
@@ -309,10 +304,29 @@ npm run cli run simulation.yaml --params scenario.json --output results.json --i
 
 **Development Commands**:
 ```bash
-npm test                    # Run full test suite (87 tests - all passing)
+# Core development
+npm run dev                 # Watch mode for development
 npm run build              # Compile TypeScript  
+npm run test               # Run full test suite (87 tests - all passing)
+npm run test:watch         # Run tests in watch mode
+npm run test:coverage      # Run tests with coverage report
+
+# Code quality
+npm run lint               # Check for linting issues
+npm run lint:fix           # Auto-fix linting issues
+npm run format             # Format code with Prettier
+npm run typecheck          # TypeScript type checking
+
+# Validation
 npm run cli validate YOUR_SIMULATION.yaml  # Bulletproof YAML validation with detailed errors
+npm run validate:yaml      # Validate all YAML files
+npm run validate:json      # Validate all JSON files
+npm run test:docs          # Test documentation examples
+npm run test:agent-apis    # Test agent API functionality
+
+# CLI commands
 npm run cli list           # List available simulations
+npm run sim                # Quick interactive mode
 ```
 
 ### Project Structure
