@@ -250,6 +250,7 @@ All examples are **tested and working**.
 
 ### For Humans:
 - **[examples/](examples/)** - Working simulation examples you can run and modify
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** - Complete CLI guide with examples and best practices
 - **[docs/TECHNICAL.md](docs/TECHNICAL.md)** - Framework architecture and advanced features
 - **[docs/VALIDATION.md](docs/VALIDATION.md)** - Bulletproof validation system and error handling
 
