@@ -30,26 +30,67 @@ npm run cli studio define --agent-mode
 
 ## ✅ Working Commands (Tested)
 
+### NPX Commands (Zero Setup)
 ```bash
-# These commands are verified working:
-npm run cli run templates/simple-roi-analysis.yaml
-npm run cli run templates/technology-investment.yaml  
-npm run cli run templates/team-scaling-decision.yaml
-npm run cli run examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml
-npm run cli run examples/simulations/ai-tool-adoption/conservative.yaml
-npm run cli run examples/simulations/ai-tool-adoption/aggressive.yaml
+# Run simulations directly without installation
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/technology-investment.yaml
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml
 
-# Directory structure:
-# /templates/ - System templates for agent generation (TemplateLibrary source)
-# /examples/ - Learning examples and documentation
-# /simulations/ - User workspace for custom simulations
+# Parameter discovery and validation  
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --list-params
+npx github:rmurphey/monte-carlo-simulator validate examples/simulations/simple-roi-analysis.yaml
 
-# CLI commands:
+# Parameter overrides with bulletproof validation
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --set initialInvestment=75000
+```
+
+### Local Development Commands
+```bash
+# Full feature access (requires git clone + npm install)
+npm run cli run examples/simulations/simple-roi-analysis.yaml --interactive
+npm run cli studio generate "ROI analysis for AI tools"
 npm run cli --help
 npm run cli list
-npm run cli validate <file.yaml>
-npm test  # 58 tests pass
 ```
+
+**Directory Structure:**
+- `/examples/simulations/` - Working examples with bulletproof validation
+- `/docs/` - Agent specifications and validation documentation
+- `/src/validation/` - BulletproofValidator system
+
+## 🚀 NPX Quick Start Guide
+
+### For Agents: Zero-Setup Analysis
+```bash
+# Instant business decision analysis (no installation required)
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
+
+# Real business scenarios
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/technology-investment.yaml
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/team-scaling-decision.yaml
+
+# AI tool adoption analysis
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml
+```
+
+### Parameter Discovery & Validation
+```bash
+# Discover all parameters for any simulation
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --list-params
+
+# Validate YAML configurations with bulletproof checking
+npx github:rmurphey/monte-carlo-simulator validate examples/simulations/simple-roi-analysis.yaml
+
+# Override parameters with validation
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --set initialInvestment=100000 --set monthlyBenefit=8000
+```
+
+**NPX Benefits for Agents:**
+- **Zero setup required** - Works immediately without git clone or npm install
+- **Bulletproof validation** - All YAML checked with detailed error messages  
+- **Parameter discovery** - Dynamic parameter listing without static documentation
+- **Production reliability** - 87 tests ensure consistent behavior
 
 ## 📋 YAML Schema Requirements
 

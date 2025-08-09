@@ -80,21 +80,21 @@ npm run build
 Analyze business decisions instantly without installation:
 
 ```bash
-# Generate and test simulations from natural language - NO SETUP REQUIRED
-npx github:rmurphey/monte-carlo-simulator studio generate "Should we invest $200K in AI tools?" --test
-
-# Interactive parameter exploration - adjust parameters in real-time
-npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --interactive
+# Run simulations directly with NPX - NO SETUP REQUIRED
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/technology-investment.yaml
 
 # Parameter override examples
-npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --set initialInvestment=500000
-npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --list-params
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --set initialInvestment=75000 --set monthlyBenefit=6000
 
-# Interactive simulation browser
-npx github:rmurphey/monte-carlo-simulator interactive
+# List parameters for any simulation
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --list-params
 
+# Interactive parameter exploration (requires installation for full interactivity)
+npx github:rmurphey/monte-carlo-simulator --help
 
-
+# Validation with bulletproof error checking
+npx github:rmurphey/monte-carlo-simulator validate examples/simulations/simple-roi-analysis.yaml
 ```
 
 ### **Interactive Parameter Exploration** 🎛️
@@ -102,14 +102,14 @@ npx github:rmurphey/monte-carlo-simulator interactive
 Adjust parameters in real-time and see results update instantly:
 
 ```bash
-# Launch interactive mode for any simulation
-npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --interactive
+# Launch interactive mode for any simulation (local installation)
+npm run cli run examples/simulations/simple-roi-analysis.yaml --interactive
 
-# Override specific parameters from command line
-npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --set initialInvestment=300000 --set monthlyBenefit=8000
+# Override specific parameters from command line (works with NPX)
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --set initialInvestment=300000 --set monthlyBenefit=8000
 
-# Discover available parameters for any simulation  
-npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --list-params
+# Discover available parameters for any simulation (works with NPX)
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --list-params
 ```
 
 **Interactive Features:**
