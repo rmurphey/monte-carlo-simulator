@@ -71,7 +71,7 @@ npm run cli run my-analysis.yaml
 - User-controlled content
 - May not follow strict validation (development workspace)
 - Can include private/proprietary business models
-- Not used by system template selection
+- Personal workspace for custom business scenarios
 
 ---
 
@@ -127,9 +127,8 @@ export function getResourcePaths() {
 ## Migration and Maintenance
 
 When moving files between directories:
-1. **Template → Example**: Add documentation, remove BI optimization
-2. **Example → Template**: Add BI metadata, ensure production validation
-3. **Template → Simulation**: Copy to user workspace, no system impact
-4. **Simulation → Template**: Full validation required, BI metadata needed
+1. **Example → Simulation**: Copy from examples/ to create custom simulation
+2. **Simulation → Example**: Add documentation and validation for sharing
+3. **Example Improvements**: Update examples/ with better patterns and documentation
 
 This structure ensures clear separation of concerns while supporting both agent-driven automation and human usability.

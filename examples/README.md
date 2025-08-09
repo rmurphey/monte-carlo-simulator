@@ -2,21 +2,20 @@
 
 ## 📚 Purpose: Educational Examples
 
-These are **educational examples** designed for learning how to use the Monte Carlo simulation framework. They focus on clarity, documentation, and teaching framework concepts.
+These are **working examples** designed as starting points for creating your own simulations. They focus on proven patterns, clear documentation, and copy-modify workflows.
 
 ## 🎯 Directory Purpose
 
 - **Learning**: New users understanding the framework
 - **Documentation**: Examples referenced in guides and tutorials  
 - **Teaching**: Demonstrating framework capabilities and patterns
-- **NOT Production**: For system templates, see `/templates/` directory
+- **Starting Points**: Working examples for users to copy and modify
 
-## ⚠️ Important Distinctions
+## 🗂️ Directory Structure
 
 | Directory | Purpose | Used By | Optimization |
 |-----------|---------|---------|-------------|
-| `/templates/` | System templates for agent generation | TemplateLibrary, Agent workflows | Production efficiency |  
-| `/examples/` | Learning and documentation | New users, documentation | Educational clarity |
+| `/examples/simulations/` | Working patterns to copy and modify | All users, agents | Copy-from-examples workflow |
 | `/simulations/` | User workspace | End users creating custom sims | User flexibility |
 
 ## Available Examples
@@ -145,4 +144,20 @@ simulations/
 - Logic: At least 10 characters
 - All required fields must be present
 
-These examples provide proven patterns for agents to create strategic business simulations with risk scenario analysis.
+## 🚀 Copy-First Workflow
+
+These examples are designed to be **copied and modified**:
+
+```bash
+# Copy an example to start your simulation
+cp examples/simulations/simple-roi-analysis.yaml my-analysis.yaml
+
+# Edit parameters and simulation logic in your copy
+# Validate your changes
+npm run cli validate my-analysis.yaml
+
+# Run your custom simulation
+npm run cli run my-analysis.yaml
+```
+
+These examples provide proven patterns for creating strategic business simulations with risk scenario analysis.

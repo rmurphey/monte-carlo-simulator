@@ -15,7 +15,7 @@ npm run cli run my-simulation.yaml
 
 ## 📝 Create Your First Simulation
 
-### Basic Business ROI Template
+### Basic Business ROI Example
 ```yaml
 # my-roi-analysis.yaml
 name: "My Investment Analysis"

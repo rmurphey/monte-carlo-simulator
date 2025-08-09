@@ -8,15 +8,15 @@ This directory is your **workspace** for creating, customizing, and maintaining 
 
 | Directory | Purpose | Used By | Validation |
 |-----------|---------|---------|-----------|
-| `/templates/` | **System templates** | TemplateLibrary, Agent generation | ✅ Strict |
-| `/examples/` | **Learning examples** | Documentation, New users | ❌ Educational |
+| `/examples/simulations/` | **Starting point patterns** | Copy-from workflow, Learning | ✅ Strict |
 | `/simulations/` | **User workspace** | You, Your team | ❌ Freedom |
 
-## 🚫 Important: NOT Used by System
+## 📁 Personal Workspace
 
-- **TemplateLibrary ignores this directory** - it uses `/templates/` for agent workflows
-- **Agents don't see these files** - they use production templates for generation
-- **Full development freedom** - no validation requirements or restrictions
+- **Development space** - Create and modify your custom simulations
+- **Copy from examples** - Start by copying from `/examples/simulations/` directory
+- **Full development freedom** - Experiment without validation requirements during development
+- **Personal/proprietary** - Can include organization-specific business models
 
 ## Directory Structure
 
@@ -79,13 +79,27 @@ simulations/
 └── technology-migrations/     # Infrastructure change analysis
 ```
 
-## Adding New Simulations
+## Creating New Simulations
 
-1. **Use descriptive names**: `[category]-[use-case]-[variant].yaml`
-2. **Include comprehensive metadata**: name, description, tags, version
-3. **Document parameters**: Clear labels and descriptions
-4. **Define meaningful outputs**: Business-relevant metrics
-5. **Add to this README**: Update documentation with usage examples
+### Copy-First Workflow
+```bash
+# Start by copying a relevant example
+cp examples/simulations/technology-investment.yaml simulations/my-analysis.yaml
+
+# Edit your copy to match your specific scenario
+# Validate when ready
+npm run cli validate simulations/my-analysis.yaml
+
+# Run your simulation
+npm run cli run simulations/my-analysis.yaml
+```
+
+### Development Guidelines
+1. **Start with examples** - Copy from `/examples/simulations/` as starting points
+2. **Use descriptive names**: `[category]-[use-case]-[variant].yaml`
+3. **Include comprehensive metadata**: name, description, tags, version
+4. **Document parameters**: Clear labels and descriptions
+5. **Define meaningful outputs**: Business-relevant metrics
 
 ## Best Practices
 

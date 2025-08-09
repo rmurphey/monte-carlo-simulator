@@ -80,56 +80,13 @@ export class InteractiveConfigBuilder {
   
   // Removed template customization - using examples-first approach
   
-  private async customizeBasicInfo(config: SimulationConfig): Promise<SimulationConfig> {
-    const answers = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'name',
-        message: 'Simulation name:',
-        default: config.name,
-        validate: (input: string) => input.trim().length > 0 || 'Name is required'
-      },
-      {
-        type: 'input',
-        name: 'description',
-        message: 'Description:',
-        default: config.description,
-        validate: (input: string) => input.trim().length > 0 || 'Description is required'
-      }
-    ])
-    
-    return {
-      ...config,
-      name: answers.name,
-      description: answers.description
-    }
-  }
+  // Removed customizeBasicInfo - using examples-first approach
   
   // Removed template-specific parameter customization - using examples-first approach
   
   // Removed template-specific all parameter customization - using examples-first approach
   
-  private async customizeOutputs(config: SimulationConfig): Promise<SimulationConfig> {
-    const { customizeOutputs } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'customizeOutputs',
-        message: 'Customize output metrics?',
-        default: false
-      }
-    ])
-    
-    if (!customizeOutputs) {
-      return config
-    }
-    
-    const outputs = await this.promptOutputs()
-    
-    return {
-      ...config,
-      outputs
-    }
-  }
+  // Removed customizeOutputs - using examples-first approach
   
   private async promptBasicInfo() {
     const answers = await inquirer.prompt([
