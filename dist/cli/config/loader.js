@@ -34,7 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConfigurationLoader = void 0;
-const fs_1 = require("fs");
+const promises_1 = require("fs/promises");
 const path_1 = require("path");
 const yaml = __importStar(require("js-yaml"));
 const schema_1 = require("./schema");
@@ -49,7 +49,7 @@ class ConfigurationLoader {
             if (this.loadedConfigs.has(normalizedPath)) {
                 return this.loadedConfigs.get(normalizedPath);
             }
-            const content = await fs_1.promises.readFile(filePath, 'utf8');
+            const content = await (0, promises_1.readFile)(filePath, 'utf8');
             let config = this.parseContent(content, filePath);
             // Handle base simulation inheritance
             if (config.baseSimulation) {
@@ -139,7 +139,7 @@ class ConfigurationLoader {
     }
     async loadMultipleConfigs(directory) {
         try {
-            const files = await fs_1.promises.readdir(directory);
+            const files = await (0, promises_1.readdir)(directory);
             const configFiles = files.filter(file => file.endsWith('.yaml') || file.endsWith('.yml') || file.endsWith('.json'));
             const configs = [];
             const errors = [];
@@ -169,7 +169,7 @@ class ConfigurationLoader {
                 throw new Error(`Invalid configuration:\n${validation.errors.join('\n')}`);
             }
             // Ensure directory exists
-            await fs_1.promises.mkdir((0, path_1.dirname)(filePath), { recursive: true });
+            await (0, promises_1.mkdir)((0, path_1.dirname)(filePath), { recursive: true });
             // Determine format from extension
             const ext = (0, path_1.extname)(filePath).toLowerCase();
             let content;
@@ -185,7 +185,7 @@ class ConfigurationLoader {
                     sortKeys: false
                 });
             }
-            await fs_1.promises.writeFile(filePath, content, 'utf8');
+            await (0, promises_1.writeFile)(filePath, content, 'utf8');
         }
         catch (error) {
             throw new Error(`Failed to save configuration to ${filePath}: ${error instanceof Error ? error.message : String(error)}`);

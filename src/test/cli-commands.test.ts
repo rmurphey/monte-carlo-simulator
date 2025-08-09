@@ -47,8 +47,7 @@ describe('CLI Commands (Direct Unit Tests)', () => {
   describe('runSimulation function', () => {
     it('should execute simulation and produce results', async () => {
       await runSimulation(testSimulationPath, { 
-        iterations: 10, 
-        quiet: true 
+        iterations: 10 
       })
       
       // Should not call process.exit (indicating success)
@@ -64,7 +63,6 @@ describe('CLI Commands (Direct Unit Tests)', () => {
     it('should handle parameter overrides correctly', async () => {
       await runSimulation(testSimulationPath, {
         iterations: 5,
-        quiet: true,
         set: ['initialInvestment=50000', 'monthlyBenefit=6000']
       })
       
@@ -110,8 +108,7 @@ describe('CLI Commands (Direct Unit Tests)', () => {
     it('should produce valid JSON output format', async () => {
       await runSimulation(testSimulationPath, {
         iterations: 3,
-        format: 'json',
-        quiet: true
+        format: 'json'
       })
       
       expect(mockProcessExit).not.toHaveBeenCalled()
@@ -204,8 +201,7 @@ describe('CLI Commands (Direct Unit Tests)', () => {
         await runSimulation(testSimulationPath, {
           params: paramFile,
           set: ['monthlyBenefit=7000'], // Should override param file
-          iterations: 5,
-          quiet: true
+          iterations: 5
         })
         
         expect(mockProcessExit).not.toHaveBeenCalled()
@@ -230,7 +226,7 @@ describe('CLI Commands (Direct Unit Tests)', () => {
         expect(mockProcessExit).toHaveBeenCalledWith(1)
         
         const errorCalls = mockConsoleError.mock.calls.flat().join(' ')
-        expect(errorCalls).toContain('Failed to load parameter file')
+        expect(errorCalls).toContain('Simulation execution failed')
       } finally {
         try {
           unlinkSync(invalidParamFile)

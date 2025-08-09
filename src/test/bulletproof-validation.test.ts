@@ -34,7 +34,7 @@ describe('BULLETPROOF VALIDATION SYSTEM', () => {
   it('should validate ALL known simulation files and provide detailed results', async () => {
     const knownFiles = [
       'examples/simulations/simple-roi-analysis.yaml',
-      'examples/simulations/ai-tool-adoption.yaml',
+      'examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml',
       'examples/simulations/marketing-campaign-roi.yaml',
       'examples/simulations/software-investment-roi.yaml',
       'examples/simulations/team-scaling-decision.yaml',

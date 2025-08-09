@@ -112,3 +112,4 @@ NEVER proactively create documentation files (*.md) or README files. Only create
 
 ## Simulation Practices
 - simulations MUST be created in a simulations directory, never at the root
+- when you are running tests pre-commit or pre-push, NEVER run them in a watch mode.

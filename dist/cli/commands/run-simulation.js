@@ -39,9 +39,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.runSimulation = runSimulation;
 const loader_1 = require("../config/loader");
 const ConfigurableSimulation_1 = require("../../framework/ConfigurableSimulation");
-const fs_1 = require("fs");
+const promises_1 = require("fs/promises");
 const path_1 = require("path");
 const chalk_1 = __importDefault(require("chalk"));
+const yaml = __importStar(require("js-yaml"));
 async function runSimulation(simulationName, options = {}) {
     try {
         console.log(chalk_1.default.cyan.bold(`🎯 Monte Carlo Simulation Runner\n`));
@@ -122,7 +123,7 @@ async function discoverSimulation(simulationName, scenario) {
     ].filter(Boolean);
     for (const path of possiblePaths) {
         try {
-            await fs_1.promises.access(path);
+            await (0, promises_1.access)(path);
             return path;
         }
         catch {
@@ -152,13 +153,13 @@ async function listAvailableSimulations() {
     const examplesDir = 'examples/simulations';
     const simulations = [];
     try {
-        const entries = await fs_1.promises.readdir(examplesDir, { withFileTypes: true });
+        const entries = await (0, promises_1.readdir)(examplesDir, { withFileTypes: true });
         for (const entry of entries) {
             if (entry.isDirectory()) {
                 // Check if directory has a main simulation file
                 const mainFile = (0, path_1.join)(examplesDir, entry.name, `${entry.name}.yaml`);
                 try {
-                    await fs_1.promises.access(mainFile);
+                    await (0, promises_1.access)(mainFile);
                     simulations.push(entry.name);
                 }
                 catch {
@@ -186,8 +187,19 @@ async function resolveParameters(config, options) {
     // 2. Apply custom parameter file if provided
     if (options.params) {
         try {
-            const loader = new loader_1.ConfigurationLoader();
-            const customConfig = await loader.loadConfig(options.params);
+            const content = await (0, promises_1.readFile)(options.params, 'utf8');
+            let customConfig;
+            // Try parsing as JSON first (common case for parameter files)
+            try {
+                customConfig = JSON.parse(content);
+            }
+            catch {
+                // If JSON fails, try YAML
+                customConfig = yaml.load(content);
+            }
+            if (!customConfig || typeof customConfig !== 'object') {
+                throw new Error('Parameter file must contain a valid object');
+            }
             // Parameter files support two formats:
             // 1. Full simulation config with parameters array: { parameters: [{ key: "foo", default: 123 }] }
             // 2. Simple parameter object: { "foo": 123, "bar": "value" }
@@ -227,6 +239,13 @@ async function resolveParameters(config, options) {
                 if (isNaN(convertedValue)) {
                     throw new Error(`Parameter '${key}' must be a number, got: ${value}`);
                 }
+                // Check min/max constraints
+                if (paramDef.min !== undefined && convertedValue < paramDef.min) {
+                    throw new Error(`Parameter '${key}' value ${convertedValue} is below minimum ${paramDef.min}`);
+                }
+                if (paramDef.max !== undefined && convertedValue > paramDef.max) {
+                    throw new Error(`Parameter '${key}' value ${convertedValue} is above maximum ${paramDef.max}`);
+                }
             }
             else if (paramDef.type === 'boolean') {
                 convertedValue = value === 'true' || value === 'yes' || value === '1';
@@ -249,6 +268,13 @@ async function resolveParameters(config, options) {
                 convertedValue = Number(value);
                 if (isNaN(convertedValue)) {
                     throw new Error(`Parameter '${key}' must be a number, got: ${value}`);
+                }
+                // Check min/max constraints
+                if (paramDef.min !== undefined && convertedValue < paramDef.min) {
+                    throw new Error(`Parameter '${key}' value ${convertedValue} is below minimum ${paramDef.min}`);
+                }
+                if (paramDef.max !== undefined && convertedValue > paramDef.max) {
+                    throw new Error(`Parameter '${key}' value ${convertedValue} is above maximum ${paramDef.max}`);
                 }
             }
             else if (paramDef.type === 'boolean') {
@@ -321,7 +347,7 @@ async function saveResults(results, config, parameters, options) {
     const content = options.format === 'csv' ?
         convertToCSV(results.results) :
         JSON.stringify(outputData, null, 2);
-    await fs_1.promises.writeFile(options.output, content, 'utf8');
+    await (0, promises_1.writeFile)(options.output, content, 'utf8');
     console.log(chalk_1.default.green(`💾 Results saved to ${chalk_1.default.white(options.output)}`));
 }
 function convertToCSV(results) {
@@ -444,7 +470,7 @@ async function saveComparisonResults(results, simulationName, options) {
     const content = options.format === 'csv' ?
         convertComparisonToCSV(results) :
         JSON.stringify(comparisonData, null, 2);
-    await fs_1.promises.writeFile(options.output, content, 'utf8');
+    await (0, promises_1.writeFile)(options.output, content, 'utf8');
     console.log(chalk_1.default.green(`💾 Comparison results saved to ${chalk_1.default.white(options.output)}`));
 }
 function convertComparisonToCSV(results) {

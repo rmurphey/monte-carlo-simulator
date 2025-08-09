@@ -1,8 +1,9 @@
 import { ConfigurationLoader } from '../config/loader'
 import { ConfigurableSimulation } from '../../framework/ConfigurableSimulation'
-import { promises as fs } from 'fs'
+import { readFile, readdir, access, writeFile } from 'fs/promises'
 import { join, basename } from 'path'
 import chalk from 'chalk'
+import * as yaml from 'js-yaml'
 
 interface RunOptions {
   scenario?: string
@@ -120,7 +121,7 @@ async function discoverSimulation(simulationName: string, scenario?: string): Pr
   
   for (const path of possiblePaths) {
     try {
-      await fs.access(path)
+      await access(path)
       return path
     } catch {
       // Continue to next path
@@ -150,14 +151,14 @@ async function listAvailableSimulations(): Promise<string[]> {
   const simulations: string[] = []
   
   try {
-    const entries = await fs.readdir(examplesDir, { withFileTypes: true })
+    const entries = await readdir(examplesDir, { withFileTypes: true })
     
     for (const entry of entries) {
       if (entry.isDirectory()) {
         // Check if directory has a main simulation file
         const mainFile = join(examplesDir, entry.name, `${entry.name}.yaml`)
         try {
-          await fs.access(mainFile)
+          await access(mainFile)
           simulations.push(entry.name)
         } catch {
           // No main file, skip
@@ -186,8 +187,20 @@ async function resolveParameters(config: any, options: RunOptions): Promise<Reco
   // 2. Apply custom parameter file if provided
   if (options.params) {
     try {
-      const loader = new ConfigurationLoader()
-      const customConfig = await loader.loadConfig(options.params)
+      const content = await readFile(options.params, 'utf8')
+      let customConfig: any
+      
+      // Try parsing as JSON first (common case for parameter files)
+      try {
+        customConfig = JSON.parse(content)
+      } catch {
+        // If JSON fails, try YAML
+        customConfig = yaml.load(content)
+      }
+      
+      if (!customConfig || typeof customConfig !== 'object') {
+        throw new Error('Parameter file must contain a valid object')
+      }
       
       // Parameter files support two formats:
       // 1. Full simulation config with parameters array: { parameters: [{ key: "foo", default: 123 }] }
@@ -231,6 +244,14 @@ async function resolveParameters(config: any, options: RunOptions): Promise<Reco
         if (isNaN(convertedValue)) {
           throw new Error(`Parameter '${key}' must be a number, got: ${value}`)
         }
+        
+        // Check min/max constraints
+        if (paramDef.min !== undefined && convertedValue < paramDef.min) {
+          throw new Error(`Parameter '${key}' value ${convertedValue} is below minimum ${paramDef.min}`)
+        }
+        if (paramDef.max !== undefined && convertedValue > paramDef.max) {
+          throw new Error(`Parameter '${key}' value ${convertedValue} is above maximum ${paramDef.max}`)
+        }
       } else if (paramDef.type === 'boolean') {
         convertedValue = value === 'true' || value === 'yes' || value === '1'
       }
@@ -255,6 +276,14 @@ async function resolveParameters(config: any, options: RunOptions): Promise<Reco
         convertedValue = Number(value)
         if (isNaN(convertedValue)) {
           throw new Error(`Parameter '${key}' must be a number, got: ${value}`)
+        }
+        
+        // Check min/max constraints
+        if (paramDef.min !== undefined && convertedValue < paramDef.min) {
+          throw new Error(`Parameter '${key}' value ${convertedValue} is below minimum ${paramDef.min}`)
+        }
+        if (paramDef.max !== undefined && convertedValue > paramDef.max) {
+          throw new Error(`Parameter '${key}' value ${convertedValue} is above maximum ${paramDef.max}`)
         }
       } else if (paramDef.type === 'boolean') {
         convertedValue = value === 'true' || value === true
@@ -343,7 +372,7 @@ async function saveResults(results: any, config: any, parameters: Record<string,
     convertToCSV(results.results) : 
     JSON.stringify(outputData, null, 2)
   
-  await fs.writeFile(options.output!, content, 'utf8')
+  await writeFile(options.output!, content, 'utf8')
   console.log(chalk.green(`💾 Results saved to ${chalk.white(options.output)}`))
 }
 
@@ -496,7 +525,7 @@ async function saveComparisonResults(results: Array<{ scenario: string; config: 
     convertComparisonToCSV(results) : 
     JSON.stringify(comparisonData, null, 2)
   
-  await fs.writeFile(options.output!, content, 'utf8')
+  await writeFile(options.output!, content, 'utf8')
   console.log(chalk.green(`💾 Comparison results saved to ${chalk.white(options.output)}`))
 }
 

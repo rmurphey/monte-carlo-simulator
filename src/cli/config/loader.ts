@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs'
+import { readFile, readdir, writeFile, mkdir } from 'fs/promises'
 import { dirname, join, extname, resolve, isAbsolute } from 'path'
 import * as yaml from 'js-yaml'
 import { SimulationConfig, ConfigurationValidator, ParameterConfig, ParameterGroupConfig, OutputConfig } from './schema'
@@ -17,7 +17,7 @@ export class ConfigurationLoader {
         return this.loadedConfigs.get(normalizedPath)!
       }
       
-      const content = await fs.readFile(filePath, 'utf8')
+      const content = await readFile(filePath, 'utf8')
       let config = this.parseContent(content, filePath) as SimulationConfig
       
       // Handle base simulation inheritance
@@ -132,7 +132,7 @@ export class ConfigurationLoader {
   
   async loadMultipleConfigs(directory: string): Promise<SimulationConfig[]> {
     try {
-      const files = await fs.readdir(directory)
+      const files = await readdir(directory)
       const configFiles = files.filter(file => 
         file.endsWith('.yaml') || file.endsWith('.yml') || file.endsWith('.json')
       )
@@ -168,7 +168,7 @@ export class ConfigurationLoader {
       }
       
       // Ensure directory exists
-      await fs.mkdir(dirname(filePath), { recursive: true })
+      await mkdir(dirname(filePath), { recursive: true })
       
       // Determine format from extension
       const ext = extname(filePath).toLowerCase()
@@ -186,7 +186,7 @@ export class ConfigurationLoader {
         })
       }
       
-      await fs.writeFile(filePath, content, 'utf8')
+      await writeFile(filePath, content, 'utf8')
     } catch (error) {
       throw new Error(`Failed to save configuration to ${filePath}: ${error instanceof Error ? error.message : String(error)}`)
     }
