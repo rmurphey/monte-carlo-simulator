@@ -132,9 +132,19 @@ async function discoverSimulation(simulationName, scenario) {
     // List available simulations for helpful error
     try {
         const available = await listAvailableSimulations();
-        throw new Error(`Simulation '${simulationName}' not found.\n\nAvailable simulations:\n${available.map(s => `  - ${s}`).join('\n')}`);
+        if (available.length > 0) {
+            throw new Error(`Simulation '${simulationName}' not found.\n\nAvailable simulations:\n${available.map(s => `  - ${s}`).join('\n')}`);
+        }
+        else {
+            throw new Error(`Simulation '${simulationName}' not found. No simulations found in examples/simulations directory.`);
+        }
     }
-    catch {
+    catch (error) {
+        // If the error is our intentional "not found" error, re-throw it
+        if (error instanceof Error && error.message.includes('Available simulations:')) {
+            throw error;
+        }
+        // Otherwise it's a filesystem error, use fallback message
         throw new Error(`Simulation '${simulationName}' not found and unable to list available simulations.`);
     }
 }
