@@ -1,21 +1,21 @@
-# Interactive Simulation Creation
+# Examples-First Simulation Creation
 
 ## Overview
 
-The framework provides an examples-first approach for creating Monte Carlo simulations. Instead of complex studio interfaces, users copy working examples and modify them directly.
+The Monte Carlo simulation framework uses an **examples-first approach** for creating business simulations. Users copy working examples and modify them directly for maximum simplicity, reliability, and speed.
 
-## Current Approach
+## Current Approach: Copy-Modify-Validate-Run
 
-### Copy-Modify-Validate-Run Workflow
+### Workflow Steps
+
 1. **Browse Examples**: Find a simulation similar to your use case
-2. **Copy Example**: Copy the YAML file to your workspace
+2. **Copy Example**: Copy the YAML file to your workspace  
 3. **Modify Parameters**: Edit the YAML directly with your values
 4. **Validate Configuration**: Ensure your changes are valid
-5. **Run Simulation**: Execute with real-time parameter control
+5. **Run Simulation**: Execute with parameter control options
 
-## User Guide
+### Implementation
 
-### Creating a New Simulation
 ```bash
 # 1. View available examples
 npm run cli list
@@ -31,279 +31,180 @@ npm run cli validate my-analysis.yaml
 npm run cli run my-analysis.yaml
 ```
 
-**Benefits of Examples-First Approach:**
-- ✅ **Simple**: Direct file editing, no complex UI
-- ✅ **Reliable**: Copy from known-working configurations
-- ✅ **Fast**: No guided questionnaires or complex workflows  
-- ✅ **Agent-Friendly**: Easy programmatic generation
+## Available Examples
 
-### Parameter Definition Process
-1. **Business Context Selection** - Choose ARR framework integration
-2. **Parameter Creation** - Define inputs with validation ranges
-3. **Logic Building** - Formula wizard with syntax checking
-4. **Output Specification** - Define what to measure
-5. **Test Validation** - Quick execution with small iteration count
+The framework includes working examples for common business scenarios:
 
-### Starting a Realtime Session
-```bash
-npm run cli studio run my-simulation.yaml
-```
+- **Simple ROI Analysis** - Basic investment return calculations
+- **Technology Investment** - Software/tool adoption analysis
+- **Team Scaling Decision** - Hiring vs efficiency investments
+- **Marketing Campaign ROI** - Marketing spend optimization
+- **AI Tool Adoption** - Conservative/aggressive AI investment scenarios
 
-**Interactive Interface:**
-```
-🚀 Realtime Simulation Runner
-┌─────────────────────────────────────────────────────┐
-│ AI Tool Adoption Analysis                           │
-│                                                     │
-│ Team Size: [■■■■■░░░] 25 devs    (↑↓ to adjust)    │
-│ Tool Cost: [■■░░░░░░] $20/month  (↑↓ to adjust)    │
-│ ROI: 847% ± 156%                                   │
-│                                                     │
-│ [r] Re-run  [s] Save  [c] Compare  [q] Quit       │
-└─────────────────────────────────────────────────────┘
-```
+### Example Structure
 
-### Keyboard Controls
-- **↑/↓**: Adjust selected parameter
-- **Tab**: Switch between parameters
-- **Enter**: Lock in value and re-run simulation
-- **r**: Force re-run with current parameters
-- **s**: Save current parameter set
-- **c**: Compare with saved scenarios
-- **q**: Quit to main menu
-
-## Agent Integration Specifications
-
-### Definition Phase API
-
-#### Starting a Definition Session
-```typescript
-interface DefinitionStudio {
-  // Start interactive definition
-  startDefinition(question: string): Promise<DefinitionSession>
-  
-  // Get parameter suggestions based on question
-  suggestParameters(question: string): Promise<ParameterSuggestion[]>
-  
-  // Validate parameter configuration
-  validateParameters(params: ParameterInput[]): ValidationResult
-  
-  // Quick test with small iteration count
-  quickTest(config: Partial<SimulationConfig>): Promise<TestResult>
-}
-```
-
-#### Parameter Suggestion Format
-```typescript
-interface ParameterSuggestion {
-  key: string
-  label: string
-  type: 'number' | 'boolean' | 'string'
-  default: number | boolean | string
-  min?: number
-  max?: number
-  description: string
-  businessContext: string  // Why this parameter matters
-  industryBenchmark?: string  // Typical values
-}
-```
-
-#### Agent Interaction Patterns
-```typescript
-// Example agent interaction
-const session = await studio.startDefinition("AI tool ROI analysis")
-const suggestions = await session.getParameterSuggestions()
-
-// Agent can accept suggestions or customize
-const customParams = suggestions.map(s => ({
-  ...s,
-  default: agentCalculatedValue(s.businessContext)
-}))
-
-const config = await session.buildConfiguration(customParams)
-const validation = await session.validateConfiguration(config)
-```
-
-### Execution Phase API
-
-#### Realtime Control Interface
-```typescript
-interface RealtimeRunner {
-  // Start interactive session
-  startSession(config: SimulationConfig): Promise<RealtimeSession>
-  
-  // Update parameters during execution
-  updateParameter(key: string, value: number): Promise<void>
-  
-  // Subscribe to results stream
-  subscribeToResults(): Observable<SimulationResults>
-  
-  // Save/load parameter sets
-  saveParameterSet(name: string): Promise<void>
-  loadParameterSet(name: string): Promise<ParameterValues>
-}
-```
-
-#### Results Stream Format
-```typescript
-interface LiveResults {
-  iteration: number
-  totalIterations: number
-  currentResults: {
-    [outputKey: string]: {
-      currentValue: number
-      runningMean: number
-      runningStdDev: number
-      confidenceInterval: [number, number]
-    }
-  }
-  convergenceStatus: {
-    [outputKey: string]: {
-      isConverged: boolean
-      stabilityScore: number  // 0-1, higher = more stable
-      requiredIterations: number
-    }
-  }
-  executionTime: number
-  parametersChanged: boolean
-}
-```
-
-#### Agent Integration Example
-```typescript
-// Agent controlling realtime session
-const session = await runner.startSession(config)
-
-// Subscribe to results
-session.subscribeToResults().subscribe(results => {
-  if (results.convergenceStatus.roi.stabilityScore > 0.95) {
-    // Agent determines ROI has converged, can make decision
-    agent.analyzeResults(results)
-  }
-})
-
-// Agent adjusts parameters based on results
-if (results.currentResults.roi.runningMean < targetROI) {
-  await session.updateParameter('teamSize', currentTeamSize + 5)
-}
-```
-
-## Configuration Format
-
-### Studio Session Configuration
 ```yaml
-# Interactive studio session metadata
-studioSession:
-  id: "ai-tool-analysis-session-001"
-  created: "2025-08-06T12:00:00Z"
-  question: "Should we adopt AI coding tools for our team?"
-  
-# Standard simulation configuration
-name: "AI Tool Adoption Analysis"
-category: "Technology Investment"
-description: "Interactive analysis of AI tool ROI with real-time parameter adjustment"
+name: "Investment Analysis"
+category: "Finance" 
+description: "ROI analysis with uncertainty modeling"
 version: "1.0.0"
-tags: [ai, tools, roi, interactive]
+tags: [finance, roi, investment]
 
-# Interactive-specific metadata
-interactiveMetadata:
-  parameterRanges:
-    teamSize:
-      min: 5
-      max: 100
-      step: 1
-      sliderPosition: 50  # UI state
-    toolCost:
-      min: 10
-      max: 100
-      step: 5
-      sliderPosition: 20
-      
-  savedParameterSets:
-    - name: "conservative"
-      parameters: {teamSize: 15, toolCost: 30, productivityGain: 10}
-    - name: "aggressive" 
-      parameters: {teamSize: 25, toolCost: 20, productivityGain: 25}
-      
-  convergenceSettings:
-    targetStability: 0.95
-    maxIterations: 10000
-    updateInterval: 100  # iterations between UI updates
-
-# Standard simulation configuration continues...
 parameters:
-  - key: teamSize
-    label: "Development Team Size"
+  - key: initialInvestment
+    label: "Initial Investment ($)"
     type: number
-    default: 20
-    min: 5
-    max: 100
-    
+    default: 100000
+    min: 1000
+    max: 10000000
+
 simulation:
   logic: |
-    const monthlyCost = teamSize * toolCost
-    const monthlyBenefit = teamSize * avgSalary * (productivityGain/100) / 12
-    const roi = ((monthlyBenefit * 12 - monthlyCost * 12) / (monthlyCost * 12)) * 100
-    return { roi: Math.round(roi * 10) / 10 }
+    const monthlyBenefit = initialInvestment * (0.01 + random() * 0.02)
+    const annualReturn = monthlyBenefit * 12
+    const roi = ((annualReturn - initialInvestment) / initialInvestment) * 100
+    return { 
+      monthlyBenefit: Math.round(monthlyBenefit),
+      annualReturn: Math.round(annualReturn), 
+      roi: Math.round(roi * 10) / 10 
+    }
 ```
 
-## Implementation Details
+## Interactive Features
 
-### File Structure
+### Parameter Override
+
+```bash
+# Override specific parameters from command line
+npm run cli run my-analysis.yaml --set initialInvestment=300000 --set riskFactor=0.15
+
+# Use parameter files for complex scenarios
+echo '{"initialInvestment": 500000, "timeline": 36}' > scenario.json
+npm run cli run my-analysis.yaml --params scenario.json
 ```
-src/cli/interactive/
-├── definition-studio.ts      # Interactive definition builder
-├── realtime-runner.ts        # Real-time parameter control
-├── live-dashboard.ts         # Unicode visualization engine
-├── session-manager.ts        # Save/load session state
-└── parameter-controllers.ts  # Keyboard/slider controls
+
+### Real-time Parameter Adjustment
+
+```bash
+# Launch interactive mode for parameter exploration
+npm run cli run my-analysis.yaml --interactive
+
+# Features:
+# - Real-time parameter sliders
+# - Immediate result updates  
+# - Before/after comparison
+# - Parameter validation
 ```
 
-### Key Technical Features
+### Validation and Testing
 
-#### Parameter Control System
-- **Unicode Sliders**: Visual parameter adjustment with `■░` characters
-- **Keyboard Navigation**: Tab between parameters, arrow keys to adjust
-- **Range Validation**: Real-time bounds checking with visual feedback
-- **Immediate Updates**: Parameter changes trigger simulation re-runs
+```bash
+# Comprehensive validation
+npm run cli validate my-analysis.yaml
 
-#### Results Streaming
-- **Observable Pattern**: RxJS streams for real-time result updates
-- **Convergence Monitoring**: Track when results stabilize
-- **Performance Optimization**: Efficient re-execution with parameter caching
-- **Unicode Charts**: Simple distribution visualization in terminal
+# List available parameters
+npm run cli run my-analysis.yaml --list-params
 
-#### Session Persistence
-- **Auto-save**: Session state preserved automatically
-- **Parameter Sets**: Named parameter combinations for comparison
-- **History Tracking**: Previous sessions and their results
-- **Export Compatibility**: Sessions export to standard YAML format
+# Quick test run
+npm run cli run my-analysis.yaml --iterations 100
+```
 
-## Error Handling
+## Benefits of Examples-First Approach
 
-### Validation Errors
-- **Parameter Bounds**: Clear feedback when values exceed ranges
-- **Logic Errors**: Syntax checking with helpful error messages
-- **Convergence Issues**: Warnings when results don't stabilize
-- **Performance Limits**: Automatic iteration capping for responsiveness
+### **Simplicity**
+- **No complex interfaces** - Direct file editing
+- **No guided questionnaires** - Copy what works
+- **No learning curve** - Standard YAML format
 
-### Recovery Mechanisms
-- **Auto-save**: Session state preserved on crashes
-- **Graceful Degradation**: Fall back to batch mode if interactive fails
-- **Parameter Reset**: Quick reset to last known good state
-- **Error Context**: Detailed error information for debugging
+### **Reliability** 
+- **Start from working configurations** - All examples are tested
+- **Bulletproof validation** - AJV schema prevents errors
+- **Known patterns** - Proven simulation structures
 
-## Integration with Existing Framework
+### **Speed**
+- **Instant setup** - Copy and modify in seconds
+- **No wizard steps** - Direct parameter editing
+- **Fast iteration** - Edit, validate, run cycle
 
-### Compatibility
-- **Full YAML Compatibility**: Studio sessions export to standard simulation format
-- **CLI Integration**: `studio` subcommand extends existing CLI structure
-- **Config System**: Uses existing ConfigurationLoader and validation
-- **Statistics Engine**: Leverages StatisticalAnalyzer for real-time updates
+### **Agent-Friendly**
+- **Programmatic generation** - Easy for AI assistants
+- **Clear patterns** - Consistent structure across examples
+- **Direct manipulation** - No complex API required
 
-### Migration Path
-- **Existing Simulations**: All current YAML files work in studio mode
-- **Batch to Interactive**: Convert any simulation to interactive session
-- **Export Options**: Studio sessions export to batch-compatible YAML
+## Advanced Usage
 
-This documentation provides comprehensive guidance for both human users learning the interactive interface and AI agents that need to programmatically control simulation sessions.
+### Custom Business Logic
+
+Edit the `simulation.logic` section for custom calculations:
+
+```yaml
+simulation:
+  logic: |
+    // Your custom business logic
+    const uncertainty = 0.8 + random() * 0.4  // 80-120% range
+    const adjustedROI = baseROI * uncertainty
+    const paybackMonths = initialCost / monthlyBenefit
+    
+    return {
+      projectedROI: Math.round(adjustedROI * 10) / 10,
+      paybackPeriod: Math.round(paybackMonths * 10) / 10,
+      riskAdjustedValue: Math.round(netPresentValue * uncertainty)
+    }
+```
+
+### Scenario Comparison
+
+```bash
+# Create multiple scenarios
+cp examples/simulations/ai-tool-adoption/conservative.yaml my-conservative.yaml
+cp examples/simulations/ai-tool-adoption/aggressive.yaml my-aggressive.yaml
+
+# Compare results side by side
+npm run cli run my-conservative.yaml --compare my-aggressive.yaml
+```
+
+### Export and Analysis
+
+```bash
+# Export results for further analysis
+npm run cli run my-analysis.yaml --output results.json --format json
+npm run cli run my-analysis.yaml --output results.csv --format csv
+
+# High-precision runs for final decisions
+npm run cli run my-analysis.yaml --iterations 10000 --output final-analysis.json
+```
+
+## Integration with Development Workflow
+
+### NPX Support (Zero Setup)
+
+```bash
+# Run simulations without installation
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
+
+# Parameter overrides work with NPX
+npx github:rmurphey/monte-carlo-simulator run examples/simulations/technology-investment.yaml --set investment=200000
+```
+
+### Development Commands
+
+```bash
+# Test all examples (ensure they work)
+npm test
+
+# Build framework for distribution  
+npm run build
+
+# Lint and validate codebase
+npm run lint
+```
+
+## Conclusion
+
+The examples-first approach provides the optimal balance of simplicity, reliability, and power. By starting with working examples and modifying them directly, users can create sophisticated Monte Carlo simulations without complex interfaces or steep learning curves.
+
+This approach is particularly effective for:
+- **Business professionals** who need quick, reliable analysis
+- **AI assistants** generating simulations programmatically  
+- **Development teams** requiring consistent, testable patterns
+- **Strategic decisions** where reliability and speed matter most

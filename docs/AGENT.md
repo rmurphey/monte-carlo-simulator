@@ -30,7 +30,7 @@ npm run cli validate my-investment.yaml
 npm run cli run my-investment.yaml
 ```
 
-**Agent Integration**: Simple copy-modify-validate-run workflow with bulletproof YAML validation. AJV-based schema validation prevents any invalid configurations. No complex studio commands - just direct file manipulation.
+**Agent Integration**: Simple copy-modify-validate-run workflow with bulletproof YAML validation. AJV-based schema validation prevents any invalid configurations. Direct file manipulation approach for maximum simplicity.
 
 ## ✅ Working Commands (Tested)
 
