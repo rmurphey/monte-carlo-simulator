@@ -176,4 +176,28 @@ npm run cli validate file.yaml  # Bulletproof YAML validation
 
 ---
 
-*Last Updated: 2025-08-07 - Interactive parameter exploration implemented, core user experience complete*
+## Development Insights
+
+### Documentation-Code Synchronization (2025-08-09)
+- **Critical Pattern**: Invalid npm commands in documentation destroy user trust and create adoption barriers
+- **Quality Gate**: All README examples must pass `npm run test:docs` before commit - zero tolerance for broken examples
+- **Agent Guidance**: Always verify package.json scripts exist before documenting commands
+- **Testing Strategy**: Automated conversion of NPX commands to local CLI for validation ensures docs match implementation
+- **ROI**: Prevents documentation drift that blocks framework adoption and user confidence
+
+### Command Discovery Enhancement (2025-08-09)
+- **User Need**: Developers require comprehensive command documentation beyond basic usage patterns
+- **Solution**: Categorize development commands by purpose (core development, code quality, validation, CLI tools)
+- **Implementation**: Mine .claude/commands files for workflow knowledge and surface in README
+- **Agent Pattern**: Clear command categories help AI agents understand development workflows and tool capabilities
+- **Quality Impact**: Eliminates user confusion about available development commands and workflows
+
+### Test-First Documentation Updates (2025-08-09)
+- **Critical Lesson**: Documentation changes require dependency installation and test validation before commit
+- **Workflow**: `npm install` → `npm test` → `npm run test:docs` → commit (never skip steps)
+- **Prevention**: Pre-commit hooks ensure validation integrity and catch documentation-code misalignment
+- **Framework Maturity**: Automated documentation testing prevents user-facing failures and maintains trust
+
+---
+
+*Last Updated: 2025-08-09 - Documentation synchronization patterns and command discovery improvements implemented*
