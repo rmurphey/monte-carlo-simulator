@@ -17,6 +17,19 @@ program
   .name('monte-carlo-cli')
   .description('CLI tools for Monte Carlo Simulation Framework')
   .version('1.0.0')
+  .addHelpText('before', `
+🎯 Monte Carlo Simulation Framework
+
+Quick Start Workflow:
+  1. npm run cli list              # Discover available simulations
+  2. npm run cli run <simulation>  # Run a simulation by ID
+  3. npm run cli create <name>     # Create your own simulation
+
+Examples:
+  npm run cli list
+  npm run cli -- run simple-roi-analysis --set initialInvestment=250000
+  npm run cli create my-business-model
+`)
 
 program
   .command('create')
