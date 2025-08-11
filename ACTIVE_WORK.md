@@ -161,7 +161,6 @@ npm run cli validate file.yaml  # Bulletproof YAML validation
 
 ### Deferred/Abandoned Designs (Archived)
 - **[Business Intelligence Template System](archive/business-intelligence-template-system-deferred-2025.md)**: Advanced BI features deferred in favor of examples-first approach
-- **[NPX Distribution System](archive/npx-distribution-system-abandoned-2025.md)**: NPX approach abandoned in favor of git-based workflows
 
 ### Current Phase  
 **Phase 4: Enhanced Features**: Framework foundation complete, focus on user workflow optimization and advanced capabilities
