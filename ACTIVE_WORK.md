@@ -11,14 +11,9 @@
 The project has achieved **production-grade reliability** with comprehensive validation system and robust testing infrastructure.
 
 ### Recently Completed ✅ 
-- **[Documentation Alignment Complete]**: Updated all documentation to reflect examples-first approach
+- **[Documentation Workflow Enhancements](archive/documentation-workflow-enhancements-2025.md)**: Fixed invalid npm commands, enhanced command discovery, automated documentation validation
 - **[Terminology Alignment Implementation](commits/f438e7f)**: Removed unused template system (2400+ lines), aligned codebase with actual usage patterns
 - **[Directory Architecture Analysis]**: Rationalized plans/ vs designs/ structure - plans for strategic roadmaps, designs for tactical implementation specs
-- **[Bulletproof YAML Validation System](commits/55b2114)**: Comprehensive AJV schema validation with detailed error messages
-- **[CLI Integration & Parameter Validation](commits/55b2114)**: Complete parameter constraint checking and file loading fixes  
-- **[Test Coverage Resolution](commits/00080c1)**: CLI command unit tests replacing subprocess tests
-- **[Pre-commit Hook Enforcement](commits/00080c1)**: Validation enforcement preventing invalid YAML commits
-- **[YAML Parsing Fixed Permanently](commits/00080c1)**: Core fs/promises import issues resolved across all components
 
 ### Foundation Quality Status  
 - **87 tests passing** (100% success rate) ✅
@@ -32,26 +27,17 @@ The project has achieved **production-grade reliability** with comprehensive val
 ## Current Priorities
 
 ### 🎯 **Production Framework with Bulletproof Validation** 
-✅ **[Production Readiness Achieved](commits/55b2114)**: Production-grade reliability with comprehensive validation and testing
-✅ **[Validation System Complete](commits/00080c1)**: Schema validation prevents any invalid YAML from reaching repository  
-✅ **[Test Coverage Resolved](commits/55b2114)**: CLI command coverage implemented with direct unit tests
+✅ **[Phase 3: Bulletproof Validation System Complete](archive/phase-3-bulletproof-validation-system-2025.md)**: Production-grade reliability with comprehensive validation, testing, and quality infrastructure
 
 ### 📋 **Current Development Status**
 
-#### **✅ Phase 3: Test Coverage & Validation - COMPLETE**
-- ✅ **CLI Command Testing** - Comprehensive unit tests for all CLI functions
-- ✅ **Parameter Validation** - Min/max constraint checking with helpful error messages
-- ✅ **Configuration Loading** - YAML/JSON parsing with bulletproof error handling  
-- ✅ **Schema Validation** - AJV-based validation prevents invalid configurations
-- ✅ **Pre-commit Enforcement** - Validation hooks prevent bad commits
-- ✅ **Overall Test Success**: 87 tests passing with robust validation coverage
+#### **Phase 4: Enhanced Features** (Current Priority)  
+**Strategic Plans Available:**
+- **[Fix Critical Workflow Blockers](plans/fix-critical-workflow-blockers.md)** - Discovery, creation, and NPX documentation alignment fixes
+- **[Advanced Export Features](plans/advanced-export-capabilities.md)** - JSON/CSV export with business integration
+- **[Multi-Branch Concurrent Development](plans/multi-branch-concurrent-development.md)** - VS Code multi-root workspace development workflow
 
-#### **Phase 4: Enhanced Features** (Next Priority)  
-- **[Multi-Branch Concurrent Development](plans/multi-branch-concurrent-development.md)** - Strategic plan for VS Code multi-root workspace development workflow
-- **Documentation Synchronization System** - Automated validation to prevent docs/code drift (manual fixes completed)
-- **Enhanced UX** - Progress tracking and navigation improvements  
-- **Performance Optimization** - Large-scale simulation handling and result caching
-- **Advanced Export Features** - CSV, PDF, and JSON export capabilities
+**Immediate Priority:** Critical workflow blockers have highest impact - fix foundation before adding features
 
 #### **Completed Foundation** ✅
 ✅ **[Examples-First Framework](archive/phase-2-business-intelligence-template-system-2025.md)** - Complete agent-friendly framework with examples-first approach
@@ -163,16 +149,25 @@ npm run cli validate file.yaml  # Bulletproof YAML validation
 
 ### Completed Phases (Archived)
 - **[Original Framework](archive/COMPLETED_WORK.md)**: Core infrastructure and web interface
+- **[Framework Foundation](archive/monte-carlo-framework-foundation-completed-2025.md)**: Complete framework architecture with CLI, testing, and simulation library
 - **[Business Intelligence](archive/business-intelligence-transformation.md)**: ARR framework and professional CLI  
 - **[CLI Generator](archive/cli-simulation-generator-completed.md)**: YAML-based simulation creation
+- **[Phase 3: Bulletproof Validation](archive/phase-3-bulletproof-validation-system-2025.md)**: Production-grade validation and testing infrastructure
+- **[Documentation Enhancements](archive/documentation-workflow-enhancements-2025.md)**: Command discovery and documentation-code synchronization
+- **[Terminology Alignment](archive/terminology-alignment-implementation-2025.md)**: Examples-first approach with template system removal
+- **[Validation System](archive/validation-system-implementation-2025.md)**: Layered validation with pre-commit hooks
 - **[Production Readiness](archive/production-readiness-milestone-2025.md)**: Complete transition to production-ready platform
 - **[Technical Debt Resolution](archive/technical-debt-resolution-2025.md)**: Clean foundation with zero technical debt
 
-### Current Phase  
-**Production-Ready Framework**: Working simulation framework with agent-friendly patterns, comprehensive documentation, and tested examples
+### Deferred/Abandoned Designs (Archived)
+- **[Business Intelligence Template System](archive/business-intelligence-template-system-deferred-2025.md)**: Advanced BI features deferred in favor of examples-first approach
+- **[NPX Distribution System](archive/npx-distribution-system-abandoned-2025.md)**: NPX approach abandoned in favor of git-based workflows
 
-### Next Phase (Ready for Implementation)
-**Enhanced Agent Features**: Scenario comparison CLI, interactive parameter tuning, export capabilities
+### Current Phase  
+**Phase 4: Enhanced Features**: Framework foundation complete, focus on user workflow optimization and advanced capabilities
+
+### Next Immediate Priority (Ready for Implementation)
+**Critical Workflow Blockers Fix**: Repair broken discovery and creation workflows that prevent user adoption
 
 ---
 
@@ -200,4 +195,4 @@ npm run cli validate file.yaml  # Bulletproof YAML validation
 
 ---
 
-*Last Updated: 2025-08-09 - Documentation synchronization patterns and command discovery improvements implemented*
+*Last Updated: 2025-08-09 - Phase 3 validation system and documentation enhancements archived, Phase 4 strategic planning complete*
