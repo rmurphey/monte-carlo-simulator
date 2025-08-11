@@ -11,6 +11,7 @@
 The project has achieved **production-grade reliability** with comprehensive validation system and robust testing infrastructure.
 
 ### Recently Completed ✅ 
+- **[Critical Workflow Blockers Fix](commits/0d30ccf)**: Fixed CLI discovery, list command multi-path support, simulation ID generation, workflow guidance
 - **[Documentation Workflow Enhancements](archive/documentation-workflow-enhancements-2025.md)**: Fixed invalid npm commands, enhanced command discovery, automated documentation validation
 - **[Terminology Alignment Implementation](commits/f438e7f)**: Removed unused template system (2400+ lines), aligned codebase with actual usage patterns
 - **[Directory Architecture Analysis]**: Rationalized plans/ vs designs/ structure - plans for strategic roadmaps, designs for tactical implementation specs
@@ -33,11 +34,11 @@ The project has achieved **production-grade reliability** with comprehensive val
 
 #### **Phase 4: Enhanced Features** (Current Priority)  
 **Strategic Plans Available:**
-- **[Fix Critical Workflow Blockers](plans/fix-critical-workflow-blockers.md)** - Discovery, creation, and NPX documentation alignment fixes
-- **[Advanced Export Features](plans/advanced-export-capabilities.md)** - JSON/CSV export with business integration
+- ✅ **[Fix Critical Workflow Blockers](plans/fix-critical-workflow-blockers.md)** - Discovery, creation, and NPX documentation alignment fixes **COMPLETED**
+- **[Advanced Export Features](plans/advanced-export-capabilities.md)** - JSON/CSV export with business integration  
 - **[Multi-Branch Concurrent Development](plans/multi-branch-concurrent-development.md)** - VS Code multi-root workspace development workflow
 
-**Immediate Priority:** Critical workflow blockers have highest impact - fix foundation before adding features
+**Current Focus:** Foundation workflow complete - ready for advanced features and platform expansion
 
 #### **Completed Foundation** ✅
 ✅ **[Examples-First Framework](archive/phase-2-business-intelligence-template-system-2025.md)** - Complete agent-friendly framework with examples-first approach
