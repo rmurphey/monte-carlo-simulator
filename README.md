@@ -1,18 +1,20 @@
 # Monte Carlo Business Decision Framework
+**Professional Examples-First Monte Carlo Simulation Framework**
 
 ## ⚡ TL;DR - Quick Start
 
 **Want to analyze a business decision right now?**
 
 ```bash
-# Option 1: Instant NPX (Zero Setup) ⚡
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
-npx github:rmurphey/monte-carlo-simulator interactive
-
-# Option 2: Local Development
+# Professional Examples-First Framework
 git clone https://github.com/rmurphey/monte-carlo-simulator
 cd monte-carlo-simulator && npm install && npm run build
-npm run cli run examples/simulations/simple-roi-analysis.yaml
+
+# Quick validation - should show 5+ working simulations
+npm run cli list
+
+# Run your first analysis
+npm run cli -- run simple-roi-analysis
 ```
 
 **Result**: Get confidence intervals like *"75% chance of $200K+ savings, 15% chance of breaking even, 10% chance of loss"* instead of *"AI tools will probably save money"*.
@@ -46,11 +48,11 @@ Turn uncertain business questions into **rigorous risk analysis with confidence 
 **Get**: "AI tools: 75% chance of $200K+ annual savings, 15% chance of breaking even, 10% chance of $30K annual loss"
 
 ### Who This Is For
-- **CTOs/Engineering Leaders**: Data-driven technology investment decisions
-- **Startup Founders**: Resource allocation with limited runway
-- **Product Managers**: Feature prioritization under uncertainty  
-- **Business Analysts**: Risk assessment for strategic initiatives
-- **Anyone**: Making decisions with incomplete information (everyone)
+- **CTOs/Engineering Leaders**: Technology investment ROI with working examples
+- **Startup Founders**: Resource allocation models with proven templates
+- **Product Managers**: Feature prioritization using battle-tested simulations  
+- **Business Analysts**: Risk assessment with copy-modify workflow
+- **AI Agents/Developers**: Programmatic simulation generation from examples
 
 ### When NOT to Use This
 - ❌ Decisions under $10K (overkill)
@@ -66,35 +68,62 @@ Turn uncertain business questions into **rigorous risk analysis with confidence 
 
 ### Installation & Setup
 ```bash
-# Clone the repository (required - not available via npx)
+# Clone and set up the framework
 git clone https://github.com/rmurphey/monte-carlo-simulator
 cd monte-carlo-simulator
 
 # Install dependencies and build
 npm install
 npm run build
+
+# Verify installation
+npm run cli --help
 ```
 
-### 🆕 **NEW: Zero-Setup NPX Access** ⚡
-
-Analyze business decisions instantly without installation:
+#### Troubleshooting Setup
+**If you encounter issues during installation:**
 
 ```bash
-# Run simulations directly with NPX - NO SETUP REQUIRED
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/technology-investment.yaml
+# Check Node.js version (requires 16+)
+node --version
 
-# Parameter override examples
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --set initialInvestment=75000 --set monthlyBenefit=6000
+# Clean install if dependencies fail
+rm -rf node_modules package-lock.json
+npm install
 
-# List parameters for any simulation
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --list-params
+# Rebuild if TypeScript compilation fails  
+npm run build
 
-# Interactive parameter exploration (requires installation for full interactivity)
-npx github:rmurphey/monte-carlo-simulator --help
+# Test core functionality
+npm run cli list
+npm run test
+```
 
-# Validation with bulletproof error checking
-npx github:rmurphey/monte-carlo-simulator validate examples/simulations/simple-roi-analysis.yaml
+**Common Issues:**
+- **Node.js version**: Requires Node 16+ for TypeScript features
+- **Permission errors**: Use `npm install` (not `sudo npm install`) 
+- **Build failures**: Run `npm run build` after any code changes
+- **Missing simulations**: Verify you're in the project root directory
+
+### **Professional Examples-First Workflow** 🎯
+
+The framework is designed around copying and modifying working examples:
+
+```bash
+# Discover available simulations
+npm run cli list
+
+# Run any simulation with default parameters  
+npm run cli -- run simple-roi-analysis
+
+# Override specific parameters
+npm run cli -- run simple-roi-analysis --set initialInvestment=75000 --set monthlyBenefit=6000
+
+# See all available parameters for any simulation
+npm run cli -- run simple-roi-analysis --list-params
+
+# Validate simulation configurations
+npm run cli -- validate examples/simulations/simple-roi-analysis.yaml
 ```
 
 ### **Interactive Parameter Exploration** 🎛️
@@ -102,14 +131,11 @@ npx github:rmurphey/monte-carlo-simulator validate examples/simulations/simple-r
 Adjust parameters in real-time and see results update instantly:
 
 ```bash
-# Launch interactive mode for any simulation (local installation)
-npm run cli run examples/simulations/simple-roi-analysis.yaml --interactive
+# Launch interactive mode for any simulation
+npm run cli -- run simple-roi-analysis --interactive
 
-# Override specific parameters from command line (works with NPX)
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --set initialInvestment=300000 --set monthlyBenefit=8000
-
-# Discover available parameters for any simulation (works with NPX)
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --list-params
+# Interactive simulation selection
+npm run cli interactive
 ```
 
 **Interactive Features:**
@@ -124,29 +150,36 @@ Create business simulations by copying and modifying working examples:
 
 ```bash
 # Copy a relevant example to start
-cp examples/simulations/simple-roi-analysis.yaml YOUR_SIMULATION.yaml
+cp examples/simulations/simple-roi-analysis.yaml my-roi-analysis.yaml
 
-# Validate your changes
-npx github:rmurphey/monte-carlo-simulator validate YOUR_SIMULATION.yaml
+# Validate your changes  
+npm run cli -- validate my-roi-analysis.yaml
 
 # Run your custom simulation
-npx github:rmurphey/monte-carlo-simulator run YOUR_SIMULATION.yaml
+npm run cli -- run my-roi-analysis.yaml
+
+# Or create interactively
+npm run cli create --interactive
 ```
 
-**Benefits:**
-- **Simple**: Direct file editing, no complex interfaces
-- **Reliable**: Start from known-working configurations  
-- **Fast**: No guided questionnaires or wizards
-- **Agent-Friendly**: Easy programmatic generation
+**Examples-First Benefits:**
+- **Proven Patterns**: Start from tested, working business simulations
+- **Copy-Modify Workflow**: Professional approach - copy example, customize for your needs
+- **No Learning Curve**: Skip complex configuration, focus on business logic
+- **Agent-Friendly**: Ideal for AI-assisted simulation generation
+- **Battle-Tested**: All examples validated and production-ready
 
 ### Run Your First Analysis
 ```bash
-# Run example simulations
-npm run cli run examples/simulations/simple-roi-analysis.yaml
-npm run cli run examples/simulations/technology-investment.yaml
+# Discover available simulations
+npm run cli list
 
-# Interactive parameter exploration
-npm run cli run examples/simulations/simple-roi-analysis.yaml --interactive
+# Run example simulations by ID
+npm run cli run simple-roi-analysis
+npm run cli run technology-investment
+
+# Interactive parameter exploration  
+npm run cli run simple-roi-analysis --interactive
 
 # See all available commands
 npm run cli --help

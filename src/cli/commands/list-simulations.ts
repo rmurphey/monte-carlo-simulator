@@ -1,6 +1,7 @@
 import { ConfigurationLoader } from '../config/loader'
 import { promises as fs } from 'fs'
 import { join, basename, extname } from 'path'
+import { packagePaths } from '../utils/package-paths'
 
 // Generate simulation ID from filename (how run command expects it)
 function generateSimulationId(filename: string): string {
@@ -10,11 +11,8 @@ function generateSimulationId(filename: string): string {
 export async function listSimulations(options: any = {}) {
   const loader = new ConfigurationLoader()
   
-  // Multi-path discovery - check multiple directories for simulations
-  const searchPaths = [
-    'examples/simulations',     // Framework examples (NEW)
-    'simulations',              // User simulations (existing)
-  ]
+  // Multi-path discovery using package-aware path resolution
+  const searchPaths = packagePaths.getSimulationSearchPaths()
   
   let allConfigs: any[] = []
   let foundDirectories: string[] = []

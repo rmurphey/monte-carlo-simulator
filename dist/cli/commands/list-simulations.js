@@ -4,17 +4,15 @@ exports.listSimulations = listSimulations;
 const loader_1 = require("../config/loader");
 const fs_1 = require("fs");
 const path_1 = require("path");
+const package_paths_1 = require("../utils/package-paths");
 // Generate simulation ID from filename (how run command expects it)
 function generateSimulationId(filename) {
     return (0, path_1.basename)(filename, (0, path_1.extname)(filename));
 }
 async function listSimulations(options = {}) {
     const loader = new loader_1.ConfigurationLoader();
-    // Multi-path discovery - check multiple directories for simulations
-    const searchPaths = [
-        'examples/simulations', // Framework examples (NEW)
-        'simulations', // User simulations (existing)
-    ];
+    // Multi-path discovery using package-aware path resolution
+    const searchPaths = package_paths_1.packagePaths.getSimulationSearchPaths();
     let allConfigs = [];
     let foundDirectories = [];
     try {

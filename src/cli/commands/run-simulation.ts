@@ -4,6 +4,42 @@ import { readFile, readdir, access, writeFile } from 'fs/promises'
 import { join, basename } from 'path'
 import chalk from 'chalk'
 import * as yaml from 'js-yaml'
+import { packagePaths } from '../utils/package-paths'
+
+// Helper function for parameter name suggestions
+function findClosestParameter(input: string, available: string[]): string | null {
+  const inputLower = input.toLowerCase()
+  return available.find(param => {
+    const paramLower = param.toLowerCase()
+    return paramLower.includes(inputLower) || 
+           inputLower.includes(paramLower) ||
+           levenshteinDistance(inputLower, paramLower) <= 2
+  }) || null
+}
+
+function levenshteinDistance(str1: string, str2: string): number {
+  const matrix: number[][] = []
+  for (let i = 0; i <= str2.length; i++) {
+    matrix[i] = [i]
+  }
+  for (let j = 0; j <= str1.length; j++) {
+    matrix[0][j] = j
+  }
+  for (let i = 1; i <= str2.length; i++) {
+    for (let j = 1; j <= str1.length; j++) {
+      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1]
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        )
+      }
+    }
+  }
+  return matrix[str2.length][str1.length]
+}
 
 interface RunOptions {
   scenario?: string
@@ -47,9 +83,9 @@ export async function runSimulation(simulationName: string, options: RunOptions 
     
     // 4. Display configuration if verbose
     if (options.verbose && !options.quiet) {
-      displayConfiguration(parameters, options.iterations || 1000)
+      displayConfiguration(parameters, options.iterations || 100)
     }
-    const iterations = options.iterations || 1000
+    const iterations = options.iterations || 100  // Reduced for faster first experience
     
     // Handle interactive mode
     if (options.interactive) {
@@ -101,30 +137,20 @@ export async function runSimulation(simulationName: string, options: RunOptions 
   }
 }
 
-async function discoverSimulation(simulationName: string, scenario?: string): Promise<string> {
-  const examplesDir = 'examples/simulations'
+async function discoverSimulation(simulationName: string, _scenario?: string): Promise<string> {
+  // First try the package-aware path resolver
+  const resolvedPath = await packagePaths.resolveSimulationPath(simulationName)
+  if (resolvedPath) {
+    return resolvedPath
+  }
   
-  // Try to find simulation configuration
-  const possiblePaths = [
-    // Direct file path
-    simulationName,
-    
-    // Scenario-specific (try this first for scenario-based structure)
-    scenario ? join(examplesDir, `${simulationName}/${scenario}.yaml`) : null,
-    
-    // In examples directory (scenario-based structure)
-    join(examplesDir, `${simulationName}/${simulationName}.yaml`),
-    
-    // Legacy single file structure
-    join(examplesDir, `${simulationName}.yaml`),
-  ].filter(Boolean) as string[]
-  
-  for (const path of possiblePaths) {
+  // Fallback: try direct file path (for absolute paths)
+  if (simulationName.includes('/') || simulationName.includes('\\')) {
     try {
-      await access(path)
-      return path
+      await access(simulationName)
+      return simulationName
     } catch {
-      // Continue to next path
+      // Continue to error handling
     }
   }
   
@@ -134,7 +160,7 @@ async function discoverSimulation(simulationName: string, scenario?: string): Pr
     if (available.length > 0) {
       throw new Error(`Simulation '${simulationName}' not found.\n\nAvailable simulations:\n${available.map(s => `  - ${s}`).join('\n')}`)
     } else {
-      throw new Error(`Simulation '${simulationName}' not found. No simulations found in examples/simulations directory.`)
+      throw new Error(`Simulation '${simulationName}' not found. No simulations found in search paths.`)
     }
   } catch (error) {
     // If the error is our intentional "not found" error, re-throw it
@@ -147,30 +173,36 @@ async function discoverSimulation(simulationName: string, scenario?: string): Pr
 }
 
 async function listAvailableSimulations(): Promise<string[]> {
-  const examplesDir = 'examples/simulations'
   const simulations: string[] = []
+  const searchPaths = packagePaths.getSimulationSearchPaths()
   
-  try {
-    const entries = await readdir(examplesDir, { withFileTypes: true })
-    
-    for (const entry of entries) {
-      if (entry.isDirectory()) {
-        // Check if directory has a main simulation file
-        const mainFile = join(examplesDir, entry.name, `${entry.name}.yaml`)
-        try {
-          await access(mainFile)
-          simulations.push(entry.name)
-        } catch {
-          // No main file, skip
+  for (const searchPath of searchPaths) {
+    try {
+      const entries = await readdir(searchPath, { withFileTypes: true })
+      
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          // Check if directory has a main simulation file
+          const mainFile = join(searchPath, entry.name, `${entry.name}.yaml`)
+          try {
+            await access(mainFile)
+            if (!simulations.includes(entry.name)) {
+              simulations.push(entry.name)
+            }
+          } catch {
+            // No main file, skip
+          }
+        } else if (entry.name.endsWith('.yaml')) {
+          // Individual YAML file
+          const name = basename(entry.name, '.yaml')
+          if (!simulations.includes(name)) {
+            simulations.push(name)
+          }
         }
-      } else if (entry.name.endsWith('.yaml')) {
-        // Individual YAML file
-        const name = basename(entry.name, '.yaml')
-        simulations.push(name)
       }
+    } catch {
+      // Directory doesn't exist or can't be read, continue with next search path
     }
-  } catch {
-    // Directory doesn't exist or can't be read
   }
   
   return simulations.sort()
@@ -234,7 +266,20 @@ async function resolveParameters(config: any, options: RunOptions): Promise<Reco
       // Check if this is a valid parameter for the simulation
       const paramDef = config.parameters.find((p: any) => p.key === key)
       if (!paramDef) {
-        throw new Error(`Unknown parameter '${key}' for simulation '${config.name}'. Use --list-params to see available parameters.`)
+        const availableParams = config.parameters.map((p: any) => 
+          `  • ${chalk.cyan(p.key)} - ${p.description || p.label}${p.type ? ` (${p.type})` : ''}`
+        ).join('\n')
+        
+        // Try to suggest closest match
+        const suggestion = findClosestParameter(key, config.parameters.map((p: any) => p.key))
+        const suggestionText = suggestion ? `\n\n💡 Did you mean '${chalk.yellow(suggestion)}'?` : ''
+        
+        throw new Error(`❌ Unknown parameter '${chalk.red(key)}' for simulation '${chalk.blue(config.name)}'.${suggestionText}
+
+📋 Available parameters:
+${availableParams}
+
+🔍 Get detailed info: ${chalk.dim(`npm run cli -- run ${config.name.toLowerCase().replace(/\s+/g, '-')} --list-params`)}`)
       }
       
       // Convert value to appropriate type
@@ -342,6 +387,33 @@ async function displayResults(results: any, config: any, options: RunOptions): P
     console.log(`${chalk.cyan(label.padEnd(25))}: ${chalk.white(mean)} ${chalk.gray(`(±${stdDev})`)}`)
   })
   
+  // Add business interpretation
+  console.log(chalk.blue.bold('\n💡 BUSINESS INTERPRETATION'))
+  Object.entries(results.summary).forEach(([key, stats]: [string, any]) => {
+    const mean = stats.mean
+    const stdDev = stats.standardDeviation
+    
+    if (key === 'roiPercentage' || key.toLowerCase().includes('roi')) {
+      console.log(`${chalk.cyan('ROI Analysis')}: ${mean?.toFixed(1)}% annual return`)
+      console.log(`  → 68% confidence range: ${(mean - stdDev)?.toFixed(1)}% to ${(mean + stdDev)?.toFixed(1)}%`)
+      
+      if (mean > 15) console.log(`  → 📈 Strong ROI - significantly above market average (7-10%)`)
+      else if (mean > 7) console.log(`  → ✅ Good ROI - above market average`)
+      else if (mean > 0) console.log(`  → ⚠️ Modest ROI - below market average, consider alternatives`)
+      else console.log(`  → ❌ Negative ROI - investment likely to lose money`)
+    }
+    
+    if (key === 'paybackPeriod' || key.toLowerCase().includes('payback')) {
+      const months = Math.round(mean)
+      console.log(`${chalk.cyan('Payback Analysis')}: ~${months} months to recover investment`)
+      
+      if (months <= 12) console.log(`  → 🚀 Fast payback - excellent cash flow impact`)
+      else if (months <= 24) console.log(`  → ✅ Reasonable payback - good investment timeline`)
+      else if (months <= 36) console.log(`  → ⚠️ Slow payback - consider cash flow impact`)
+      else console.log(`  → ❌ Very slow payback - high risk investment`)
+    }
+  })
+  
   if (options.verbose) {
     console.log(chalk.blue.bold('\n📊 STATISTICAL DISTRIBUTION'))
     console.log(' '.repeat(16) + chalk.yellow('P10'.padStart(10)) + chalk.yellow('P50'.padStart(10)) + chalk.yellow('P90'.padStart(10)))
@@ -390,7 +462,7 @@ function convertToCSV(results: any[]): string {
 
 async function runComparisonMode(simulationName: string, options: RunOptions): Promise<void> {
   const scenarios = options.compare!.split(',').map(s => s.trim())
-  const iterations = options.iterations || 1000
+  const iterations = options.iterations || 100
   const results: Array<{ scenario: string; config: any; results: any }> = []
   
   console.log(chalk.magenta.bold(`🔬 Scenario Comparison: ${chalk.white(simulationName)}`))

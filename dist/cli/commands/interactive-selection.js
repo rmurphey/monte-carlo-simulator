@@ -42,6 +42,7 @@ const fs_1 = require("fs");
 const path_1 = require("path");
 const chalk_1 = __importDefault(require("chalk"));
 const run_simulation_1 = require("./run-simulation");
+const package_paths_1 = require("../utils/package-paths");
 async function runInteractiveSelection(options = {}) {
     console.log(chalk_1.default.cyan.bold('🎯 Interactive Simulation Selection\n'));
     console.log(chalk_1.default.gray('Discover and run simulations with ease\n'));
@@ -64,59 +65,68 @@ async function runInteractiveSelection(options = {}) {
 }
 async function discoverAllSimulations() {
     const simulations = [];
-    const simulationsDir = 'simulations';
-    try {
-        const entries = await fs_1.promises.readdir(simulationsDir, { withFileTypes: true });
-        const loader = new loader_1.ConfigurationLoader();
-        for (const entry of entries) {
-            if (entry.isDirectory()) {
-                // Category directory - scan for simulations
-                const categoryPath = (0, path_1.join)(simulationsDir, entry.name);
-                const categoryFiles = await fs_1.promises.readdir(categoryPath, { withFileTypes: true });
-                const yamlFiles = categoryFiles.filter(f => f.name.endsWith('.yaml'));
-                const scenarios = [];
-                for (const yamlFile of yamlFiles) {
-                    const filePath = (0, path_1.join)(categoryPath, yamlFile.name);
+    const searchPaths = package_paths_1.packagePaths.getSimulationSearchPaths();
+    const loader = new loader_1.ConfigurationLoader();
+    for (const searchPath of searchPaths) {
+        try {
+            const entries = await fs_1.promises.readdir(searchPath, { withFileTypes: true });
+            for (const entry of entries) {
+                if (entry.isDirectory()) {
+                    // Category directory - scan for simulations
+                    const categoryPath = (0, path_1.join)(searchPath, entry.name);
+                    try {
+                        const categoryFiles = await fs_1.promises.readdir(categoryPath, { withFileTypes: true });
+                        const yamlFiles = categoryFiles.filter(f => f.name.endsWith('.yaml'));
+                        for (const yamlFile of yamlFiles) {
+                            const filePath = (0, path_1.join)(categoryPath, yamlFile.name);
+                            try {
+                                const config = await loader.loadConfig(filePath);
+                                const scenarioName = (0, path_1.basename)(yamlFile.name, '.yaml');
+                                // Add as separate simulation entry
+                                simulations.push({
+                                    name: config.name,
+                                    category: config.category,
+                                    description: config.description,
+                                    path: filePath,
+                                    tags: config.tags || [],
+                                    scenarios: [scenarioName]
+                                });
+                            }
+                            catch {
+                                // Skip invalid files
+                            }
+                        }
+                    }
+                    catch {
+                        // Skip directories that can't be read
+                    }
+                }
+                else if (entry.name.endsWith('.yaml')) {
+                    // Direct YAML file
+                    const filePath = (0, path_1.join)(searchPath, entry.name);
                     try {
                         const config = await loader.loadConfig(filePath);
-                        const scenarioName = (0, path_1.basename)(yamlFile.name, '.yaml');
-                        scenarios.push(scenarioName);
-                        // Add as separate simulation entry
-                        simulations.push({
-                            name: config.name,
-                            category: config.category,
-                            description: config.description,
-                            path: filePath,
-                            tags: config.tags || [],
-                            scenarios: [scenarioName]
-                        });
+                        // Check if already added (from another search path)
+                        const existingSimulation = simulations.find(s => s.name === config.name);
+                        if (!existingSimulation) {
+                            simulations.push({
+                                name: config.name,
+                                category: config.category,
+                                description: config.description,
+                                path: filePath,
+                                tags: config.tags || []
+                            });
+                        }
                     }
                     catch {
                         // Skip invalid files
                     }
                 }
             }
-            else if (entry.name.endsWith('.yaml')) {
-                // Direct YAML file
-                const filePath = (0, path_1.join)(simulationsDir, entry.name);
-                try {
-                    const config = await loader.loadConfig(filePath);
-                    simulations.push({
-                        name: config.name,
-                        category: config.category,
-                        description: config.description,
-                        path: filePath,
-                        tags: config.tags || []
-                    });
-                }
-                catch {
-                    // Skip invalid files
-                }
-            }
         }
-    }
-    catch {
-        // Directory doesn't exist or can't be read
+        catch {
+            // Directory doesn't exist or can't be read, continue with next search path
+        }
     }
     return simulations.sort((a, b) => a.name.localeCompare(b.name));
 }

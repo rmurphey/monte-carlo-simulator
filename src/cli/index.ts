@@ -18,17 +18,22 @@ program
   .description('CLI tools for Monte Carlo Simulation Framework')
   .version('1.0.0')
   .addHelpText('before', `
-🎯 Monte Carlo Simulation Framework
+🎯 Monte Carlo Business Decision Framework - Examples-First Approach
 
 Quick Start Workflow:
-  1. npm run cli list              # Discover available simulations
-  2. npm run cli run <simulation>  # Run a simulation by ID
-  3. npm run cli create <name>     # Create your own simulation
+  1. npm run cli list                    # Discover 5+ working simulations
+  2. npm run cli -- run <simulation-id> # Run with business insights
+  3. npm run cli -- run <id> --set param=value  # Customize parameters
+
+Popular Simulations:
+  • simple-roi-analysis - Basic investment ROI (3 parameters, ~3 seconds)
+  • technology-investment - Tech adoption analysis (4 parameters)  
+  • marketing-campaign-roi - Marketing spend optimization (9 parameters)
 
 Examples:
   npm run cli list
   npm run cli -- run simple-roi-analysis --set initialInvestment=250000
-  npm run cli create my-business-model
+  npm run cli -- run simple-roi-analysis --list-params
 `)
 
 program
@@ -77,7 +82,7 @@ program
   .option('-s, --scenario <scenario>', 'scenario to run (conservative, neutral, aggressive)')
   .option('-c, --compare <scenarios>', 'compare multiple scenarios (comma-separated)')
   .option('-p, --params <file>', 'custom parameter file (JSON/YAML)')
-  .option('-i, --iterations <number>', 'number of iterations', '1000')
+  .option('-i, --iterations <number>', 'number of iterations', '100')
   .option('-o, --output <file>', 'save results to file')
   .option('-f, --format <format>', 'output format (table, json, csv, quiet)', 'table')
   .option('-v, --verbose', 'show detailed output')

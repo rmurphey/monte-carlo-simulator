@@ -3,6 +3,7 @@ import { promises as fs } from 'fs'
 import { join, basename } from 'path'
 import chalk from 'chalk'
 import { runSimulation } from './run-simulation'
+import { packagePaths } from '../utils/package-paths'
 
 interface SelectionOptions {
   verbose?: boolean
@@ -44,60 +45,68 @@ export async function runInteractiveSelection(options: SelectionOptions = {}): P
 
 async function discoverAllSimulations(): Promise<SimulationInfo[]> {
   const simulations: SimulationInfo[] = []
-  const simulationsDir = 'simulations'
+  const searchPaths = packagePaths.getSimulationSearchPaths()
+  const loader = new ConfigurationLoader()
   
-  try {
-    const entries = await fs.readdir(simulationsDir, { withFileTypes: true })
-    const loader = new ConfigurationLoader()
-    
-    for (const entry of entries) {
-      if (entry.isDirectory()) {
-        // Category directory - scan for simulations
-        const categoryPath = join(simulationsDir, entry.name)
-        const categoryFiles = await fs.readdir(categoryPath, { withFileTypes: true })
-        
-        const yamlFiles = categoryFiles.filter(f => f.name.endsWith('.yaml'))
-        const scenarios: string[] = []
-        
-        for (const yamlFile of yamlFiles) {
-          const filePath = join(categoryPath, yamlFile.name)
+  for (const searchPath of searchPaths) {
+    try {
+      const entries = await fs.readdir(searchPath, { withFileTypes: true })
+      
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          // Category directory - scan for simulations
+          const categoryPath = join(searchPath, entry.name)
+          try {
+            const categoryFiles = await fs.readdir(categoryPath, { withFileTypes: true })
+            const yamlFiles = categoryFiles.filter(f => f.name.endsWith('.yaml'))
+            
+            for (const yamlFile of yamlFiles) {
+              const filePath = join(categoryPath, yamlFile.name)
+              try {
+                const config = await loader.loadConfig(filePath)
+                const scenarioName = basename(yamlFile.name, '.yaml')
+                
+                // Add as separate simulation entry
+                simulations.push({
+                  name: config.name,
+                  category: config.category,
+                  description: config.description,
+                  path: filePath,
+                  tags: config.tags || [],
+                  scenarios: [scenarioName]
+                })
+              } catch {
+                // Skip invalid files
+              }
+            }
+          } catch {
+            // Skip directories that can't be read
+          }
+        } else if (entry.name.endsWith('.yaml')) {
+          // Direct YAML file
+          const filePath = join(searchPath, entry.name)
           try {
             const config = await loader.loadConfig(filePath)
-            const scenarioName = basename(yamlFile.name, '.yaml')
-            scenarios.push(scenarioName)
             
-            // Add as separate simulation entry
-            simulations.push({
-              name: config.name,
-              category: config.category,
-              description: config.description,
-              path: filePath,
-              tags: config.tags || [],
-              scenarios: [scenarioName]
-            })
+            // Check if already added (from another search path)
+            const existingSimulation = simulations.find(s => s.name === config.name)
+            if (!existingSimulation) {
+              simulations.push({
+                name: config.name,
+                category: config.category,
+                description: config.description,
+                path: filePath,
+                tags: config.tags || []
+              })
+            }
           } catch {
             // Skip invalid files
           }
         }
-      } else if (entry.name.endsWith('.yaml')) {
-        // Direct YAML file
-        const filePath = join(simulationsDir, entry.name)
-        try {
-          const config = await loader.loadConfig(filePath)
-          simulations.push({
-            name: config.name,
-            category: config.category,
-            description: config.description,
-            path: filePath,
-            tags: config.tags || []
-          })
-        } catch {
-          // Skip invalid files
-        }
       }
+    } catch {
+      // Directory doesn't exist or can't be read, continue with next search path
     }
-  } catch {
-    // Directory doesn't exist or can't be read
   }
   
   return simulations.sort((a, b) => a.name.localeCompare(b.name))
