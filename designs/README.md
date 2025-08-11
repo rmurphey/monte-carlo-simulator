@@ -10,18 +10,46 @@ Design documents support large team coordination by:
 - Creating measurable success criteria and testing approaches
 - Documenting integration patterns with existing framework components
 
-## Current Designs
+## Active Designs
 
 ### [Interactive Definition Builder](interactive-definition-builder.md)
 **Status:** Ready for Implementation  
-**Phase:** Interactive Studio Phase 4  
-**Priority:** High
+**Priority:** High  
+**Scope:** Major UX Feature
 
-Comprehensive design for guided simulation creation workflow optimized for AI agents. Includes:
+Comprehensive design for guided simulation creation workflow optimized for AI agents. Enables sophisticated simulation generation through interactive prompts with real-time validation.
+
+**Key Features:**
 - Agent-friendly workflow patterns
-- Business intelligence template integration
+- Business intelligence template integration  
 - Real-time validation and preview capabilities
 - Performance and scalability considerations
+
+### [Interactive Parameter Exploration](interactive-parameter-exploration.md)
+**Status:** Ready for Implementation  
+**Priority:** High  
+**Scope:** Core Workflow Feature
+
+Implementation of the `--interactive` flag for real-time parameter adjustment during simulation execution, enabling the core exploration workflow documented in the agent beginner guide.
+
+**Key Features:**
+- Real-time parameter modification
+- Progress comparison between runs
+- Professional UI with inquirer prompts
+- Seamless workflow integration
+
+### [Documentation Sync System](documentation-sync-system.md)  
+**Status:** Ready for Implementation  
+**Priority:** Medium  
+**Scope:** Quality Assurance
+
+Critical system to prevent documentation drift and ensure examples remain working and current with codebase changes.
+
+**Key Features:**
+- Automated documentation validation
+- Example testing integration
+- Development workflow enhancement
+- Quality assurance automation
 
 ## Design Review Process
 
