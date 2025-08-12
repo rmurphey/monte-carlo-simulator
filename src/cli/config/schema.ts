@@ -36,9 +36,12 @@ export interface ParameterGroupConfig {
   parameters: string[]
 }
 
+export type OutputType = 'number' | 'boolean' | 'string'
+
 export interface OutputConfig {
   key: string
   label: string
+  type?: OutputType  // Optional, defaults to 'number' for backward compatibility
   description?: string
 }
 
@@ -83,6 +86,7 @@ const outputSchema: JSONSchemaType<OutputConfig> = {
   properties: {
     key: { type: 'string', minLength: 1 },
     label: { type: 'string', minLength: 1 },
+    type: { type: 'string', enum: ['number', 'boolean', 'string'], nullable: true },
     description: { type: 'string', nullable: true }
   },
   required: ['key', 'label'],

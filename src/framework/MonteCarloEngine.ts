@@ -8,7 +8,7 @@ export abstract class MonteCarloEngine {
 
   abstract getMetadata(): SimulationMetadata
   abstract getParameterDefinitions(): ParameterDefinition[]
-  abstract simulateScenario(_parameters: Record<string, unknown>): Record<string, number>
+  abstract simulateScenario(_parameters: Record<string, unknown>): Record<string, number | string | boolean>
 
   getParameterSchema(): ParameterSchema {
     if (!this._parameterSchema) {

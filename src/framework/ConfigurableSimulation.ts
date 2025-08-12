@@ -127,7 +127,7 @@ export class ConfigurableSimulation extends MonteCarloEngine {
     }))
   }
   
-  simulateScenario(parameters: Record<string, unknown>): Record<string, number> {
+  simulateScenario(parameters: Record<string, unknown>): Record<string, number | string | boolean> {
     try {
       // Create a safe execution context
       const parameterNames = Object.keys(parameters)
@@ -168,26 +168,48 @@ export class ConfigurableSimulation extends MonteCarloEngine {
         throw new Error('Simulation logic must return an object')
       }
       
-      // Ensure all values are numbers
-      const numericResult: Record<string, number> = {}
+      // Validate output types according to configuration
+      const validatedResult: Record<string, number | string | boolean> = {}
+      const outputConfigs = this.enhancedConfig.outputs || this.config.outputs || []
+      
       for (const [key, value] of Object.entries(result)) {
-        const numValue = Number(value)
-        if (isNaN(numValue)) {
-          throw new Error(`Output '${key}' must be a number, got: ${typeof value}`)
+        const outputConfig = outputConfigs.find(o => o.key === key)
+        const expectedType = outputConfig?.type || 'number' // Default to number for backward compatibility
+        
+        let validatedValue: number | string | boolean
+        
+        if (expectedType === 'string') {
+          validatedValue = String(value)
+        } else if (expectedType === 'boolean') {
+          if (typeof value === 'boolean') {
+            validatedValue = value
+          } else if (typeof value === 'string') {
+            validatedValue = value.toLowerCase() === 'true'
+          } else {
+            validatedValue = Boolean(value)
+          }
+        } else {
+          // number or default case
+          const numericValue = Number(value)
+          if (isNaN(numericValue)) {
+            throw new Error(`Output '${key}' must be a number, got: ${typeof value}`)
+          }
+          validatedValue = numericValue
         }
-        numericResult[key] = numValue
+        
+        validatedResult[key] = validatedValue
       }
       
       // Validate that returned keys match expected outputs
       const expectedOutputs = (this.enhancedConfig.outputs || this.config.outputs || []).map(o => o.key)
-      const actualOutputs = Object.keys(numericResult)
+      const actualOutputs = Object.keys(validatedResult)
       
       const missingOutputs = expectedOutputs.filter(key => !actualOutputs.includes(key))
       if (missingOutputs.length > 0) {
         throw new Error(`Missing expected outputs: ${missingOutputs.join(', ')}`)
       }
       
-      return numericResult
+      return validatedResult
       
     } catch (error) {
       if (error instanceof Error) {
