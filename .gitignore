@@ -22,7 +22,6 @@ logs/
 
 # JavaScript/TypeScript
 build/
-dist/
 *.tsbuildinfo
 .eslintcache
 
