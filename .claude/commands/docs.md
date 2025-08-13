@@ -12,36 +12,35 @@ description: docs command
 - Specifically consider README.md at the root, and all content in docs/
 
 ## Your task
-Manage and update documentation for the agent-friendly Monte Carlo simulation framework.
+Update documentation based on recent code changes and new features.
 
-Focus on keeping documentation current, accurate, and optimized for agent guidance.
+Focus on targeted updates that reflect actual changes rather than comprehensive audits.
 
-## Output
-Provide documentation management covering:
+## Strategy
+**Change-Driven Documentation Updates:**
 
-### 1. **Documentation Audit**
-- Review README.md for accuracy and agent guidance
-- Check ACTIVE_WORK.md for outdated or completed items
-- Verify scenario documentation matches current implementation
-- Identify gaps in agent-facing documentation
+### 1. **Identify Recent Changes**
+- Review git status and recent commits for new features
+- Find new files (simulations, utilities, commands)
+- Identify modified CLI options or capabilities
+- Detect new or changed configuration options
 
-### 2. **Agent Guidance Optimization**
-- Improve YAML configuration examples
-- Enhance error message documentation
-- Update simulation creation workflows
-- Clarify business intelligence integration
+### 2. **Update Documentation to Match Changes**
+- Add new features to README.md examples
+- Update CLI reference with new options/commands
+- Document new simulation templates
+- Refresh ACTIVE_WORK.md with completed features
 
-### 3. **Documentation Structure**
-- Ensure logical information hierarchy
-- Maintain clear separation between user docs and development docs
-- Verify cross-references and links are accurate
-- Keep archive references current
+### 3. **Verify Examples Still Work**
+- Test documented commands and examples
+- Update any broken references or examples
+- Ensure agent guidance reflects current capabilities
 
-### 4. **Framework Documentation**
-- Update API documentation for configuration schemas
-- Document new business intelligence features
-- Maintain scenario system documentation
-- Keep template and example documentation current
+### 4. **Agent-Focused Updates Only**
+- Prioritize documentation that helps agents use the framework
+- Update YAML configuration examples if schema changed
+- Document new validation rules or error messages
+- Add working examples for new features
 
 ## Documentation Priorities
 Based on project phase and agent needs:
@@ -65,25 +64,23 @@ Based on project phase and agent needs:
 - Advanced customization docs
 
 ## Actions Available
-Offer to:
-- **Update README.md** with current project state
-- **Refresh ACTIVE_WORK.md** to remove outdated content
-- **Enhance agent guidance** in configuration documentation  
-- **Create missing docs** for new features
-- **Archive outdated docs** to maintain clarity
-- **Fix broken links** and references
-- **Improve examples** with tested configurations
+Focus on changes since last documentation update:
+- **Update README.md** with new features and capabilities
+- **Update CLI_REFERENCE.md** with new command options
+- **Document new simulations** and templates
+- **Update ACTIVE_WORK.md** with completed work
+- **Fix broken examples** caused by code changes
+- **Add agent guidance** for new features only
 
 ## Quality Checks
-After documentation updates:
-- Verify all examples work with current implementation
-- Check that agent guidance is clear and actionable
-- Ensure business intelligence docs match current features
-- Test that scenario documentation produces expected results
-- Validate that links and references are accurate
+After targeted documentation updates:
+- Test new examples mentioned in documentation
+- Verify new CLI options are correctly documented
+- Ensure new simulation templates work as documented
+- Check that agent guidance reflects current capabilities
 
-Focus on documentation that:
-- Makes agent simulation generation more successful
-- Reduces common configuration errors
-- Provides clear business intelligence guidance
-- Maintains framework usability as it evolves
+**Efficient approach:**
+- Only update docs for actual changes, not comprehensive reviews
+- Focus on user-facing changes that need documentation
+- Test examples that were modified, not all examples
+- Prioritize agent workflow impact over comprehensive coverage

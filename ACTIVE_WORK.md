@@ -39,6 +39,8 @@ Four strategic plans ready for implementation prioritization:
 - **Foundation is solid** - ready for advanced feature development
 
 ## Recently Completed ✅
+- **Document Generation System** - Comprehensive analysis reports with text-based visualizations (August 2025)
+- **QA Strategy Simulations** - Manual vs automated testing ROI analysis templates
 - Strategic enhancement plans (4 comprehensive implementation guides)
 - NPX GitHub compatibility (committed dist/ directory)
 - Critical workflow blockers resolution (archived)

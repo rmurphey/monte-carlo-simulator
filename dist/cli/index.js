@@ -109,7 +109,7 @@ program
     .option('-p, --params <file>', 'custom parameter file (JSON/YAML)')
     .option('-i, --iterations <number>', 'number of iterations', '100')
     .option('-o, --output <file>', 'save results to file')
-    .option('-f, --format <format>', 'output format (table, json, csv, quiet)', 'table')
+    .option('-f, --format <format>', 'output format (table, json, csv, document, quiet)', 'table')
     .option('-v, --verbose', 'show detailed output')
     .option('-q, --quiet', 'minimal output')
     .option('--interactive', 'launch interactive config editing session with full YAML editor')

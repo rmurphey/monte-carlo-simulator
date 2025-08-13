@@ -7,6 +7,7 @@ import * as yaml from 'js-yaml'
 import { packagePaths } from '../utils/package-paths'
 import { RunOptions } from '../config/schema'
 import { InteractiveSimulationSession } from '../interactive/session-manager'
+import { documentGenerator } from '../utils/document-generator'
 
 // Helper function for parameter name suggestions
 function findClosestParameter(input: string, available: string[]): string | null {
@@ -111,7 +112,7 @@ export async function runSimulation(simulationName: string, options: RunOptions 
     }
     
     // 5. Display results
-    await displayResults(results, config, options)
+    await displayResults(results, config, options, parameters)
     
     // 6. Save output if requested
     if (options.output) {
@@ -345,7 +346,7 @@ function displayConfiguration(parameters: Record<string, any>, iterations: numbe
   console.log('')
 }
 
-async function displayResults(results: any, config: any, options: RunOptions): Promise<void> {
+async function displayResults(results: any, config: any, options: RunOptions, parameters?: Record<string, any>): Promise<void> {
   if (options.quiet) return
   
   const format = options.format || 'table'
@@ -362,6 +363,16 @@ async function displayResults(results: any, config: any, options: RunOptions): P
     results.results.forEach((result: any) => {
       console.log(headers.map(h => result[h]).join(','))
     })
+    return
+  }
+
+  if (format === 'document') {
+    const document = documentGenerator.generateAnalysisDocument(results, config, parameters || {}, {
+      includeCharts: true,
+      includeRawData: false,
+      includeRecommendations: true
+    })
+    console.log(document)
     return
   }
   
@@ -431,9 +442,18 @@ async function saveResults(results: any, config: any, parameters: Record<string,
     summary: results.summary
   }
   
-  const content = options.format === 'csv' ? 
-    convertToCSV(results.results) : 
-    JSON.stringify(outputData, null, 2)
+  let content: string
+  if (options.format === 'csv') {
+    content = convertToCSV(results.results)
+  } else if (options.format === 'document') {
+    content = documentGenerator.generateAnalysisDocument(results, config, parameters, {
+      includeCharts: true,
+      includeRawData: true,
+      includeRecommendations: true
+    })
+  } else {
+    content = JSON.stringify(outputData, null, 2)
+  }
   
   await writeFile(options.output!, content, 'utf8')
   console.log(chalk.green(`💾 Results saved to ${chalk.white(options.output)}`))

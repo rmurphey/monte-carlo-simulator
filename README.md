@@ -178,6 +178,10 @@ npm run cli list
 npm run cli run simple-roi-analysis
 npm run cli run technology-investment
 
+# Generate comprehensive analysis documents
+npm run cli run simple-roi-analysis --format=document
+npm run cli run technology-investment --format=document --output=analysis.md
+
 # Interactive parameter exploration  
 npm run cli run simple-roi-analysis --interactive
 
@@ -197,6 +201,10 @@ npm run cli run examples/simulations/technology-investment.yaml
 
 # Team scaling - advanced with business intelligence
 npm run cli run examples/simulations/team-scaling-decision.yaml
+
+# QA strategy analysis - manual vs automated testing ROI
+npm run cli run simulations/manual-qa-roi.yaml
+npm run cli run simulations/qa-strategy-comparison.yaml
 
 # Scenario analysis - compare risk scenarios
 npm run cli run examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml
@@ -295,7 +303,8 @@ All examples are **tested and working**.
 
 ### ✅ **Current Capabilities**
 - **Risk scenario comparison** - Side-by-side analysis with `--compare` flag  
-- **Export capabilities** - JSON/CSV output with `--format` and `--output` options
+- **Export capabilities** - JSON/CSV/Document output with `--format` and `--output` options
+- **Document generation** - Comprehensive analysis reports with text-based visualizations
 - **Parameter overrides** - Custom values via CLI arguments or parameter files
 - **Statistical analysis** - P10/P50/P90 percentiles, mean, standard deviation
 

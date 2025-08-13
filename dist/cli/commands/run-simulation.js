@@ -45,6 +45,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const yaml = __importStar(require("js-yaml"));
 const package_paths_1 = require("../utils/package-paths");
 const session_manager_1 = require("../interactive/session-manager");
+const document_generator_1 = require("../utils/document-generator");
 // Helper function for parameter name suggestions
 function findClosestParameter(input, available) {
     const inputLower = input.toLowerCase();
@@ -127,7 +128,7 @@ async function runSimulation(simulationName, options = {}) {
             console.log(`\r${bar} ${chalk_1.default.cyan('100%')} | ${chalk_1.default.white(iterations.toLocaleString())}/${chalk_1.default.white(iterations.toLocaleString())} | ${chalk_1.default.magenta(executionTime + 's')}\n`);
         }
         // 5. Display results
-        await displayResults(results, config, options);
+        await displayResults(results, config, options, parameters);
         // 6. Save output if requested
         if (options.output) {
             await saveResults(results, config, parameters, options);
@@ -337,7 +338,7 @@ function displayConfiguration(parameters, iterations) {
     console.log(`${chalk_1.default.cyan('iterations'.padEnd(20))}: ${chalk_1.default.white(iterations.toLocaleString())}`);
     console.log('');
 }
-async function displayResults(results, config, options) {
+async function displayResults(results, config, options, parameters) {
     if (options.quiet)
         return;
     const format = options.format || 'table';
@@ -352,6 +353,15 @@ async function displayResults(results, config, options) {
         results.results.forEach((result) => {
             console.log(headers.map(h => result[h]).join(','));
         });
+        return;
+    }
+    if (format === 'document') {
+        const document = document_generator_1.documentGenerator.generateAnalysisDocument(results, config, parameters || {}, {
+            includeCharts: true,
+            includeRawData: false,
+            includeRecommendations: true
+        });
+        console.log(document);
         return;
     }
     // Default table format
@@ -416,9 +426,20 @@ async function saveResults(results, config, parameters, options) {
         results: options.format === 'json' ? results.results : undefined,
         summary: results.summary
     };
-    const content = options.format === 'csv' ?
-        convertToCSV(results.results) :
-        JSON.stringify(outputData, null, 2);
+    let content;
+    if (options.format === 'csv') {
+        content = convertToCSV(results.results);
+    }
+    else if (options.format === 'document') {
+        content = document_generator_1.documentGenerator.generateAnalysisDocument(results, config, parameters, {
+            includeCharts: true,
+            includeRawData: true,
+            includeRecommendations: true
+        });
+    }
+    else {
+        content = JSON.stringify(outputData, null, 2);
+    }
     await (0, promises_1.writeFile)(options.output, content, 'utf8');
     console.log(chalk_1.default.green(`💾 Results saved to ${chalk_1.default.white(options.output)}`));
 }

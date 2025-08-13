@@ -1,0 +1,243 @@
+name: QA Strategy Comparison - Manual vs Automated
+category: Quality Assurance
+description: Compare manual QA, automated testing, and hybrid approaches to find optimal quality assurance strategy
+version: 1.0.0
+tags: [qa, automation, testing, efficiency, strategy]
+
+parameters:
+  - key: teamSize
+    label: Development Team Size
+    type: number
+    default: 10
+    min: 3
+    max: 50
+    step: 1
+    description: Number of developers on the team
+
+  - key: qaStrategy
+    label: QA Strategy
+    type: string
+    default: "hybrid"
+    options: ["manual", "automated", "hybrid"]
+    description: Testing strategy approach
+
+  - key: manualQAEngineers
+    label: Manual QA Engineers
+    type: number
+    default: 2
+    min: 0
+    max: 8
+    step: 1
+    description: Number of dedicated manual QA engineers (0 for full automation)
+
+  - key: qaEngineerSalary
+    label: QA Engineer Annual Salary ($)
+    type: number
+    default: 95000
+    min: 60000
+    max: 150000
+    step: 5000
+    description: Annual salary per QA engineer
+
+  - key: automationEngineerSalary
+    label: Automation Engineer Annual Salary ($)
+    type: number
+    default: 130000
+    min: 90000
+    max: 180000
+    step: 5000
+    description: Annual salary for automation specialists
+
+  - key: developerSalary
+    label: Developer Annual Salary ($)
+    type: number
+    default: 120000
+    min: 80000
+    max: 200000
+    step: 5000
+    description: Annual salary per developer
+
+  - key: releaseFrequency
+    label: Releases Per Year
+    type: number
+    default: 52
+    min: 12
+    max: 365
+    step: 4
+    description: Number of software releases per year (higher frequency favors automation)
+
+  - key: automationToolingCost
+    label: Annual Automation Tooling Cost ($)
+    type: number
+    default: 35000
+    min: 10000
+    max: 100000
+    step: 5000
+    description: CI/CD, test frameworks, cloud testing infrastructure
+
+  - key: automationCoverage
+    label: Automated Test Coverage (%)
+    type: number
+    default: 75
+    min: 30
+    max: 95
+    step: 5
+    description: Percentage of functionality covered by automated tests
+
+  - key: manualTestCycleTime
+    label: Manual Test Cycle Time (Hours)
+    type: number
+    default: 16
+    min: 4
+    max: 40
+    step: 2
+    description: Hours for manual testing per release
+
+  - key: automatedTestTime
+    label: Automated Test Time (Minutes)
+    type: number
+    default: 45
+    min: 10
+    max: 120
+    step: 5
+    description: Minutes for automated test suite per release
+
+  - key: complexBugDetectionRate
+    label: Complex Bug Detection Rate - Manual (%)
+    type: number
+    default: 85
+    min: 60
+    max: 95
+    step: 5
+    description: Manual QA effectiveness at finding complex/edge case bugs
+
+  - key: regressionBugDetectionRate
+    label: Regression Bug Detection Rate - Automated (%)
+    type: number
+    default: 95
+    min: 80
+    max: 99
+    step: 2
+    description: Automated test effectiveness at catching regressions
+
+  - key: productionBugCost
+    label: Average Production Bug Cost ($)
+    type: number
+    default: 5000
+    min: 1000
+    max: 20000
+    step: 1000
+    description: Average cost of a bug reaching production (fix + customer impact)
+
+outputs:
+  - key: annualQACost
+    label: Annual QA Cost ($)
+    description: Total annual cost of chosen QA strategy
+
+  - key: testExecutionTime
+    label: Test Execution Time Per Release (Hours)
+    description: Time required for testing per release
+
+  - key: annualTestingTime
+    label: Annual Testing Time (Hours)
+    description: Total hours spent on testing annually
+
+  - key: estimatedBugsPreventedPerYear
+    label: Bugs Prevented Per Year
+    description: Estimated bugs caught before production
+
+  - key: estimatedBugCostSavings
+    label: Estimated Bug Cost Savings ($)
+    description: Annual savings from preventing production bugs
+
+  - key: netBenefit
+    label: Net Annual Benefit ($)
+    description: Bug cost savings minus QA costs
+
+  - key: roi
+    label: ROI Percentage
+    description: Return on investment of QA strategy
+
+  - key: velocityImpact
+    label: Development Velocity Impact (%)
+    description: Impact on development speed (negative = slower, positive = faster)
+
+  - key: releaseConfidence
+    label: Release Confidence Score
+    description: Confidence in release quality (1-10 scale)
+
+simulation:
+  logic: |
+    // Calculate strategy-specific parameters
+    let manualQACost = 0;
+    let automationCost = automationToolingCost;
+    let testTimePerRelease = 0;
+    let bugsPreventedEfficiency = 0;
+    let velocityImpact = 0;
+    let releaseConfidence = 5;
+    
+    // Strategy-specific calculations
+    switch(qaStrategy) {
+      case "manual":
+        manualQACost = manualQAEngineers * qaEngineerSalary;
+        testTimePerRelease = manualTestCycleTime;
+        bugsPreventedEfficiency = (complexBugDetectionRate / 100) * 0.8; // Manual good at edge cases, poor at regression
+        velocityImpact = -15 - (releaseFrequency > 26 ? 10 : 0); // Slower with frequent releases
+        releaseConfidence = 6 + (manualQAEngineers > teamSize * 0.15 ? 1 : 0);
+        automationCost = 5000; // Minimal tooling
+        break;
+        
+      case "automated":
+        // Need 0.5-1 automation engineers per 10 developers
+        const autoEngineers = Math.ceil(teamSize * 0.08);
+        manualQACost = autoEngineers * automationEngineerSalary;
+        testTimePerRelease = automatedTestTime / 60; // Convert to hours
+        bugsPreventedEfficiency = (automationCoverage / 100) * (regressionBugDetectionRate / 100) * 0.9;
+        velocityImpact = 10 + (releaseFrequency > 50 ? 15 : 0); // Much faster with frequent releases
+        releaseConfidence = 7 + (automationCoverage > 80 ? 1 : 0);
+        break;
+        
+      case "hybrid":
+        const hybridManualQA = Math.max(1, Math.floor(manualQAEngineers * 0.6));
+        const hybridAutoEngineers = Math.ceil(teamSize * 0.05);
+        manualQACost = (hybridManualQA * qaEngineerSalary) + (hybridAutoEngineers * automationEngineerSalary);
+        testTimePerRelease = (automatedTestTime / 60) + (manualTestCycleTime * 0.3);
+        bugsPreventedEfficiency = (automationCoverage / 100) * 0.85 + (complexBugDetectionRate / 100) * 0.4;
+        velocityImpact = 5 + (releaseFrequency > 50 ? 8 : 0);
+        releaseConfidence = 8;
+        break;
+    }
+    
+    const annualQACost = manualQACost + automationCost;
+    
+    // Add uncertainty and variance
+    const effectivenessVariance = 0.8 + (random() * 0.4); // QA effectiveness varies
+    const actualEfficiency = bugsPreventedEfficiency * effectivenessVariance;
+    
+    // Calculate bugs prevented based on strategy efficiency
+    const baseBugRate = teamSize * 0.8; // Bugs per release without QA
+    const estimatedBugsPreventedPerYear = Math.max(0, baseBugRate * releaseFrequency * actualEfficiency);
+    
+    // Calculate cost savings
+    const bugCostVariance = 0.7 + (random() * 0.6); // Bug costs vary significantly
+    const estimatedBugCostSavings = estimatedBugsPreventedPerYear * productionBugCost * bugCostVariance;
+    
+    // Calculate metrics
+    const annualTestingTime = testTimePerRelease * releaseFrequency;
+    const netBenefit = estimatedBugCostSavings - annualQACost;
+    const roi = annualQACost > 0 ? (netBenefit / annualQACost) * 100 : 0;
+    
+    // Add strategy-specific velocity adjustments
+    const finalVelocityImpact = velocityImpact + (random() * 6 - 3); // ±3% random variance
+    
+    return {
+      annualQACost: Math.round(annualQACost),
+      testExecutionTime: Math.round(testTimePerRelease * 10) / 10,
+      annualTestingTime: Math.round(annualTestingTime),
+      estimatedBugsPreventedPerYear: Math.round(estimatedBugsPreventedPerYear * 10) / 10,
+      estimatedBugCostSavings: Math.round(estimatedBugCostSavings),
+      netBenefit: Math.round(netBenefit),
+      roi: Math.round(roi * 10) / 10,
+      velocityImpact: Math.round(finalVelocityImpact * 10) / 10,
+      releaseConfidence: Math.round(releaseConfidence * 10) / 10
+    };

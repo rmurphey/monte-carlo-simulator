@@ -53,7 +53,7 @@
       "eslint --fix"
     ],
     "{examples,simulations}/**/*.{yaml,yml}": [
-      "npm run cli validate"
+      "bash -c 'for file in \"$@\"; do npm run cli validate \"$file\"; done' _"
     ],
     "*.json": [
       "node -e \"JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8'))\""

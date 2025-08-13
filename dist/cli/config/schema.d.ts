@@ -43,7 +43,7 @@ export interface RunOptions {
     params?: string;
     iterations?: number;
     output?: string;
-    format?: 'table' | 'json' | 'csv' | 'quiet';
+    format?: 'table' | 'json' | 'csv' | 'quiet' | 'document';
     verbose?: boolean;
     quiet?: boolean;
     interactive?: boolean;

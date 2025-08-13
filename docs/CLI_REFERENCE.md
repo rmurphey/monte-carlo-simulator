@@ -45,12 +45,12 @@ npx github:rmurphey/monte-carlo-simulator run <simulation> [options]
 
 **Key Options:**
 - `-i, --iterations <number>` - Number of Monte Carlo iterations (default: 1000)
+- `-f, --format <format>` - Output format: table, json, csv, document, quiet (default: table)
+- `-o, --output <file>` - Save results to file
 - `--set <param=value>` - Override parameters with validation
 - `-p, --params <file>` - Load parameters from JSON/YAML file
 - `--interactive` - Real-time parameter adjustment mode
 - `--list-params` - Discover available parameters
-- `-f, --format <format>` - Output format: table, json, csv, quiet
-- `-o, --output <file>` - Save results to file
 - `-v, --verbose` - Detailed output with configuration display
 
 **Parameter Override Examples:**
@@ -76,6 +76,20 @@ npm run cli run technology-investment --set toolCost=150000 --iterations 5000 --
 ```bash
 # Compare multiple scenarios (advanced usage)
 npm run cli run ai-tool-adoption --compare conservative,baseline,aggressive
+```
+
+**Document Generation:**
+```bash
+# Generate comprehensive analysis reports
+npm run cli run simple-roi-analysis --format=document
+npm run cli run technology-investment --format=document --output=analysis.md
+
+# Features:
+# - Executive summary with key insights
+# - Statistical analysis with confidence intervals
+# - Text-based visualizations (histograms, confidence charts)
+# - Risk analysis and strategic recommendations
+# - Business intelligence interpretation
 ```
 
 **Interactive Mode:**
