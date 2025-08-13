@@ -15,7 +15,7 @@ npx monte-carlo-simulator create --interactive
 # OR: Copy a template and modify it for your business
 curl -O https://raw.githubusercontent.com/rmurphey/monte-carlo-simulator/main/examples/simulations/simple-roi-analysis.yaml
 # Edit the YAML file with your parameters, then run:
-npx monte-carlo-simulator run simple-roi-analysis.yaml --set initialInvestment=100000
+npx monte-carlo-simulator run simple-roi-analysis --set initialInvestment=100000
 ```
 
 **You Get**: Confidence intervals like *"75% chance of $200K+ savings, 15% chance of breaking even, 10% chance of loss"* 
@@ -88,14 +88,14 @@ curl -O https://raw.githubusercontent.com/rmurphey/monte-carlo-simulator/main/ex
 
 ### 3. Run Your Custom Analysis
 ```bash
-# Validate your changes
+# Validate your changes (if you downloaded the file)
 npx monte-carlo-simulator validate simple-roi-analysis.yaml
 
 # Run with your parameters
-npx monte-carlo-simulator run simple-roi-analysis.yaml
+npx monte-carlo-simulator run simple-roi-analysis
 
 # Override parameters on the fly
-npx monte-carlo-simulator run simple-roi-analysis.yaml --set initialInvestment=250000
+npx monte-carlo-simulator run simple-roi-analysis --set initialInvestment=250000
 ```
 
 ### Available Business Templates

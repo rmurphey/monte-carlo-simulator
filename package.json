@@ -38,14 +38,14 @@
     "sim": "tsx src/cli/index.ts interactive",
     "run": "tsx src/cli/index.ts run",
     "test:docs": "tsx scripts/test-docs.ts",
-    "validate:yaml": "find examples/ simulations/ -name '*.yaml' -exec npm run cli validate {} \\; 2>/dev/null || true",
+    "validate:yaml": "find examples/ -name '*.yaml' -exec npm run cli validate {} \\; 2>/dev/null || true",
     "validate:json": "find . -name '*.json' -not -path './node_modules/*' -not -path './coverage/*' -exec node -e 'JSON.parse(require(\"fs\").readFileSync(\"{}\", \"utf8\"))' \\;",
     "test:agent-apis": "npm run cli list >/dev/null && npm run cli -- run examples/simulations/simple-roi-analysis.yaml --iterations 5 >/dev/null && npm run cli -- run examples/simulations/simple-roi-analysis.yaml --list-params >/dev/null",
     "check:formatting": "npm run lint",
     "check:file-sizes": "git diff --cached --name-only | head -20 | while read file; do [ -f \"$file\" ] && [ $(wc -c < \"$file\") -gt 1048576 ] && echo \"Large file: $file\"; done || true",
     "check:secrets": "./scripts/check-secrets.sh",
-    "push": "npm run build && git add dist/ && git push",
-    "push-force": "npm run build && git add dist/ && git commit -m 'build: update dist/ for NPX compatibility' && git push",
+    "push": "git push",
+    "push-force": "git push --force-with-lease",
     "prepare": "husky"
   },
   "lint-staged": {

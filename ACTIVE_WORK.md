@@ -2,9 +2,10 @@
 
 ## Project Status
 - **Quality**: Production-ready with bulletproof validation
-- **Tests**: 92/92 passing (100% success rate)  
-- **Examples**: 7 working simulations, all schema-validated
-- **NPX Support**: GitHub distribution working
+- **Tests**: All tests passing
+- **Templates**: 13 working simulation templates, all schema-validated
+- **NPM Published**: Available via `npx monte-carlo-simulator`
+- **Distribution**: Clean npm package, no build artifacts in git
 - **Date**: 2025-08-13
 
 ## Current Priorities
@@ -39,11 +40,13 @@ Four strategic plans ready for implementation prioritization:
 - **Foundation is solid** - ready for advanced feature development
 
 ## Recently Completed ✅
-- **Document Generation System** - Comprehensive analysis reports with text-based visualizations (August 2025)
+- **NPM Package Distribution** - Published to npm registry, clean distribution without git artifacts
+- **Document Generation System** - Business-friendly reports with narrative explanations (August 2025)
+- **Template Consolidation** - All 13 templates organized in `examples/simulations/`  
+- **User Workspace** - `simulations/` directory for user files (gitignored)
+- **Documentation Overhaul** - README emphasizes simulation creation as primary purpose
 - **QA Strategy Simulations** - Manual vs automated testing ROI analysis templates
 - Strategic enhancement plans (4 comprehensive implementation guides)
-- NPX GitHub compatibility (committed dist/ directory)
-- Critical workflow blockers resolution (archived)
 - Examples-first framework with bulletproof validation
 - Production-ready CLI with interactive features
 
