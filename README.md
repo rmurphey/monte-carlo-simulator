@@ -1,22 +1,28 @@
 # Monte Carlo Business Decision Framework
-**Professional Examples-First Monte Carlo Simulation Framework**
+**Create Custom Monte Carlo Simulations for Strategic Business Decisions**
 
-## ⚡ TL;DR - Quick Start
+## ⚡ TL;DR - Create Your Business Analysis
 
-**Want to analyze a business decision right now?**
+**Turn uncertain business decisions into rigorous risk analysis:**
 
 ```bash
-# Zero-installation - works immediately
+# Browse templates to get started
 npx monte-carlo-simulator list
 
-# Run your first analysis
-npx monte-carlo-simulator run simple-roi-analysis
+# Create your custom simulation (no coding required!)
+npx monte-carlo-simulator create --interactive
 
-# Advanced usage with custom parameters
-npx monte-carlo-simulator run simple-roi-analysis --set initialInvestment=100000
+# OR: Copy a template and modify it for your business
+curl -O https://raw.githubusercontent.com/rmurphey/monte-carlo-simulator/main/examples/simulations/simple-roi-analysis.yaml
+# Edit the YAML file with your parameters, then run:
+npx monte-carlo-simulator run simple-roi-analysis.yaml --set initialInvestment=100000
 ```
 
-**Result**: Get confidence intervals like *"75% chance of $200K+ savings, 15% chance of breaking even, 10% chance of loss"* instead of *"AI tools will probably save money"*.
+**You Get**: Confidence intervals like *"75% chance of $200K+ savings, 15% chance of breaking even, 10% chance of loss"* 
+
+**Instead Of**: Vague statements like *"AI tools will probably save money"*
+
+**🎯 Primary Purpose**: Create custom Monte Carlo simulations for YOUR business decisions using proven templates - no coding, data science expertise, or complex setup required!
 
 ---
 
@@ -53,17 +59,70 @@ Turn uncertain business questions into **rigorous risk analysis with confidence 
 - **Business Analysts**: Risk assessment with copy-modify workflow
 - **AI Agents/Developers**: Programmatic simulation generation from examples
 
-### When NOT to Use This
-- ❌ Decisions under $10K (overkill)
-- ❌ Completely deterministic problems (no uncertainty)
-- ❌ Immediate decisions (analysis takes time)
+## 🎯 How It Works: Create Your Custom Simulation
+
+**PRIMARY WORKFLOW**: Copy a template → Modify for your business → Run analysis
+
+**No coding, data science, or complex setup required!**
+
+### 1. Choose Your Template
+```bash
+# Browse 9+ proven templates for different business decisions
+npx monte-carlo-simulator list
+
+# Examine any template's customizable parameters
+npx monte-carlo-simulator run technology-investment --list-params
+```
+
+### 2. Copy & Modify
+```bash
+# Interactive creation (guided workflow)
+npx monte-carlo-simulator create --interactive
+
+# OR: Copy any example YAML file
+curl -O https://raw.githubusercontent.com/rmurphey/monte-carlo-simulator/main/examples/simulations/simple-roi-analysis.yaml
+
+# Edit the YAML file with your business parameters
+# Change investment amounts, team sizes, time periods, etc.
+```
+
+### 3. Run Your Custom Analysis
+```bash
+# Validate your changes
+npx monte-carlo-simulator validate simple-roi-analysis.yaml
+
+# Run with your parameters
+npx monte-carlo-simulator run simple-roi-analysis.yaml
+
+# Override parameters on the fly
+npx monte-carlo-simulator run simple-roi-analysis.yaml --set initialInvestment=250000
+```
+
+### Available Business Templates
+- **ROI Analysis**: Investment returns with uncertainty modeling  
+- **Team Scaling**: Hiring decisions with coordination overhead
+- **Technology Investment**: Tool adoption with productivity gains
+- **Marketing Campaigns**: Multi-channel ROI with customer acquisition  
+- **Quality Assurance**: Manual vs automated testing strategies
+- **Sales Operations**: Outbound sales team effectiveness
+
+*Templates are fully-working examples designed to be copied and customized for your specific business parameters.*
+
+**✨ AI Agents**: Perfect for programmatic business analysis generation!
+
+### When NOT to Use This Framework
+- ❌ Decisions under $10K (overkill for small decisions)
+- ❌ Completely deterministic problems (no uncertainty to model)  
+- ❌ Immediate decisions (analysis takes time to set up and run)
 - ❌ When you have dedicated data science team with specialized tools
 
-## 🚀 Getting Started
+---
 
-### Prerequisites
-- Node.js 16+ and npm
-- Basic understanding of business metrics
+## 🚀 Local Development (Optional)
+
+*Most users don't need this - the `npx` commands above work immediately without any setup!*
+
+### For Local Development
 
 ### Installation & Setup
 ```bash
