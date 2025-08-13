@@ -45,6 +45,20 @@ export interface OutputConfig {
   description?: string
 }
 
+export interface RunOptions {
+  scenario?: string
+  compare?: string
+  params?: string
+  iterations?: number
+  output?: string
+  format?: 'table' | 'json' | 'csv' | 'quiet'
+  verbose?: boolean
+  quiet?: boolean
+  interactive?: boolean
+  set?: string[] // For --set param=value options
+  [key: string]: any // For additional parameter overrides
+}
+
 const parameterSchema: JSONSchemaType<ParameterConfig> = {
   type: 'object',
   properties: {

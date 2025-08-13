@@ -313,14 +313,51 @@ npm run cli run YOUR_SIMULATION.yaml
 
 ### Advanced CLI Features
 
-**Interactive Mode** - Real-time parameter adjustment:
+**Interactive Config Editing** - Full simulation development environment:
 ```bash
-# Interactive parameter exploration
+# Launch interactive session with complete config editing capabilities
 npm run cli run examples/simulations/simple-roi-analysis.yaml --interactive
 npm run cli run examples/simulations/technology-investment.yaml --interactive
 
-# Adjust parameters → See results instantly → Save scenarios
-# Perfect for exploring "what-if" scenarios in real-time
+# Interactive commands available in session:
+# [r] Run simulation again    [c] Edit full config    [s] Save changes  
+# [e] Export results          [h] Help               [q] Quit
+
+# Config editor sub-commands:
+# [e] Edit full YAML in $EDITOR  [t] Test config   [u] Undo changes
+# [r] Run with changes          [b] Back to main menu
+
+# Features:
+# ✅ External editor integration (nano, vim, VS Code, etc.)
+# ✅ Safe temporary files with automatic cleanup and backups
+# ✅ Config history with undo/redo functionality
+# ✅ Real-time validation and change detection
+# ✅ Perfect for rapid prototyping and iterative development
+```
+
+**Interactive Workflow Example**:
+```bash
+# Start session - shows initial simulation results
+npm run cli -- run simple-roi-analysis.yaml --interactive
+
+# Enter config editing mode
+> c
+
+# Edit full YAML configuration  
+> e
+# Opens config in your $EDITOR, make changes, save and exit
+
+# Automatic validation shows what changed:
+# 🔍 Changes detected:
+#   • Modified parameter: initialInvestment (100000 → 250000)  
+#   • Updated simulation logic: added risk adjustment
+
+# Test changes with quick 100-iteration run
+> t
+
+# Save changes permanently or undo if needed
+> s    # Save to original file with backup
+> u    # Undo changes and revert
 ```
 
 **Parameter Files** - Batch analysis with custom values:

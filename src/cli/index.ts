@@ -87,7 +87,7 @@ program
   .option('-f, --format <format>', 'output format (table, json, csv, quiet)', 'table')
   .option('-v, --verbose', 'show detailed output')
   .option('-q, --quiet', 'minimal output')
-  .option('--interactive', 'launch interactive mode with real-time parameter adjustment')
+  .option('--interactive', 'launch interactive config editing session with full YAML editor')
   .option('--list-params', 'list available parameters for the simulation and exit')
   .option('--set <param=value>', 'set parameter value (repeatable)', collect, [])
   .addHelpText('after', `
@@ -102,6 +102,14 @@ Quick Examples:
   Override investment:   run ai-investment-roi --set initialInvestment=500000
   Test small team:       run ai-investment-roi --set affectedEmployees=10 --iterations 500
   Compare scenarios:     run ai-investment-roi --compare conservative,aggressive
+  Interactive editing:   run simple-roi-analysis --interactive
+  
+Interactive Mode Commands:
+  [r] Run simulation     [c] Edit config        [s] Save changes
+  [e] Export results     [h] Help              [q] Quit
+  
+  Config Editor:
+  [e] Edit full YAML     [t] Test config       [u] Undo changes
   
 Use --list-params to see all available parameters for any simulation`)
   .action(async (simulation, options) => {

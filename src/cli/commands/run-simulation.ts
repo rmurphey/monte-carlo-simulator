@@ -5,6 +5,8 @@ import { join, basename } from 'path'
 import chalk from 'chalk'
 import * as yaml from 'js-yaml'
 import { packagePaths } from '../utils/package-paths'
+import { RunOptions } from '../config/schema'
+import { InteractiveSimulationSession } from '../interactive/session-manager'
 
 // Helper function for parameter name suggestions
 function findClosestParameter(input: string, available: string[]): string | null {
@@ -41,18 +43,6 @@ function levenshteinDistance(str1: string, str2: string): number {
   return matrix[str2.length][str1.length]
 }
 
-interface RunOptions {
-  scenario?: string
-  compare?: string
-  params?: string
-  iterations?: number
-  output?: string
-  format?: 'table' | 'json' | 'csv' | 'quiet'
-  verbose?: boolean
-  quiet?: boolean
-  set?: string[] // For --set param=value options
-  [key: string]: any // For additional parameter overrides
-}
 
 export async function runSimulation(simulationName: string, options: RunOptions = {}): Promise<void> {
   try {
@@ -87,9 +77,10 @@ export async function runSimulation(simulationName: string, options: RunOptions 
     }
     const iterations = options.iterations || 100  // Reduced for faster first experience
     
-    // Handle interactive mode
+    // Handle interactive mode with full config editing
     if (options.interactive) {
-      await runInteractiveMode(simulation, enhancedConfig, parameters, iterations)
+      const session = new InteractiveSimulationSession(configPath, options)
+      await session.start()
       return
     }
     
@@ -622,140 +613,3 @@ function convertComparisonToCSV(results: Array<{ scenario: string; config: any; 
   return rows.join('\n')
 }
 
-async function runInteractiveMode(
-  simulation: ConfigurableSimulation, 
-  config: any, 
-  initialParams: Record<string, any>, 
-  iterations: number
-): Promise<void> {
-  const inquirer = await import('inquirer')
-  let currentParams = { ...initialParams }
-  let previousResults: any = null
-  
-  console.log(chalk.cyan.bold('\n🎛️  Interactive Parameter Exploration'))
-  console.log(chalk.gray(`Adjust parameters for: ${config.name}\n`))
-  
-  // Interactive menu loop: while(true) is correct pattern for CLI applications
-  // - Blocks on await inquirer.prompt() (no CPU/memory consumption)
-  // - User explicitly chooses "Exit" to break loop
-  // - Standard pattern used by npm init, create-react-app, etc.
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    // Run simulation with current parameters
-    console.log(chalk.yellow(`🚀 Running ${iterations.toLocaleString()} iterations...`))
-    const startTime = Date.now()
-    const results = await simulation.runSimulation(currentParams, iterations)
-    const executionTime = ((Date.now() - startTime) / 1000).toFixed(1)
-    
-    console.log(chalk.green(`✅ Completed (${executionTime}s)\n`))
-    
-    // Display results
-    console.log(chalk.green.bold('📈 RESULTS'))
-    console.log(chalk.gray('═'.repeat(50)))
-    Object.entries(results.summary).forEach(([key, stats]: [string, any]) => {
-      const output = config.outputs.find((o: any) => o.key === key)
-      const label = output?.label || key
-      const mean = stats.mean?.toLocaleString() || 'N/A'
-      const stdDev = stats.standardDeviation?.toLocaleString() || 'N/A'
-      console.log(`${chalk.cyan(label.padEnd(25))}: ${chalk.white(mean)} ${chalk.gray(`(±${stdDev})`)}`)
-    })
-    
-    // Show comparison if we have previous results
-    if (previousResults) {
-      console.log(chalk.blue.bold('\n📊 CHANGE FROM PREVIOUS'))
-      console.log(chalk.gray('─'.repeat(50)))
-      Object.entries(results.summary).forEach(([key, stats]: [string, any]) => {
-        const prevStats = previousResults.summary[key]
-        if (prevStats && typeof stats.mean === 'number' && typeof prevStats.mean === 'number') {
-          const change = ((stats.mean - prevStats.mean) / prevStats.mean) * 100
-          const changeStr = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`
-          const arrow = change >= 0 ? '⬆️' : '⬇️'
-          const output = config.outputs.find((o: any) => o.key === key)
-          const label = output?.label || key
-          console.log(`${chalk.cyan(label.padEnd(25))}: ${chalk.white(changeStr)} ${arrow}`)
-        }
-      })
-    }
-    
-    // Ask what to do next
-    const answer = await inquirer.default.prompt([{
-      type: 'list',
-      name: 'action',
-      message: 'What would you like to do?',
-      choices: [
-        { name: 'Adjust parameters', value: 'adjust' },
-        { name: 'Run again with same parameters', value: 'rerun' },
-        { name: 'Exit interactive mode', value: 'exit' }
-      ]
-    }])
-    
-    if (answer.action === 'exit') {
-      console.log(chalk.green('\n✅ Interactive session ended'))
-      break
-    }
-    
-    if (answer.action === 'rerun') {
-      previousResults = results
-      continue
-    }
-    
-    if (answer.action === 'adjust') {
-      // Show current parameters and let user pick which to change
-      const paramChoices = config.parameters.map((param: any) => ({
-        name: `${param.key}: ${currentParams[param.key]} ${param.description ? `(${param.description})` : ''}`,
-        value: param.key
-      }))
-      paramChoices.push({ name: 'Back to results', value: 'back' })
-      
-      const paramAnswer = await inquirer.default.prompt([{
-        type: 'list',
-        name: 'param',
-        message: 'Which parameter would you like to adjust?',
-        choices: paramChoices
-      }])
-      
-      if (paramAnswer.param === 'back') {
-        continue
-      }
-      
-      const paramDef = config.parameters.find((p: any) => p.key === paramAnswer.param)
-      const currentValue = currentParams[paramAnswer.param]
-      
-      let newValue
-      if (paramDef.type === 'number') {
-        const numberAnswer = await inquirer.default.prompt([{
-          type: 'input',
-          name: 'value',
-          message: `Enter new value for ${paramDef.key} (current: ${currentValue}):`,
-          validate: (input: string) => {
-            const num = Number(input)
-            if (isNaN(num)) return 'Please enter a valid number'
-            if (paramDef.min !== undefined && num < paramDef.min) return `Value must be >= ${paramDef.min}`
-            if (paramDef.max !== undefined && num > paramDef.max) return `Value must be <= ${paramDef.max}`
-            return true
-          }
-        }])
-        newValue = Number(numberAnswer.value)
-      } else if (paramDef.type === 'boolean') {
-        const boolAnswer = await inquirer.default.prompt([{
-          type: 'confirm',
-          name: 'value',
-          message: `${paramDef.key}:`,
-          default: currentValue
-        }])
-        newValue = boolAnswer.value
-      } else {
-        const textAnswer = await inquirer.default.prompt([{
-          type: 'input',
-          name: 'value',
-          message: `Enter new value for ${paramDef.key} (current: ${currentValue}):`
-        }])
-        newValue = textAnswer.value
-      }
-      
-      previousResults = results
-      currentParams[paramAnswer.param] = newValue
-      console.log(chalk.green(`✅ Updated ${paramAnswer.param} to ${newValue}\n`))
-    }
-  }
-}
