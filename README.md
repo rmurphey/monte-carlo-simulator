@@ -10,7 +10,7 @@
 git clone https://github.com/rmurphey/monte-carlo-simulator
 cd monte-carlo-simulator && npm install && npm run build
 
-# Quick validation - should show 5+ working simulations
+# Quick validation - should show 7 working simulations
 npm run cli list
 
 # Run your first analysis
@@ -291,7 +291,7 @@ All examples are **tested and working**.
 - **YAML-based configuration** with bulletproof validation
 - **TypeScript framework** for complex custom logic
 - **Professional CLI** with comprehensive parameter validation
-- **Production-grade reliability** (87 passing tests with schema validation)
+- **Production-grade reliability** (92 passing tests with schema validation)
 
 ### ✅ **Current Capabilities**
 - **Risk scenario comparison** - Side-by-side analysis with `--compare` flag  
@@ -377,7 +377,7 @@ npm run cli run simulation.yaml --params scenario.json --output results.json --i
 # Core development
 npm run dev                 # Watch mode for development
 npm run build              # Compile TypeScript  
-npm run test               # Run full test suite (87 tests - all passing)
+npm run test               # Run full test suite (92 tests - all passing)
 npm run test:watch         # Run tests in watch mode
 npm run test:coverage      # Run tests with coverage report
 
@@ -407,17 +407,31 @@ src/
 ├── examples/              # Working example simulations  
 └── test/                  # Test cases and validation
 
-examples/simulations/      # All working examples
+examples/simulations/      # 7 working examples
 ├── simple-roi-analysis.yaml
 ├── technology-investment.yaml  
 ├── team-scaling-decision.yaml
+├── software-investment-roi.yaml
+├── marketing-campaign-roi.yaml
 └── ai-tool-adoption/      # Scenario examples
 ```
 
-### Current Limitations
-- **Local development only** - not published to npm
-- **Requires full repository clone** - no npx support yet
-- **Node.js dev environment needed** - not a standalone binary
+### NPX Quick Start (Zero Installation)
+```bash
+# Run simulations directly without installation
+npx github:rmurphey/monte-carlo-simulator list
+npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis
+npx github:rmurphey/monte-carlo-simulator run technology-investment --set toolCost=30000
+
+# Parameter discovery and validation
+npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --list-params
+npx github:rmurphey/monte-carlo-simulator validate examples/simulations/simple-roi-analysis.yaml
+```
+
+### Current Capabilities
+- **NPX support** - Run directly with `npx github:rmurphey/monte-carlo-simulator`
+- **Local development** - Full development environment available  
+- **GitHub distribution** - Zero installation required via NPX
 
 ## 🤝 Contributing
 
