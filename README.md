@@ -6,15 +6,14 @@
 **Want to analyze a business decision right now?**
 
 ```bash
-# Professional Examples-First Framework
-git clone https://github.com/rmurphey/monte-carlo-simulator
-cd monte-carlo-simulator && npm install && npm run build
-
-# Quick validation - should show 7 working simulations
-npm run cli list
+# Zero-installation - works immediately
+npx monte-carlo-simulator list
 
 # Run your first analysis
-npm run cli -- run simple-roi-analysis
+npx monte-carlo-simulator run simple-roi-analysis
+
+# Advanced usage with custom parameters
+npx monte-carlo-simulator run simple-roi-analysis --set initialInvestment=100000
 ```
 
 **Result**: Get confidence intervals like *"75% chance of $200K+ savings, 15% chance of breaking even, 10% chance of loss"* instead of *"AI tools will probably save money"*.
@@ -378,7 +377,7 @@ echo '{"initialCost": 75000, "adoptionRate": 0.8}' > my-scenario.json
 npm run cli run simulations/ai-investment-roi/baseline.yaml --params my-scenario.json --verbose
 
 # Save results for analysis
-npm run cli run simulation.yaml --params scenario.json --output results.json --iterations 5000
+npm run cli run simple-roi-analysis --params scenario.json --output results.json --iterations 5000
 ```
 
 **Development Commands**:
@@ -428,19 +427,19 @@ examples/simulations/      # 7 working examples
 ### NPX Quick Start (Zero Installation)
 ```bash
 # Run simulations directly without installation
-npx github:rmurphey/monte-carlo-simulator list
-npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis
-npx github:rmurphey/monte-carlo-simulator run technology-investment --set toolCost=30000
+npx monte-carlo-simulator list
+npx monte-carlo-simulator run simple-roi-analysis
+npx monte-carlo-simulator run technology-investment --set toolCost=30000
 
 # Parameter discovery and validation
-npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --list-params
-npx github:rmurphey/monte-carlo-simulator validate examples/simulations/simple-roi-analysis.yaml
+npx monte-carlo-simulator run simple-roi-analysis --list-params
+npx monte-carlo-simulator validate simple-roi-analysis
 ```
 
 ### Current Capabilities
-- **NPX support** - Run directly with `npx github:rmurphey/monte-carlo-simulator`
+- **NPM Package** - Published and available via `npx monte-carlo-simulator`
 - **Local development** - Full development environment available  
-- **GitHub distribution** - Zero installation required via NPX
+- **Zero installation** - No setup required, works immediately
 
 ## 🤝 Contributing
 

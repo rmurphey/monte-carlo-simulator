@@ -46,6 +46,14 @@ export class DocumentGenerator {
     doc.push(`🎲 Iterations: ${results.results.length.toLocaleString()}`)
     doc.push('')
 
+    // Business Question and Model Overview
+    doc.push('📋 BUSINESS QUESTION & MODEL OVERVIEW')
+    doc.push('─'.repeat(50))
+    doc.push(this.generateBusinessQuestion(config, parameters))
+    doc.push('')
+    doc.push(this.generateModelDiscussion(config, parameters, results))
+    doc.push('')
+
     // Executive Summary
     doc.push('📈 EXECUTIVE SUMMARY')
     doc.push('─'.repeat(50))
@@ -183,6 +191,109 @@ export class DocumentGenerator {
     doc.push('═'.repeat(80))
 
     return doc.join('\n')
+  }
+
+  private generateModelDiscussion(config: SimulationConfig, parameters: Record<string, any>, results: CLISimulationResults): string {
+    const discussion = []
+    const name = config.name.toLowerCase()
+    const summary = results.summary
+    
+    // Model overview based on simulation type
+    if (name.includes('roi') || name.includes('investment')) {
+      discussion.push('**What this model shows:**')
+      discussion.push('This Monte Carlo simulation models the financial return on investment by running thousands of scenarios with varying assumptions. The model accounts for uncertainty in key variables like costs, benefits, and market conditions to provide a realistic range of possible outcomes rather than a single point estimate.')
+      
+      // Find ROI metric with flexible naming
+      const roiStats = summary.roi || summary.roiPercentage || summary['ROI Percentage']
+      if (roiStats) {
+        const confidence = Math.abs((roiStats.percentile90 - roiStats.percentile10) / roiStats.mean * 100).toFixed(0)
+        discussion.push(``)
+        discussion.push(`The analysis shows an expected ROI of ${this.formatValue(roiStats.mean)}%, but with significant variability (${confidence}% confidence range). This uncertainty reflects real-world conditions where actual results can vary substantially from initial projections.`)
+      }
+      
+      // Add payback period insight if available
+      const paybackStats = summary.paybackPeriod || summary['Payback Period (Months)']
+      if (paybackStats) {
+        discussion.push(`The payback period averages ${this.formatValue(paybackStats.mean)} months, with outcomes ranging from ${this.formatValue(paybackStats.percentile10)} to ${this.formatValue(paybackStats.percentile90)} months in 80% of scenarios.`)
+      }
+    } else if (name.includes('qa') || name.includes('quality') || name.includes('testing')) {
+      discussion.push('**What this model shows:**')
+      discussion.push('This simulation models the economic impact of quality assurance by comparing the costs of QA activities against the value of prevented defects. It accounts for variability in bug rates, fix costs, customer impact, and testing effectiveness to provide a comprehensive cost-benefit analysis.')
+      
+      const bugsPreventedStats = summary.bugsPreventedPerYear || summary.bugsPrevented
+      const totalSavingsStats = summary.totalAnnualSavings || summary.totalSavings
+      if (bugsPreventedStats && totalSavingsStats) {
+        const avgBugsPerRelease = (bugsPreventedStats.mean / (parameters.releasesPerYear || 12)).toFixed(1)
+        discussion.push(``)
+        discussion.push(`The model shows QA preventing approximately ${this.formatValue(bugsPreventedStats.mean)} bugs annually (${avgBugsPerRelease} per release), generating ${this.formatValue(totalSavingsStats.mean)} in total value. The wide range in outcomes reflects the unpredictable nature of software defects and their varying business impact.`)
+      }
+    } else if (name.includes('team') || name.includes('scaling') || name.includes('hiring')) {
+      discussion.push('**What this model shows:**')
+      discussion.push('This model evaluates team scaling decisions by comparing the costs of additional personnel against productivity gains. It factors in hiring costs, onboarding time, coordination overhead, and the diminishing returns that often occur with larger teams.')
+    } else if (name.includes('technology') || name.includes('tool')) {
+      discussion.push('**What this model shows:**')
+      discussion.push('This analysis models technology investment returns by comparing tool costs against productivity improvements. The simulation accounts for adoption curves, training time, maintenance costs, and the varying impact of tools across different team members and use cases.')
+    } else {
+      discussion.push('**What this model shows:**')
+      discussion.push('This Monte Carlo simulation models the range of possible outcomes for this business decision by running thousands of scenarios with different assumptions. Rather than providing a single answer, it shows the probability distribution of results to support risk-aware decision making.')
+    }
+    
+    // Add key modeling insights
+    const keyOutputs = Object.keys(summary).length
+    const iterations = results.results.length
+    discussion.push(``)
+    discussion.push(`The simulation ran ${iterations.toLocaleString()} iterations across ${keyOutputs} key metrics, capturing the inherent uncertainty in business decisions. This probabilistic approach reveals not just what might happen on average, but the full range of possible outcomes and their likelihood.`)
+    
+    return discussion.join('\n')
+  }
+
+  private generateBusinessQuestion(config: SimulationConfig, parameters: Record<string, any>): string {
+    // Generate plain-language business question based on simulation type and parameters
+    const name = config.name.toLowerCase()
+    const category = config.category?.toLowerCase() || ''
+    
+    // ROI and Investment simulations
+    if (name.includes('roi') || name.includes('investment')) {
+      const investment = parameters.initialInvestment || parameters.investment || parameters.toolCost || 'investment'
+      const benefit = parameters.monthlyBenefit || parameters.annualBenefit || parameters.annualSavings || 'expected returns'
+      
+      if (typeof investment === 'number' && typeof benefit === 'number') {
+        const monthlyBenefit = typeof parameters.monthlyBenefit === 'number' ? parameters.monthlyBenefit : benefit
+        return `**"Should I invest $${this.formatValue(investment)} expecting $${this.formatValue(monthlyBenefit)} monthly returns, and what are the risks?"**\n\nThis analysis helps determine if the investment will be profitable, how long it will take to pay back, and what could go wrong.`
+      } else {
+        return `**"Is this investment financially worthwhile, and what are the risks?"**\n\nThis analysis evaluates the expected return on investment while accounting for uncertainty and potential downsides.`
+      }
+    }
+    
+    // QA and Testing simulations
+    if (name.includes('qa') || name.includes('quality') || name.includes('testing')) {
+      if (parameters.qaStrategy) {
+        const strategy = parameters.qaStrategy
+        const teamSize = parameters.teamSize || 'team'
+        return `**"Should we use ${strategy} testing for our ${teamSize}-person development team, and what will it cost vs. the benefits?"**\n\nThis analysis compares testing strategies to find the optimal balance of quality, speed, and cost.`
+      } else {
+        return `**"Is manual quality assurance worth the cost for our development team?"**\n\nThis analysis weighs QA staffing costs against the value of preventing bugs and improving software quality.`
+      }
+    }
+    
+    // Technology and tools
+    if (name.includes('technology') || name.includes('tool')) {
+      const team = parameters.teamSize || 'team'
+      return `**"Should we invest in this technology for our ${team}-person team, and will the productivity gains justify the cost?"**\n\nThis analysis evaluates whether technology investments will deliver sufficient productivity improvements to cover their costs.`
+    }
+    
+    // Marketing simulations
+    if (category.includes('marketing') || name.includes('marketing') || name.includes('campaign')) {
+      return `**"Will this marketing campaign generate positive ROI, and what are the chances of success?"**\n\nThis analysis models marketing spend effectiveness while accounting for market uncertainty and campaign performance variability.`
+    }
+    
+    // Team scaling
+    if (name.includes('team') || name.includes('scaling') || name.includes('hiring')) {
+      return `**"Should we hire more people for our team, and will increased productivity offset the additional costs?"**\n\nThis analysis weighs hiring costs against productivity gains while considering coordination overhead and onboarding time.`
+    }
+    
+    // Generic business decision
+    return `**"What are the expected outcomes of this business decision, and what are the risks?"**\n\nThis Monte Carlo analysis models the range of possible outcomes to support data-driven decision making under uncertainty.`
   }
 
   private generateHistogram(values: number[]): string {

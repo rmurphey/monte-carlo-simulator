@@ -4,13 +4,13 @@
 
 ```bash
 # Zero setup testing (NPX)
-npx github:rmurphey/monte-carlo-simulator validate my-simulation.yaml
+npx monte-carlo-simulator validate simple-roi-analysis
 
 # Local development (full features)
 git clone https://github.com/rmurphey/monte-carlo-simulator
 cd monte-carlo-simulator && npm install && npm run build
-npm run cli validate my-simulation.yaml
-npm run cli run my-simulation.yaml
+npm run cli validate simple-roi-analysis
+npm run cli run simple-roi-analysis
 ```
 
 ## 📝 Create Your First Simulation

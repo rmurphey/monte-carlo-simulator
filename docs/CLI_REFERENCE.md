@@ -8,7 +8,7 @@ The Monte Carlo CLI provides comprehensive business simulation capabilities with
 
 ```bash
 # Zero setup with NPX (recommended for quick analysis)
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
+npx monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
 
 # Local installation (full features)
 git clone https://github.com/rmurphey/monte-carlo-simulator
@@ -40,7 +40,7 @@ Commands:
 npm run cli run <simulation> [options]
 
 # NPX (zero setup)
-npx github:rmurphey/monte-carlo-simulator run <simulation> [options]
+npx monte-carlo-simulator run <simulation> [options]
 ```
 
 **Key Options:**
@@ -110,11 +110,11 @@ npm run cli run simple-roi-analysis --interactive
 ```bash
 # Bulletproof validation with detailed errors
 npm run cli validate <file>
-npx github:rmurphey/monte-carlo-simulator validate <file>
+npx monte-carlo-simulator validate <file>
 
 # Examples
 npm run cli validate examples/simulations/simple-roi-analysis.yaml
-npm run cli validate my-custom-simulation.yaml --verbose
+npm run cli validate custom-analysis.yaml --verbose
 ```
 
 **What Gets Validated:**
@@ -154,7 +154,7 @@ npm run cli interactive
 ```bash
 # See all parameters for any simulation
 npm run cli run <simulation> --list-params
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --list-params
+npx monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --list-params
 
 # Output includes:
 # - Parameter name, type, default value
@@ -195,19 +195,19 @@ riskEnabled: true
 
 **Type Checking:**
 ```bash
-npm run cli run simulation.yaml --set investment=abc
+npm run cli run simple-roi-analysis --set investment=abc
 # ❌ Parameter 'investment' must be a number, got: abc
 ```
 
 **Range Validation:**
 ```bash
-npm run cli run simulation.yaml --set investment=500  
+npm run cli run simple-roi-analysis --set investment=500  
 # ❌ Parameter 'investment' value 500 is below minimum 1000
 ```
 
 **Unknown Parameters:**
 ```bash
-npm run cli run simulation.yaml --set unknownParam=123
+npm run cli run simple-roi-analysis --set unknownParam=123
 # ❌ Unknown parameter 'unknownParam'. Use --list-params to see available parameters
 ```
 
@@ -261,7 +261,7 @@ done
 ### Scripting Integration  
 ```bash
 # Use in shell scripts with error handling
-if npm run cli run simulation.yaml --format quiet > /dev/null 2>&1; then
+if npm run cli run simple-roi-analysis --format quiet > /dev/null 2>&1; then
   echo "Simulation successful"
 else
   echo "Simulation failed"
@@ -275,7 +275,7 @@ fi
 npm run cli run technology-investment --iterations 10000 --format json --output detailed-results.json
 
 # Verbose output for debugging
-npm run cli run simulation.yaml --verbose --iterations 100
+npm run cli run simple-roi-analysis --verbose --iterations 100
 ```
 
 ## 🚨 Error Handling
@@ -300,7 +300,7 @@ npm run cli validate problematic-file.yaml
 ```bash
 # ❌ Parameter validation failed  
 # ✅ Solution: Check parameter constraints
-npm run cli run simulation.yaml --list-params
+npm run cli run simple-roi-analysis --list-params
 ```
 
 ### Exit Codes
@@ -322,7 +322,7 @@ npm run cli run simulation.yaml --list-params
 4. **Parameter files** for repeatable analysis
 
 ### For Exploration  
-1. **Start interactive**: `npm run cli run simulation.yaml --interactive`
+1. **Start interactive**: `npm run cli run simple-roi-analysis --interactive`
 2. **Use NPX** for quick testing without installation
 3. **Compare scenarios** to understand sensitivity
 4. **Export successful parameter combinations**

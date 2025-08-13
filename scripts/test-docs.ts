@@ -207,7 +207,7 @@ class DocumentationTester {
   
   private shouldTestCommand(command: string): boolean {
     // Test commands that use our NPX interface
-    if (!command.includes('npx github:rmurphey/monte-carlo-simulator')) {
+    if (!command.includes('npx monte-carlo-simulator')) {
       return false
     }
     
@@ -275,7 +275,7 @@ class DocumentationTester {
   private convertToLocalCommand(npxCommand: string): string {
     // Convert NPX commands to local CLI commands for testing
     return npxCommand
-      .replace('npx github:rmurphey/monte-carlo-simulator', 'npm run cli --')
+      .replace('npx monte-carlo-simulator', 'npm run cli --')
       .replace(/\s+/g, ' ')
       .trim()
   }

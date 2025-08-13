@@ -8,13 +8,13 @@
 npm run cli list
 
 # Copy an example to modify
-cp examples/simulations/simple-roi-analysis.yaml my-analysis.yaml
+cp examples/simulations/simple-roi-analysis.yaml custom-analysis.yaml
 
 # Validate your configuration
-npm run cli validate my-analysis.yaml
+npm run cli validate custom-analysis.yaml
 
 # Run your simulation
-npm run cli run my-analysis.yaml
+npm run cli run custom-analysis.yaml
 ```
 
 ### Agent-Optimized Pattern  
@@ -37,23 +37,23 @@ npm run cli run my-investment.yaml
 ### NPX Commands (Zero Setup)
 ```bash
 # Run simulations directly without installation
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/technology-investment.yaml
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml
+npx monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
+npx monte-carlo-simulator run examples/simulations/technology-investment.yaml
+npx monte-carlo-simulator run examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml
 
 # Parameter discovery and validation  
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --list-params
-npx github:rmurphey/monte-carlo-simulator validate examples/simulations/simple-roi-analysis.yaml
+npx monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --list-params
+npx monte-carlo-simulator validate examples/simulations/simple-roi-analysis.yaml
 
 # Parameter overrides with bulletproof validation
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --set initialInvestment=75000
+npx monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --set initialInvestment=75000
 ```
 
 ### Local Development Commands
 ```bash
 # Full feature access (requires git clone + npm install)
 npm run cli run examples/simulations/simple-roi-analysis.yaml --interactive
-npm run cli validate my-simulation.yaml
+npm run cli validate custom-analysis.yaml
 npm run cli --help
 npm run cli list
 ```
@@ -68,26 +68,26 @@ npm run cli list
 ### For Agents: Zero-Setup Analysis
 ```bash
 # Instant business decision analysis (no installation required)
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
+npx monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
 
 # Real business scenarios
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/technology-investment.yaml
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/team-scaling-decision.yaml
+npx monte-carlo-simulator run examples/simulations/technology-investment.yaml
+npx monte-carlo-simulator run examples/simulations/team-scaling-decision.yaml
 
 # AI tool adoption analysis
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml
+npx monte-carlo-simulator run examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml
 ```
 
 ### Parameter Discovery & Validation
 ```bash
 # Discover all parameters for any simulation
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --list-params
+npx monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --list-params
 
 # Validate YAML configurations with bulletproof checking
-npx github:rmurphey/monte-carlo-simulator validate examples/simulations/simple-roi-analysis.yaml
+npx monte-carlo-simulator validate examples/simulations/simple-roi-analysis.yaml
 
 # Override parameters with validation
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --set initialInvestment=100000 --set monthlyBenefit=8000
+npx monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --set initialInvestment=100000 --set monthlyBenefit=8000
 ```
 
 **NPX Benefits for Agents:**
@@ -374,13 +374,13 @@ npm run cli run my-analysis.yaml
 ### Real-Time Parameter Adjustment
 ```bash
 # Launch interactive mode for any simulation
-npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --interactive
+npx monte-carlo-simulator run simple-roi-analysis --interactive
 
 # Override specific parameters from command line
-npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --set initialInvestment=300000 --set monthlyBenefit=8000
+npx monte-carlo-simulator run simple-roi-analysis --set initialInvestment=300000 --set monthlyBenefit=8000
 
 # Discover available parameters for any simulation  
-npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --list-params
+npx monte-carlo-simulator run simple-roi-analysis --list-params
 ```
 
 **Interactive Features:**
@@ -395,7 +395,7 @@ npx github:rmurphey/monte-carlo-simulator run simple-roi-analysis --list-params
 ```bash
 # Generate but don't just test - SAVE it so you can modify it
 cp examples/simulations/technology-investment.yaml ai-investment.yaml
-npx github:rmurphey/monte-carlo-simulator run ai-investment.yaml
+npx monte-carlo-simulator run ai-investment.yaml
 ```
 
 #### Step 2: Examine the Generated Model
@@ -412,7 +412,7 @@ You'll see a complete business model with:
 #### Step 3: Run Interactive Exploration
 ```bash
 # Run the simulation interactively - you can change parameters in real-time
-npx github:rmurphey/monte-carlo-simulator run ai-investment.yaml --interactive
+npx monte-carlo-simulator run ai-investment.yaml --interactive
 ```
 
 **This lets you:**
@@ -451,8 +451,8 @@ cp ai-investment.yaml conservative-scenario.yaml
 cp ai-investment.yaml aggressive-scenario.yaml
 
 # Edit each file with different assumptions, then compare:
-npx github:rmurphey/monte-carlo-simulator run conservative-scenario.yaml
-npx github:rmurphey/monte-carlo-simulator run aggressive-scenario.yaml
+npx monte-carlo-simulator run conservative-scenario.yaml
+npx monte-carlo-simulator run aggressive-scenario.yaml
 ```
 
 ## 📊 Business Question Patterns
@@ -469,7 +469,7 @@ npx github:rmurphey/monte-carlo-simulator run aggressive-scenario.yaml
 "Cost-benefit analysis of moving to serverless vs scaling existing infrastructure"
 
 # Implementation with uncertainty
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/technology-investment.yaml
+npx monte-carlo-simulator run examples/simulations/technology-investment.yaml
 ```
 
 ### Resource Allocation Decisions
@@ -484,7 +484,7 @@ npx github:rmurphey/monte-carlo-simulator run examples/simulations/technology-in
 "Should we expand to 2 new markets or focus on growing current market?"
 
 # Implementation with validation
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/marketing-campaign-roi.yaml --set budget=75000
+npx monte-carlo-simulator run examples/simulations/marketing-campaign-roi.yaml --set budget=75000
 ```
 
 ### Feature and Product Decisions
@@ -500,7 +500,7 @@ npx github:rmurphey/monte-carlo-simulator run examples/simulations/marketing-cam
 
 # Save for further analysis
 cp examples/simulations/technology-investment.yaml automation-analysis.yaml
-npx github:rmurphey/monte-carlo-simulator validate automation-analysis.yaml
+npx monte-carlo-simulator validate automation-analysis.yaml
 ```
 
 ## 📈 Output Format
@@ -533,7 +533,7 @@ npx github:rmurphey/monte-carlo-simulator validate automation-analysis.yaml
 #### 1. Generate Your Starting Point
 ```bash
 cp examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml ai-tools.yaml
-npx github:rmurphey/monte-carlo-simulator validate ai-tools.yaml
+npx monte-carlo-simulator validate ai-tools.yaml
 ```
 
 #### 2. Examine Generated Parameters
@@ -549,28 +549,28 @@ The AI creates a complete model with parameters like:
 **What if adoption is lower?**
 ```bash
 # Edit ai-tools.yaml, change adoptionRate from 85 to 60
-npx github:rmurphey/monte-carlo-simulator run ai-tools.yaml
+npx monte-carlo-simulator run ai-tools.yaml
 # Result: ROI drops from 280% to 180%
 ```
 
 **What if we invest more in training?**
 ```bash
 # Change initialInvestment to 200000, implementationMonths to 4  
-npx github:rmurphey/monte-carlo-simulator run ai-tools.yaml
+npx monte-carlo-simulator run ai-tools.yaml
 # Result: Higher upfront cost but faster payback
 ```
 
 **What if productivity gains are higher?**
 ```bash
 # Change productivityGain from 15 to 25
-npx github:rmurphey/monte-carlo-simulator run ai-tools.yaml  
+npx monte-carlo-simulator run ai-tools.yaml  
 # Result: See how much ROI improves with better tools
 ```
 
 #### 4. Interactive Real-Time Exploration
 ```bash
 # Launch interactive mode to adjust parameters with immediate feedback
-npx github:rmurphey/monte-carlo-simulator run ai-tools.yaml --interactive
+npx monte-carlo-simulator run ai-tools.yaml --interactive
 ```
 
 In interactive mode, you can:
@@ -583,11 +583,11 @@ In interactive mode, you can:
 ```bash
 # Conservative approach: lower expectations
 # Edit: productivityGain: 10, adoptionRate: 70, implementationMonths: 8
-npx github:rmurphey/monte-carlo-simulator run ai-tools.yaml --output conservative-results.json
+npx monte-carlo-simulator run ai-tools.yaml --output conservative-results.json
 
 # Aggressive approach: higher expectations  
 # Edit: productivityGain: 25, adoptionRate: 95, implementationMonths: 3
-npx github:rmurphey/monte-carlo-simulator run ai-tools.yaml --output aggressive-results.json
+npx monte-carlo-simulator run ai-tools.yaml --output aggressive-results.json
 
 # Compare the risk/reward profiles
 ```
@@ -605,7 +605,7 @@ Remember: this shows probability ranges, not guarantees. A 70% chance of success
 ### Parameter Validation Errors
 Use `--list-params` to see available parameters:
 ```bash
-npx github:rmurphey/monte-carlo-simulator run simulation.yaml --list-params
+npx monte-carlo-simulator run simple-roi-analysis --list-params
 ```
 
 ## ✅ Validation Checklist

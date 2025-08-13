@@ -180,10 +180,10 @@ npm run cli run my-analysis.yaml --iterations 10000 --output final-analysis.json
 
 ```bash
 # Run simulations without installation
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
+npx monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
 
 # Parameter overrides work with NPX
-npx github:rmurphey/monte-carlo-simulator run examples/simulations/technology-investment.yaml --set investment=200000
+npx monte-carlo-simulator run examples/simulations/technology-investment.yaml --set investment=200000
 ```
 
 ### Development Commands
