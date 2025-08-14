@@ -33,7 +33,7 @@ export class FileGenerator {
     }
   }
   
-  async writeFile(filePath: string, content: string, overwrite: boolean = false): Promise<void> {
+  async writeFile(filePath: string, content: string, overwrite = false): Promise<void> {
     const fullPath = join(this.baseDir, filePath)
     
     // Check if file exists and overwrite is not allowed
@@ -88,7 +88,7 @@ export class FileGenerator {
       throw new Error(`File does not exist: ${filePath}`)
     }
     
-    let existingContent = await this.readFile(filePath)
+    const existingContent = await this.readFile(filePath)
     
     // If marker is provided, check if content is already present
     if (marker && existingContent.includes(marker)) {

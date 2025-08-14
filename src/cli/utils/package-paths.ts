@@ -18,7 +18,7 @@ export class PackagePathResolver {
   private findPackageRoot(): string {
     // Start from the compiled CLI location: dist/cli/utils/package-paths.js
     // Need to go up to find package.json: ../../../package.json
-    let currentDir = dirname(dirname(__dirname)) // Go up from dist/cli/utils to dist/
+    const currentDir = dirname(dirname(__dirname)) // Go up from dist/cli/utils to dist/
     
     // Try to find package.json by walking up directories
     const possibleRoots = [

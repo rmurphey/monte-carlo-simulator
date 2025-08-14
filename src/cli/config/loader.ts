@@ -1,7 +1,7 @@
-import { readFile, readdir, writeFile, mkdir } from 'fs/promises'
-import { dirname, join, extname, resolve, isAbsolute } from 'path'
+import { mkdir, readFile, readdir, writeFile } from 'fs/promises'
+import { dirname, extname, isAbsolute, join, resolve } from 'path'
 import * as yaml from 'js-yaml'
-import { SimulationConfig, ConfigurationValidator, ParameterConfig, ParameterGroupConfig, OutputConfig } from './schema'
+import { ConfigurationValidator, OutputConfig, ParameterConfig, ParameterGroupConfig, SimulationConfig } from './schema'
 
 export class ConfigurationLoader {
   private validator = new ConfigurationValidator()

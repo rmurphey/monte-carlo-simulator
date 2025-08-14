@@ -1,6 +1,6 @@
 import { ConfigurationLoader } from '../config/loader'
 import { promises as fs } from 'fs'
-import { join, basename } from 'path'
+import { basename, join } from 'path'
 import chalk from 'chalk'
 import { runSimulation } from './run-simulation'
 import { packagePaths } from '../utils/package-paths'
