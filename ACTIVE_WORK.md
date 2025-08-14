@@ -24,6 +24,11 @@ Four strategic plans ready for implementation prioritization:
   - Add package.json scripts for automated doc sync checks
   - Implement CLI command discovery and documentation auto-generation
 - **Revisit web view to make sure it works** - Verify interactive web interface functionality
+- **Add simulation selection to web view** - Enable choosing different simulations in the web interface
+  - Add dropdown/selector for available simulations (9 current templates)
+  - Load simulation metadata and parameters dynamically
+  - Update parameter form based on selected simulation
+  - Maintain current functionality for parameter editing and execution
 
 ## Recently Completed ✅
 - **Type System Refactoring** - Eliminated code duplication with shared type definitions (August 2025)
