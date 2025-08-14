@@ -49,6 +49,16 @@ npm run test:docs
 npm run cli run simulation-name --list-params
 ```
 
+### Pre-approved Commands
+The following npm commands can be run without user approval for validation and analysis:
+- `npm run validate:repo-clean` - Check for uncommitted changes
+- `npm run validate:no-unpushed` - Check for unpushed commits
+- `npm run validate:dist-current` - Ensure dist/ directory is current
+- `npm run quality:all` - Run test + build + lint sequence
+- `npm run version:analyze` - Show commits since last tag
+- `npm run commit:size` - Show staged changes statistics
+- `npm run status:full` - Comprehensive git status with unpushed commits
+
 ### Large Team Commands
 - `/design` - Formal feature design documentation
 - `/estimate` - Detailed project estimation

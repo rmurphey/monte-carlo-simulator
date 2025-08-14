@@ -46,7 +46,14 @@
     "check:secrets": "./scripts/check-secrets.sh",
     "push": "git push",
     "push-force": "git push --force-with-lease",
-    "prepare": "husky"
+    "prepare": "husky",
+    "validate:repo-clean": "test -z \"$(git status --porcelain)\" || (echo '❌ Repository has uncommitted changes' && exit 1)",
+    "validate:no-unpushed": "test -z \"$(git log @{u}..HEAD --oneline 2>/dev/null)\" || (echo '❌ Repository has unpushed commits' && exit 1)",
+    "validate:dist-current": "test dist -nt src || npm run build",
+    "quality:all": "npm run test && npm run build && npm run lint",
+    "version:analyze": "git log $(git describe --tags --abbrev=0 2>/dev/null || echo HEAD~10)..HEAD --oneline",
+    "commit:size": "git diff --cached --stat | tail -1",
+    "status:full": "git status && echo '\\n📊 Unpushed commits:' && git log @{u}..HEAD --oneline 2>/dev/null || echo 'None'"
   },
   "lint-staged": {
     "*.ts": [
