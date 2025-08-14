@@ -1,5 +1,5 @@
 import inquirer from 'inquirer'
-import { SimulationConfig, ParameterType } from '../config/schema'
+import { ParameterType, SimulationConfig } from '../config/schema'
 import { ConfigurationLoader } from '../config/loader'
 import { ConfigurableSimulation } from '../../framework/ConfigurableSimulation'
 // Remove template library import - using examples-first approach

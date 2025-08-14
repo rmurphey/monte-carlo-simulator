@@ -1,6 +1,6 @@
 import * as readline from 'readline'
 import chalk from 'chalk'
-import { SimulationConfig, RunOptions } from '../config/schema'
+import { RunOptions, SimulationConfig } from '../config/schema'
 import { ConfigurationLoader } from '../config/loader'
 import { ConfigurableSimulation } from '../../framework/ConfigurableSimulation'
 import { SimulationResults } from '../../framework/types'
