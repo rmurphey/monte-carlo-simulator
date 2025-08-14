@@ -7,6 +7,16 @@ import { SimulationResults } from '../../framework/types'
 import { InteractiveConfigEditor } from './config-editor'
 import { TempConfigManager } from './temp-config-manager'
 
+// Check if terminal supports interactive input
+function isInteractiveEnvironment(): boolean {
+  return !!(
+    process.stdin.isTTY && 
+    process.stdout.isTTY &&
+    !process.env.CLAUDECODE &&
+    !process.env.CLAUDE_CODE_SSE_PORT
+  )
+}
+
 export interface ConfigHistoryEntry {
   config: SimulationConfig
   timestamp: Date
@@ -36,7 +46,19 @@ export class InteractiveSimulationSession {
     this.tempManager = new TempConfigManager()
     this.editor = new InteractiveConfigEditor()
     
-    // Setup readline interface
+    // Check if environment supports interactive mode
+    if (!isInteractiveEnvironment()) {
+      throw new Error(
+        `❌ Interactive mode requires a real terminal with TTY support.\n\n` +
+        `This environment does not support interactive input.\n` +
+        `Please run this command in a regular terminal instead.\n\n` +
+        `Alternative: Use parameter flags directly:\n` +
+        `  npm run cli -- run ${this.getSimulationName()} --set param=value\n` +
+        `  npm run cli -- run ${this.getSimulationName()} --list-params`
+      )
+    }
+    
+    // Setup readline interface for terminals
     this.rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
@@ -44,6 +66,10 @@ export class InteractiveSimulationSession {
 
     // Setup keyboard shortcuts
     this.setupKeyboardShortcuts()
+  }
+
+  private getSimulationName(): string {
+    return this.originalConfigPath.split('/').pop()?.replace('.yaml', '') || 'simulation'
   }
 
   async start(): Promise<void> {
@@ -81,16 +107,16 @@ export class InteractiveSimulationSession {
   private async runInitialSimulation(): Promise<void> {
     console.log(chalk.blue('Running initial simulation with current config...'))
     
-    // Get default parameters
-    const defaultParams: Record<string, unknown> = {}
-    this.simulation.getParameterDefinitions().forEach(param => {
-      defaultParams[param.key] = param.defaultValue
+    // Get current parameter values from config
+    const currentParams: Record<string, unknown> = {}
+    this.config.parameters?.forEach(param => {
+      currentParams[param.key] = param.default
     })
 
     // Run simulation with progress
     const iterations = this.options.iterations || 1000
     this.results = await this.simulation.runSimulation(
-      defaultParams,
+      currentParams,
       iterations,
       (progress, iteration) => {
         if (iteration % Math.max(1, Math.floor(iterations / 10)) === 0) {
@@ -121,21 +147,31 @@ export class InteractiveSimulationSession {
   }
 
   private async enterMainLoop(): Promise<void> {
+    console.log(chalk.blue('🎮 Interactive Mode - Terminal Required'))
+    console.log(chalk.gray('Use menu options below to interact with the simulation'))
+    console.log()
+
     // Interactive menu loop: while(true) is correct pattern for CLI applications
     // - Blocks on await this.getCommand() (no CPU/memory consumption)
     // - User explicitly chooses "q" to break loop
     // - Standard pattern used by npm init, create-react-app, etc.
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      this.displayMainMenu()
-      
-      const command = await this.getCommand()
-      
-      if (command === 'q') {
-        break
-      }
+      try {
+        this.displayMainMenu()
+        
+        const command = await this.getCommand()
+        
+        if (command === 'q') {
+          console.log(chalk.green('👋 Goodbye!'))
+          break
+        }
 
-      await this.handleMainCommand(command)
+        await this.handleMainCommand(command)
+      } catch (error) {
+        console.error(chalk.red(`❌ Error: ${error instanceof Error ? error.message : String(error)}`))
+        console.log(chalk.gray('Type "q" to quit or try again'))
+      }
     }
   }
 
@@ -151,7 +187,7 @@ export class InteractiveSimulationSession {
 
   private async getCommand(): Promise<string> {
     return new Promise((resolve) => {
-      this.rl.question('', (answer) => {
+      this.rl.question('> ', (answer) => {
         resolve(answer.trim().toLowerCase())
       })
     })
@@ -190,14 +226,14 @@ export class InteractiveSimulationSession {
   private async runSimulation(): Promise<void> {
     console.log(chalk.blue('🔄 Running simulation...'))
     
-    // Get current parameters
-    const defaultParams: Record<string, unknown> = {}
-    this.simulation.getParameterDefinitions().forEach(param => {
-      defaultParams[param.key] = param.defaultValue
+    // Get current parameter values from config (may have been edited)
+    const currentParams: Record<string, unknown> = {}
+    this.config.parameters?.forEach(param => {
+      currentParams[param.key] = param.default
     })
 
     const iterations = this.options.iterations || 1000
-    this.results = await this.simulation.runSimulation(defaultParams, iterations)
+    this.results = await this.simulation.runSimulation(currentParams, iterations)
     
     console.log(chalk.green(`✅ Completed ${iterations} iterations in ${(this.results.duration / 1000).toFixed(1)}s`))
     this.displayResultsSummary()
@@ -205,8 +241,121 @@ export class InteractiveSimulationSession {
 
   private async quickParameterEdit(): Promise<void> {
     console.log(chalk.blue('📝 Quick Parameter Edit'))
-    console.log(chalk.gray('(Full parameter editing coming in next phase)'))
-    console.log(chalk.yellow('Use [c] Edit config for full configuration editing'))
+    console.log(chalk.gray('Current parameter values:'))
+    console.log()
+
+    // Display current parameters
+    this.config.parameters?.forEach((param, index) => {
+      const value = param.default
+      const displayValue = typeof value === 'number' ? value.toLocaleString() : String(value)
+      console.log(`${chalk.cyan((index + 1).toString().padStart(2))}. ${chalk.white(param.label || param.key)}: ${chalk.yellow(displayValue)}`)
+      if (param.description) {
+        console.log(`    ${chalk.gray(param.description)}`)
+      }
+      if (param.type === 'number' && (param.min !== undefined || param.max !== undefined)) {
+        console.log(`    ${chalk.gray(`Range: ${param.min || 'no min'} - ${param.max || 'no max'}`)}`)
+      }
+      console.log()
+    })
+
+    console.log(chalk.blue('Commands:'))
+    console.log(`  ${chalk.cyan('[number]')} Edit parameter by number (e.g., '1' to edit first parameter)`)
+    console.log(`  ${chalk.cyan('[r]')} Run simulation with current values`)
+    console.log(`  ${chalk.cyan('[b]')} Back to main menu`)
+    console.log()
+
+    // Parameter editing loop
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      process.stdout.write(chalk.cyan('Select parameter to edit (number/r/b): '))
+      const command = await this.getCommand()
+
+      if (command === 'b') {
+        break
+      }
+
+      if (command === 'r') {
+        await this.runSimulation()
+        continue
+      }
+
+      const paramIndex = parseInt(command) - 1
+      if (!isNaN(paramIndex) && paramIndex >= 0 && paramIndex < (this.config.parameters?.length || 0)) {
+        await this.editSingleParameter(paramIndex)
+      } else {
+        console.log(chalk.yellow(`Invalid selection. Enter 1-${this.config.parameters?.length || 0}, 'r', or 'b'`))
+      }
+    }
+  }
+
+  private async editSingleParameter(paramIndex: number): Promise<void> {
+    const param = this.config.parameters![paramIndex]
+    const currentValue = param.default
+    
+    console.log(chalk.blue(`\nEditing: ${chalk.white(param.label || param.key)}`))
+    if (param.description) {
+      console.log(chalk.gray(param.description))
+    }
+    console.log(chalk.gray(`Current value: ${chalk.yellow(String(currentValue))}`))
+    
+    if (param.type === 'number' && (param.min !== undefined || param.max !== undefined)) {
+      console.log(chalk.gray(`Valid range: ${param.min || 'no min'} - ${param.max || 'no max'}`))
+    }
+    
+    process.stdout.write(chalk.cyan('Enter new value (or press Enter to keep current): '))
+    const input = await this.getCommand()
+    
+    if (input === '') {
+      console.log(chalk.gray('Value unchanged'))
+      return
+    }
+
+    try {
+      let newValue: any = input
+      
+      if (param.type === 'number') {
+        newValue = Number(input)
+        if (isNaN(newValue)) {
+          throw new Error('Must be a valid number')
+        }
+        
+        if (param.min !== undefined && newValue < param.min) {
+          throw new Error(`Value must be at least ${param.min}`)
+        }
+        if (param.max !== undefined && newValue > param.max) {
+          throw new Error(`Value must be at most ${param.max}`)
+        }
+      } else if (param.type === 'boolean') {
+        const lowerInput = input.toLowerCase()
+        if (['true', 'yes', '1', 'on'].includes(lowerInput)) {
+          newValue = true
+        } else if (['false', 'no', '0', 'off'].includes(lowerInput)) {
+          newValue = false
+        } else {
+          throw new Error('Must be true/false, yes/no, 1/0, or on/off')
+        }
+      }
+
+      // Update parameter default value
+      param.default = newValue
+      
+      // Update simulation with new config
+      this.simulation = new ConfigurableSimulation(this.config)
+      
+      // Add to history
+      this.configHistory.push({
+        config: { ...this.config },
+        timestamp: new Date(),
+        description: `Updated ${param.label || param.key} to ${newValue}`
+      })
+      
+      console.log(chalk.green(`✅ Updated ${param.label || param.key} to ${chalk.yellow(String(newValue))}`))
+      
+    } catch (error) {
+      console.log(chalk.red(`❌ Invalid value: ${error instanceof Error ? error.message : String(error)}`))
+    }
+    
+    console.log()
   }
 
   private async enterConfigEditMode(): Promise<void> {
@@ -308,12 +457,13 @@ export class InteractiveSimulationSession {
   private async testConfig(): Promise<void> {
     console.log(chalk.blue('🧪 Testing config with quick run (100 iterations)...'))
     
-    const defaultParams: Record<string, unknown> = {}
-    this.simulation.getParameterDefinitions().forEach(param => {
-      defaultParams[param.key] = param.defaultValue
+    // Get current parameter values from config
+    const currentParams: Record<string, unknown> = {}
+    this.config.parameters?.forEach(param => {
+      currentParams[param.key] = param.default
     })
 
-    const testResults = await this.simulation.runSimulation(defaultParams, 100)
+    const testResults = await this.simulation.runSimulation(currentParams, 100)
     console.log(chalk.green(`✅ Test completed in ${(testResults.duration / 1000).toFixed(1)}s`))
     
     // Show brief results
@@ -405,6 +555,8 @@ export class InteractiveSimulationSession {
     // TODO: Implement other keyboard shortcuts in next phase
     // Ctrl+R, Ctrl+S, Ctrl+T require more complex readline handling
   }
+
+
 
   private async cleanup(): Promise<void> {
     this.rl.close()
