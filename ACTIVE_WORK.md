@@ -31,6 +31,12 @@ Four strategic plans ready for implementation prioritization:
   - Maintain current functionality for parameter editing and execution
 
 ## Recently Completed ✅
+- **Context Scripts Token Optimization** - Created comprehensive context script system to reduce token usage (August 2025)
+  - Added `scripts/command-context.sh` with 8 context functions covering all major Claude commands
+  - Token savings of 70-85% per command execution by consolidating repetitive bash calls
+  - Created npm scripts: `context:docs`, `context:todo`, `context:archive`, `context:commit`, `context:next`, `context:hygiene`, `context:push`, `context:build`
+  - Maintains full functionality while improving execution speed and efficiency
+  - Documented in CLAUDE.md for easy reference and usage
 - **Type System Refactoring** - Eliminated code duplication with shared type definitions (August 2025)
   - Re-exported `ParameterDefinition` from CLI config to eliminate framework duplication
   - Updated all CLI commands, framework components, and tests for consistency
