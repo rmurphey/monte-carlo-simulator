@@ -1,0 +1,185 @@
+name: AI Cost Impact on Engineering Organizations
+category: Technology & Operations
+description: Models the impact of non-linear AI cost increases on engineering teams, productivity, and organizational adaptation strategies
+version: 1.0.0
+tags:
+  - ai
+  - costs
+  - engineering
+  - productivity
+  - organizational-change
+parameters:
+  - key: annualRecurringRevenue
+    label: Annual Recurring Revenue
+    type: number
+    default: 12000000
+    min: 1000000
+    max: 100000000
+    description: Company ARR for budget planning context
+  - key: engineerCount
+    label: Engineering Team Size
+    type: number
+    default: 45
+    min: 5
+    max: 500
+    description: Number of engineers using AI tools
+  - key: currentAIMonthlyCostPerEngineer
+    label: Current AI Cost Per Engineer ($/month)
+    type: number
+    default: 85
+    min: 10
+    max: 500
+    description: Current monthly AI tool costs per engineer
+  - key: costIncreaseRate
+    label: Annual Cost Increase Rate (%)
+    type: number
+    default: 35
+    min: 10
+    max: 150
+    description: Annual percentage increase in AI costs (non-linear acceleration)
+  - key: productivityGainPercent
+    label: AI Productivity Gain (%)
+    type: number
+    default: 28
+    min: 5
+    max: 80
+    description: Current productivity improvement from AI tools
+  - key: productivityDependency
+    label: Productivity Dependency Factor
+    type: number
+    default: 0.75
+    min: 0.1
+    max: 1.0
+    description: How much productivity would decrease if AI tools were removed (0-1)
+  - key: budgetConstraintThreshold
+    label: Budget Constraint Threshold (% of Eng Budget)
+    type: number
+    default: 15
+    min: 5
+    max: 50
+    description: Maximum percentage of engineering budget allocated to AI tools
+  - key: avgEngineerSalary
+    label: Average Engineer Salary
+    type: number
+    default: 165000
+    min: 80000
+    max: 300000
+    description: Fully loaded annual cost per engineer
+  - key: timeHorizonYears
+    label: Analysis Time Horizon (Years)
+    type: number
+    default: 5
+    min: 1
+    max: 10
+    description: Years to project AI cost impact
+  - key: budgetPercent
+    label: Engineering Budget (% of ARR)
+    type: number
+    default: 30
+    min: 15
+    max: 60
+    description: Engineering budget allocation as percentage of ARR
+outputs:
+  - key: totalAICostYear1
+    label: Total AI Cost Year 1
+    description: First year total AI tool costs
+  - key: totalAICostFinalYear
+    label: Total AI Cost Final Year
+    description: Final year total AI tool costs
+  - key: cumulativeAICosts
+    label: Cumulative AI Costs
+    description: Total AI costs over analysis period
+  - key: productivityMultiplier
+    label: Productivity Multiplier
+    description: Overall team productivity factor with AI
+  - key: effectiveTeamSize
+    label: Effective Team Size
+    description: Equivalent team size accounting for AI productivity gains
+  - key: costPerEffectiveEngineer
+    label: Cost Per Effective Engineer
+    description: Total cost per productivity-adjusted engineer
+  - key: budgetPressurePoint
+    label: Budget Pressure Point (Year)
+    description: Year when AI costs exceed budget threshold
+  - key: organizationalResponse
+    label: Organizational Response
+    type: string
+    description: Likely organizational adaptation strategy
+  - key: netProductivityImpact
+    label: Net Productivity Impact (%)
+    description: Overall productivity change accounting for costs and constraints
+simulation:
+  logic: |-
+    // ARR-based engineering budget calculations
+    const totalEngineeringBudget = annualRecurringRevenue * (budgetPercent / 100)
+    const actualEngineerCount = Math.min(engineerCount, Math.floor(totalEngineeringBudget / avgEngineerSalary))
+    const maxAIBudget = totalEngineeringBudget * (budgetConstraintThreshold / 100)
+    
+    // Cost projection with non-linear increases
+    let currentMonthlyCost = currentAIMonthlyCostPerEngineer
+    let totalYear1Cost = currentMonthlyCost * 12 * actualEngineerCount
+    let cumulativeCosts = 0
+    let budgetPressureYear = timeHorizonYears + 1
+    
+    // Model non-linear cost acceleration (compounds faster over time)
+    const accelerationFactor = 1 + (Math.random() * 0.3 - 0.15) // ±15% variability
+    let finalYearCost = totalYear1Cost
+    
+    for (let year = 1; year <= timeHorizonYears; year++) {
+      const yearlyIncrease = (costIncreaseRate / 100) * Math.pow(accelerationFactor, year - 1)
+      const yearCost = totalYear1Cost * Math.pow(1 + yearlyIncrease, year)
+      cumulativeCosts += yearCost
+      finalYearCost = yearCost
+      
+      // Check when budget threshold is exceeded
+      if (yearCost > maxAIBudget && budgetPressureYear > timeHorizonYears) {
+        budgetPressureYear = year
+      }
+    }
+    
+    // Productivity calculations with variability
+    const productivityVariability = 0.85 + Math.random() * 0.3 // ±15% variability
+    const actualProductivityGain = (productivityGainPercent / 100) * productivityVariability
+    const productivityMultiplier = 1 + actualProductivityGain
+    const effectiveTeamSize = actualEngineerCount * productivityMultiplier
+    
+    // Organizational response modeling
+    const responses = [
+      'Continue Current Usage', 'Optimize AI Tool Stack', 'Reduce AI Usage', 
+      'Selective Engineer Access', 'Build Internal Tools', 'Negotiate Enterprise Pricing',
+      'Productivity-Based Justification', 'Headcount Reduction Strategy'
+    ]
+    
+    let organizationalResponse = 'Continue Current Usage'
+    let netProductivityChange = actualProductivityGain * 100
+    
+    // Response logic based on budget pressure
+    if (budgetPressureYear <= 2) {
+      organizationalResponse = 'Build Internal Tools'
+      netProductivityChange *= 0.8 // Initial productivity dip from transition
+    } else if (budgetPressureYear <= 3) {
+      organizationalResponse = 'Selective Engineer Access' 
+      netProductivityChange *= 0.6 // Reduced access impacts productivity
+    } else if (budgetPressureYear <= 4) {
+      organizationalResponse = 'Optimize AI Tool Stack'
+      netProductivityChange *= 0.9 // Some efficiency loss from optimization
+    } else if (finalYearCost > maxAIBudget * 0.8) {
+      organizationalResponse = 'Negotiate Enterprise Pricing'
+      netProductivityChange *= 0.95 // Slight impact from usage constraints
+    }
+    
+    // Cost per effective engineer calculation
+    const totalEngineeringCostWithAI = totalEngineeringBudget + (finalYearCost / timeHorizonYears)
+    const costPerEffectiveEngineer = totalEngineeringCostWithAI / effectiveTeamSize
+    
+    return {
+      totalAICostYear1: Math.round(totalYear1Cost),
+      totalAICostFinalYear: Math.round(finalYearCost),
+      cumulativeAICosts: Math.round(cumulativeCosts),
+      productivityMultiplier: Math.round(productivityMultiplier * 100) / 100,
+      effectiveTeamSize: Math.round(effectiveTeamSize * 10) / 10,
+      costPerEffectiveEngineer: Math.round(costPerEffectiveEngineer),
+      budgetPressurePoint: budgetPressureYear > timeHorizonYears ? 999 : budgetPressureYear,
+      organizationalResponse: organizationalResponse,
+      netProductivityImpact: Math.round(netProductivityChange * 10) / 10
+    }

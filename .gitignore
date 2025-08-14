@@ -26,8 +26,8 @@ dist/
 *.tsbuildinfo
 .eslintcache
 
-# User workspace
-simulations/
+# User workspace (only root-level simulations directory)
+/simulations/
 
 # Coverage
 coverage/

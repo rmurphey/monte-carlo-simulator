@@ -1,6 +1,6 @@
 {
   "name": "monte-carlo-simulator",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Business decision framework with Monte Carlo risk analysis - instant via npx",
   "keywords": [
     "monte-carlo",
