@@ -82,6 +82,59 @@ next_context() {
     git log --oneline -3
 }
 
+# /hygiene command context
+hygiene_context() {
+    echo "=== PROJECT STATUS ==="
+    git status --porcelain
+    
+    echo -e "\n=== ESLINT STATUS ==="
+    npm run lint 2>&1 | tail -3 || echo "ESLint check failed"
+    
+    echo -e "\n=== TEST STATUS ==="
+    npm run test 2>&1 | tail -5 || echo "Tests failed"
+    
+    echo -e "\n=== TYPECHECK STATUS ==="
+    npm run typecheck 2>&1 | tail -3 || echo "TypeScript check failed"
+    
+    echo -e "\n=== RECENT COMMITS ==="
+    git log --oneline -5
+}
+
+# /push command context 
+push_context() {
+    echo "=== BRANCH STATUS ==="
+    git status --branch --porcelain
+    
+    echo -e "\n=== UNPUSHED COMMITS ==="
+    git log @{u}..HEAD --oneline 2>/dev/null || echo "No upstream branch or no unpushed commits"
+    
+    echo -e "\n=== REMOTE TRACKING ==="
+    git branch -vv
+    
+    echo -e "\n=== VALIDATION CHECKS ==="
+    npm run validate:repo-clean 2>/dev/null && echo "✅ Repository clean" || echo "❌ Repository has changes"
+    npm run validate:dist-current 2>/dev/null && echo "✅ Dist current" || echo "❌ Dist needs rebuild"
+    npm run test:docs 2>&1 | tail -3 || echo "Documentation tests status unknown"
+}
+
+# /build command context
+build_context() {
+    echo "=== PROJECT STATUS ==="
+    git status --porcelain
+    
+    echo -e "\n=== BUILD STATUS ==="
+    npm run typecheck 2>&1 | tail -3 || echo "TypeScript check failed"
+    
+    echo -e "\n=== DIST DIRECTORY ==="
+    ls -la dist/ 2>/dev/null || echo "No dist directory"
+    
+    echo -e "\n=== PACKAGE STATUS ==="
+    npm run validate:dist-current 2>/dev/null && echo "✅ Dist current" || echo "❌ Dist needs rebuild"
+    
+    echo -e "\n=== TEST STATUS ==="
+    npm run test 2>&1 | tail -3 || echo "Tests failed"
+}
+
 # Main execution
 case "$1" in
     "docs")
@@ -99,8 +152,17 @@ case "$1" in
     "next")
         next_context
         ;;
+    "hygiene")
+        hygiene_context
+        ;;
+    "push")
+        push_context
+        ;;
+    "build")
+        build_context
+        ;;
     *)
-        echo "Usage: $0 {docs|todo|archive|commit|next}"
+        echo "Usage: $0 {docs|todo|archive|commit|next|hygiene|push|build}"
         echo "Provides context for Claude commands to save tokens"
         exit 1
         ;;

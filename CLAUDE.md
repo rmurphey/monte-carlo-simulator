@@ -55,6 +55,9 @@ Use these scripts instead of individual bash commands to save tokens:
 - `npm run context:archive` - Archive command context (completed work, plans)
 - `npm run context:commit` - Commit command context (staged changes, recent commits)
 - `npm run context:next` - Next task context (project phase, priorities)
+- `npm run context:hygiene` - Code quality context (lint, tests, typecheck)
+- `npm run context:push` - Push readiness context (branch status, validation)
+- `npm run context:build` - Build status context (dist, compilation, tests)
 
 ### Pre-approved Commands
 The following npm commands can be run without user approval for validation and analysis:
