@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { existsSync } from 'fs'
+import { existsSync, readdirSync } from 'fs'
 
 /**
  * Get resource paths for templates, examples, and other bundled resources.
@@ -83,7 +83,6 @@ export function resolveResourceFile(filename: string, category: 'examples' | 'do
  */
 export function listResourceFiles(category: 'examples' | 'docs'): string[] {
   const paths = getResourcePaths()
-  const fs = require('fs')
   
   const categoryPath = paths[category]
   if (!existsSync(categoryPath)) {
@@ -93,7 +92,7 @@ export function listResourceFiles(category: 'examples' | 'docs'): string[] {
   const files: string[] = []
   
   // Get files directly in category directory
-  const directFiles = fs.readdirSync(categoryPath)
+  const directFiles = readdirSync(categoryPath)
     .filter((f: string) => f.endsWith('.yaml') || f.endsWith('.md'))
     .filter((f: string) => f !== 'README.md') // Exclude README files from listings
   
@@ -103,7 +102,7 @@ export function listResourceFiles(category: 'examples' | 'docs'): string[] {
   if (category === 'examples') {
     const simulationsPath = path.join(categoryPath, 'simulations')
     if (existsSync(simulationsPath)) {
-      const simulationFiles = fs.readdirSync(simulationsPath)
+      const simulationFiles = readdirSync(simulationsPath)
         .filter((f: string) => f.endsWith('.yaml'))
         .map((f: string) => `simulations/${f}`)
       files.push(...simulationFiles)

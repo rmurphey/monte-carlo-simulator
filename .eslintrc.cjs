@@ -46,6 +46,12 @@ module.exports = {
         document: 'readonly',
         NodeListOf: 'readonly'
       }
+    },
+    {
+      files: ['src/test/setup.ts'],
+      rules: {
+        "no-var": "off" // Allow var in global type declarations
+      }
     }
   ]
 }
