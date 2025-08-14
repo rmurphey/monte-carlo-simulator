@@ -4,20 +4,17 @@
 
 import { Chart, registerables } from 'chart.js'
 import type { HistogramData } from './types'
+import { formatNumber, getElementOrThrow } from './utils'
 
 // Register Chart.js components
 Chart.register(...registerables)
 
-export class ChartManager {
+export class Charts {
   private container: HTMLElement
   private charts: Map<string, Chart> = new Map()
 
   constructor(containerId: string) {
-    const element = document.getElementById(containerId)
-    if (!element) {
-      throw new Error(`Container element ${containerId} not found`)
-    }
-    this.container = element
+    this.container = getElementOrThrow(containerId)
   }
 
   createHistograms(results: Array<Record<string, any>>) {
@@ -105,7 +102,7 @@ export class ChartManager {
     
     if (min === max) {
       return {
-        labels: [this.formatNumber(min)],
+        labels: [formatNumber(min)],
         data: [values.length]
       }
     }
@@ -118,7 +115,7 @@ export class ChartManager {
     for (let i = 0; i < binCount; i++) {
       const binStart = min + i * binWidth
       const binEnd = min + (i + 1) * binWidth
-      labels.push(`${this.formatNumber(binStart)}-${this.formatNumber(binEnd)}`)
+      labels.push(`${formatNumber(binStart)}-${formatNumber(binEnd)}`)
     }
 
     // Count values in each bin
@@ -151,17 +148,6 @@ export class ChartManager {
     })
   }
 
-  private formatNumber(value: number): string {
-    if (Math.abs(value) >= 1000000) {
-      return (value / 1000000).toFixed(1) + 'M'
-    } else if (Math.abs(value) >= 1000) {
-      return (value / 1000).toFixed(1) + 'K'
-    } else if (Math.abs(value) < 1) {
-      return value.toFixed(3)
-    } else {
-      return value.toFixed(2)
-    }
-  }
 
   clear() {
     // Destroy existing charts

@@ -3,16 +3,13 @@
  */
 
 import type { StatisticalSummary } from '../framework/types'
+import { formatNumber, getElementOrThrow } from './utils'
 
-export class StatisticsTableManager {
+export class Statistics {
   private container: HTMLElement
 
   constructor(containerId: string) {
-    const element = document.getElementById(containerId)
-    if (!element) {
-      throw new Error(`Container element ${containerId} not found`)
-    }
-    this.container = element
+    this.container = getElementOrThrow(containerId)
   }
 
   displayTable(summary: Record<string, StatisticalSummary>) {
@@ -38,28 +35,17 @@ export class StatisticsTableManager {
     Object.entries(summary).forEach(([key, stats]) => {
       const row = tbody.insertRow()
       row.insertCell().textContent = key
-      row.insertCell().textContent = this.formatNumber(stats.mean)
-      row.insertCell().textContent = this.formatNumber(stats.standardDeviation)
-      row.insertCell().textContent = this.formatNumber(stats.min || 0)
-      row.insertCell().textContent = this.formatNumber(stats.max || 0)
-      row.insertCell().textContent = this.formatNumber(stats.percentile10 || 0)
-      row.insertCell().textContent = this.formatNumber(stats.percentile90 || 0)
+      row.insertCell().textContent = formatNumber(stats.mean)
+      row.insertCell().textContent = formatNumber(stats.standardDeviation)
+      row.insertCell().textContent = formatNumber(stats.min || 0)
+      row.insertCell().textContent = formatNumber(stats.max || 0)
+      row.insertCell().textContent = formatNumber(stats.percentile10 || 0)
+      row.insertCell().textContent = formatNumber(stats.percentile90 || 0)
     })
 
     this.container.appendChild(table)
   }
 
-  private formatNumber(value: number): string {
-    if (Math.abs(value) >= 1000000) {
-      return (value / 1000000).toFixed(1) + 'M'
-    } else if (Math.abs(value) >= 1000) {
-      return (value / 1000).toFixed(1) + 'K'
-    } else if (Math.abs(value) < 1) {
-      return value.toFixed(3)
-    } else {
-      return value.toFixed(2)
-    }
-  }
 
   clear() {
     this.container.innerHTML = ''

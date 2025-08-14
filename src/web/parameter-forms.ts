@@ -2,25 +2,22 @@
  * Parameter form generation and management
  */
 
-import type { ParameterDefinition } from '../framework/types'
+import type { ParameterConfig } from '../cli/config/schema'
+import { getElementOrThrow } from './utils'
 
-export class ParameterFormManager {
+export class ParameterForm {
   private container: HTMLElement
   private onChangeCallback?: () => void
 
   constructor(containerId: string) {
-    const element = document.getElementById(containerId)
-    if (!element) {
-      throw new Error(`Container element ${containerId} not found`)
-    }
-    this.container = element
+    this.container = getElementOrThrow(containerId)
   }
 
   setOnChangeCallback(callback: () => void) {
     this.onChangeCallback = callback
   }
 
-  generateForm(parameters: ParameterDefinition[]) {
+  generateForm(parameters: ParameterConfig[]) {
     this.container.innerHTML = ''
 
     parameters.forEach(param => {
@@ -48,7 +45,7 @@ export class ParameterFormManager {
     })
   }
 
-  private createInput(param: ParameterDefinition): HTMLInputElement {
+  private createInput(param: ParameterConfig): HTMLInputElement {
     const input = document.createElement('input')
     input.id = param.key
     input.name = param.key
@@ -57,12 +54,12 @@ export class ParameterFormManager {
     switch (param.type) {
       case 'boolean':
         input.type = 'checkbox'
-        input.checked = param.defaultValue as boolean
+        input.checked = param.default as boolean
         break
         
       case 'number':
         input.type = 'number'
-        input.value = String(param.defaultValue)
+        input.value = String(param.default)
         if (param.min !== undefined) input.min = String(param.min)
         if (param.max !== undefined) input.max = String(param.max)
         if (param.step !== undefined) input.step = String(param.step)
@@ -70,13 +67,13 @@ export class ParameterFormManager {
         
       default:
         input.type = 'text'
-        input.value = String(param.defaultValue || '')
+        input.value = String(param.default || '')
     }
 
     return input
   }
 
-  private validateInput(input: HTMLInputElement, param: ParameterDefinition) {
+  private validateInput(input: HTMLInputElement, param: ParameterConfig) {
     input.classList.remove('invalid')
 
     if (param.type === 'number') {
