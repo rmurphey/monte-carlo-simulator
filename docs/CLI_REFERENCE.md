@@ -50,7 +50,7 @@ npx monte-carlo-simulator run <simulation> [options]
 - `-o, --output <file>` - Save results to file
 - `--set <param=value>` - Override parameters with validation
 - `-p, --params <file>` - Load parameters from JSON/YAML file
-- `--interactive` - Real-time parameter adjustment mode
+- `--interactive` - Real-time parameter adjustment mode (requires terminal with TTY support)
 - `--list-params` - Discover available parameters
 
 ## 📊 Monte Carlo Visualizations
@@ -189,8 +189,12 @@ npm run cli list --verbose
 ### `interactive` - Simulation Browser
 
 ```bash
-# Interactive simulation selection and execution
+# Interactive simulation selection and execution (terminal required)
 npm run cli interactive
+
+# Note: Interactive mode requires real terminal with TTY support
+# In environments like Claude Code, use parameter flags instead:
+npm run cli run <simulation> --set param=value
 ```
 
 ## 🎛️ Parameter Management
@@ -367,10 +371,11 @@ npm run cli run simple-roi-analysis --list-params
 4. **Parameter files** for repeatable analysis
 
 ### For Exploration  
-1. **Start interactive**: `npm run cli run simple-roi-analysis --interactive`
+1. **Start interactive** (terminal required): `npm run cli run simple-roi-analysis --interactive`
 2. **Use NPX** for quick testing without installation
-3. **Compare scenarios** to understand sensitivity
-4. **Export successful parameter combinations**
+3. **Use parameter flags** in non-terminal environments: `--set param=value`
+4. **Compare scenarios** to understand sensitivity
+5. **Export successful parameter combinations**
 
 ## 🔗 Integration Examples
 

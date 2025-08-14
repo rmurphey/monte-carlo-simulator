@@ -209,18 +209,22 @@ npm run cli -- validate examples/simulations/simple-roi-analysis.yaml
 Adjust parameters in real-time and see results update instantly:
 
 ```bash
-# Launch interactive mode for any simulation
+# Launch interactive mode for any simulation (terminal required)
 npm run cli -- run simple-roi-analysis --interactive
 
 # Interactive simulation selection
 npm run cli interactive
+
+# For non-terminal environments (Claude Code, CI/CD), use parameter flags:
+npm run cli -- run simple-roi-analysis --set initialInvestment=500000 --set affectedEmployees=100
 ```
 
 **Interactive Features:**
-- **Real-time parameter adjustment** - Change values and see immediate impact on results  
+- **Real-time parameter adjustment** - Change values and see immediate impact on results (terminal required)
 - **Before/after comparison** - Track how parameter changes affect outcomes
-- **Parameter validation** - Type checking and range enforcement with helpful error messages
+- **Parameter validation** - Type checking and range enforcement with helpful error messages  
 - **Dynamic parameter discovery** - No static documentation to maintain
+- **Environment detection** - Clear error messages with alternatives for unsupported environments
 
 ### **Examples-First Simulation Creation** ✨
 
