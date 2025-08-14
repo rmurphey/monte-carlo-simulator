@@ -8,6 +8,7 @@ import { packagePaths } from '../utils/package-paths'
 import { RunOptions } from '../config/schema'
 import { InteractiveSimulationSession } from '../interactive/session-manager'
 import { documentGenerator } from '../utils/document-generator'
+import { StatisticalAnalyzer } from '../../framework/StatisticalAnalyzer'
 
 // Helper function for parameter name suggestions
 function findClosestParameter(input: string, available: string[]): string | null {
@@ -416,8 +417,29 @@ async function displayResults(results: any, config: any, options: RunOptions, pa
     }
   })
   
+  // Always show Monte Carlo visualizations (this is the key feature!)
+  console.log(chalk.magenta.bold('\n🎲 MONTE CARLO ANALYSIS'))
+  console.log(chalk.gray('═'.repeat(70)))
+  
+  // Show the most important output with full visualization
+  const primaryOutputKey = Object.keys(results.summary)[0]
+  const primaryStats = results.summary[primaryOutputKey]
+  const primaryOutput = config.outputs.find((o: any) => o.key === primaryOutputKey)
+  const primaryTitle = primaryOutput?.label || primaryOutputKey
+  
+  // Get raw values for the primary output for histogram
+  const primaryValues = results.results.map((result: any) => result[primaryOutputKey]).filter((v: any) => typeof v === 'number')
+  
+  if (primaryValues.length > 0) {
+    console.log(generateConfidenceInterval(primaryStats, primaryTitle))
+    console.log()
+    console.log(generateASCIIHistogram(primaryValues, primaryTitle))
+    console.log()
+    console.log(generateRiskAnalysis(primaryValues, primaryTitle))
+  }
+
   if (options.verbose) {
-    console.log(chalk.blue.bold('\n📊 STATISTICAL DISTRIBUTION'))
+    console.log(chalk.blue.bold('\n📊 DETAILED STATISTICAL DISTRIBUTION'))
     console.log(' '.repeat(16) + chalk.yellow('P10'.padStart(10)) + chalk.yellow('P50'.padStart(10)) + chalk.yellow('P90'.padStart(10)))
     
     Object.entries(results.summary).forEach(([key, stats]: [string, any]) => {
@@ -428,6 +450,18 @@ async function displayResults(results: any, config: any, options: RunOptions, pa
       const p90 = stats.percentile90?.toLocaleString() || 'N/A'
       
       console.log(`${chalk.cyan(label.padEnd(15))} ${chalk.white(p10.padStart(10))} ${chalk.white(p50.padStart(10))} ${chalk.white(p90.padStart(10))}`)
+    })
+    
+    // Show histograms for all outputs when verbose
+    Object.entries(results.summary).slice(1).forEach(([key, stats]: [string, any]) => {
+      const output = config.outputs.find((o: any) => o.key === key)
+      const title = output?.label || key
+      const values = results.results.map((result: any) => result[key]).filter((v: any) => typeof v === 'number')
+      
+      if (values.length > 0) {
+        console.log('\n' + generateConfidenceInterval(stats, title))
+        console.log('\n' + generateASCIIHistogram(values, title))
+      }
     })
   }
 }
@@ -469,6 +503,102 @@ function convertToCSV(results: any[]): string {
   ].join('\n')
   
   return csvContent
+}
+
+function generateASCIIHistogram(values: number[], title: string): string {
+  const analyzer = new StatisticalAnalyzer()
+  const histogram = analyzer.calculateHistogram(values, 20)
+  
+  if (histogram.length === 0) return 'No data available for visualization'
+  
+  const maxCount = Math.max(...histogram.map(h => h.count))
+  if (maxCount === 0) return 'No data available for visualization'
+  
+  const lines = []
+  lines.push(chalk.blue.bold(`📊 ${title}`))
+  lines.push(chalk.gray('─'.repeat(70)))
+  
+  // Header
+  lines.push(`${chalk.gray('Value Range'.padStart(12))} │${chalk.gray('Distribution'.padEnd(42))}│ ${chalk.gray('Count')}`)
+  lines.push(chalk.gray('─'.repeat(70)))
+  
+  histogram.forEach(bin => {
+    const barLength = Math.round((bin.count / maxCount) * 40)
+    const bar = chalk.cyan('█'.repeat(barLength)) + chalk.gray('░'.repeat(40 - barLength))
+    const range = `${formatNumber(bin.binStart)}`
+    const count = bin.count.toString()
+    const percentage = `(${bin.percentage.toFixed(1)}%)`
+    
+    lines.push(`${range.padStart(12)} │${bar}│ ${count.padEnd(4)} ${chalk.gray(percentage)}`)
+  })
+  
+  return lines.join('\n')
+}
+
+function generateConfidenceInterval(stats: any, title: string): string {
+  const lines = []
+  lines.push(chalk.blue.bold(`📈 ${title} - Confidence Intervals`))
+  lines.push(chalk.gray('─'.repeat(70)))
+  
+  const width = 60
+  const range = (stats.max || 0) - (stats.min || 0)
+  
+  if (range === 0 || !stats.mean) {
+    lines.push(`Single value: ${formatNumber(stats.mean || 0)}`)
+    return lines.join('\n')
+  }
+  
+  const normalize = (value: number) => {
+    if (!value || range === 0) return 0
+    return Math.round(((value - stats.min) / range) * width)
+  }
+  
+  const p10Pos = normalize(stats.percentile10 || stats.min)
+  const p50Pos = normalize(stats.median || stats.mean)
+  const p90Pos = normalize(stats.percentile90 || stats.max)
+  const meanPos = normalize(stats.mean || 0)
+  
+  // Build confidence interval chart
+  const line = new Array(width + 1).fill('─')
+  if (p10Pos >= 0 && p10Pos <= width) line[p10Pos] = '├'
+  if (p50Pos >= 0 && p50Pos <= width) line[p50Pos] = '┼'
+  if (p90Pos >= 0 && p90Pos <= width) line[p90Pos] = '┤'
+  if (meanPos >= 0 && meanPos <= width) line[meanPos] = '●'
+  
+  lines.push(`${formatNumber(stats.min || 0).padStart(10)} ${line.join('')} ${formatNumber(stats.max || 0)}`)
+  lines.push(`${''.padStart(11)}${chalk.cyan('├────── 80% confidence interval ──────┤')}`)
+  lines.push(`${''.padStart(11)}P10: ${chalk.white(formatNumber(stats.percentile10 || 0))} | P50: ${chalk.white(formatNumber(stats.median || 0))} | P90: ${chalk.white(formatNumber(stats.percentile90 || 0))}`)
+  lines.push(`${''.padStart(11)}Mean: ${chalk.yellow(formatNumber(stats.mean || 0))} ${chalk.yellow('●')}`)
+  
+  return lines.join('\n')
+}
+
+function formatNumber(value: number): string {
+  if (Math.abs(value) >= 1000000) {
+    return (value / 1000000).toFixed(1) + 'M'
+  } else if (Math.abs(value) >= 1000) {
+    return (value / 1000).toFixed(1) + 'K'
+  } else if (value % 1 === 0) {
+    return value.toString()
+  } else {
+    return value.toFixed(2)
+  }
+}
+
+function generateRiskAnalysis(values: number[], title: string): string {
+  const analyzer = new StatisticalAnalyzer()
+  const riskMetrics = analyzer.calculateRiskMetrics(values, 0)
+  
+  const lines = []
+  lines.push(chalk.blue.bold(`⚡ ${title} - Risk Analysis`))
+  lines.push(chalk.gray('─'.repeat(50)))
+  
+  lines.push(`${chalk.cyan('Probability of Loss'.padEnd(25))}: ${chalk.white((riskMetrics.probabilityOfLoss || 0).toFixed(1) + '%')}`)
+  lines.push(`${chalk.cyan('Value at Risk (95%)'.padEnd(25))}: ${chalk.white(formatNumber(riskMetrics.valueAtRisk95 || 0))}`)
+  lines.push(`${chalk.cyan('Value at Risk (99%)'.padEnd(25))}: ${chalk.white(formatNumber(riskMetrics.valueAtRisk99 || 0))}`)
+  lines.push(`${chalk.cyan('Expected Shortfall (95%)'.padEnd(25))}: ${chalk.white(formatNumber(riskMetrics.expectedShortfall95 || 0))}`)
+  
+  return lines.join('\n')
 }
 
 async function runComparisonMode(simulationName: string, options: RunOptions): Promise<void> {
