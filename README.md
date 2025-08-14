@@ -156,7 +156,32 @@ npm run build
 
 # Verify installation
 npm run cli --help
+
+# Start web development server with hot reload
+npm run dev:web  # Opens browser at http://localhost:3000
 ```
+
+### **Web Development with Hot Reload** 🔥
+
+For web interface development with instant browser refresh:
+
+```bash
+# Start Vite development server
+npm run dev:web
+
+# This will:
+# - Open browser at http://localhost:3000
+# - Watch for file changes in src/web/
+# - Automatically refresh browser on changes
+# - Provide TypeScript error reporting in console
+# - Enable fast development iteration
+```
+
+**Development Features:**
+- **Instant Hot Reload**: Changes to HTML, CSS, or TypeScript reflect immediately
+- **TypeScript Integration**: Real-time compilation and error reporting  
+- **Modern Tooling**: Vite-powered development with optimized builds
+- **Port 3000**: Dedicated development port separate from production builds
 
 #### Troubleshooting Setup
 **If you encounter issues during installation:**
@@ -466,11 +491,18 @@ npm run cli run simple-roi-analysis --params scenario.json --output results.json
 **Development Commands**:
 ```bash
 # Core development
-npm run dev                 # Watch mode for development
+npm run dev                 # Watch mode for CLI development
 npm run build              # Compile TypeScript  
 npm run test               # Run full test suite (92 tests - all passing)
 npm run test:watch         # Run tests in watch mode
 npm run test:coverage      # Run tests with coverage report
+
+# Web development
+npm run dev:web            # Vite development server with hot reload (port 3000)
+npm run build:web:vite     # Production web build with Vite
+npm run preview:web        # Preview production web build locally
+npm run test:web           # Test Vite development server and web interface
+npm run test:all           # Run both framework and web tests
 
 # Code quality
 npm run lint               # Check for linting issues
