@@ -27,7 +27,13 @@
     "dev": "tsx watch src/cli/index.ts",
     "build": "tsc",
     "build:web": "tsc --project tsconfig.web.json && cp src/web/index.html dist/web/",
-    "test": "vitest --run",
+    "dev:web": "vite",
+    "build:web:vite": "vite build",
+    "preview:web": "vite preview",
+    "test": "vitest --run --exclude=src/test/vite-integration.test.ts",
+    "test:all": "npm run test && npm run test:web",
+    "test:web": "vitest --run src/test/vite-integration.test.ts",
+    "test:web:full": "vitest --run src/test/vite-dev-server.test.ts",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
@@ -79,8 +85,10 @@
     "yaml": "^2.8.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "@types/inquirer": "^9.0.8",
     "@types/js-yaml": "^4.0.9",
+    "@types/node-fetch": "^2.6.13",
     "@typescript-eslint/eslint-plugin": "^8.39.1",
     "@typescript-eslint/parser": "^8.39.1",
     "@vitest/coverage-v8": "^1.1.0",
@@ -89,9 +97,12 @@
     "husky": "^9.1.7",
     "jsdom": "^26.1.0",
     "lint-staged": "^16.1.4",
+    "node-fetch": "^3.3.2",
+    "playwright": "^1.54.2",
     "prettier": "^3.1.1",
     "tsx": "^4.20.3",
     "typescript": "^5.2.2",
+    "vite": "^7.1.2",
     "vitest": "^1.1.0"
   }
 }
