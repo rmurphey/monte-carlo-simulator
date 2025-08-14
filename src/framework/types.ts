@@ -1,14 +1,5 @@
-export interface ParameterDefinition {
-  key: string
-  label: string
-  type: 'number' | 'boolean' | 'string' | 'select'
-  defaultValue: number | boolean | string
-  min?: number
-  max?: number
-  step?: number
-  options?: string[]
-  description?: string
-}
+// Re-export from CLI config to eliminate duplication
+export type { ParameterConfig as ParameterDefinition, ParameterType } from '../cli/config/schema'
 
 export interface SimulationMetadata {
   id: string

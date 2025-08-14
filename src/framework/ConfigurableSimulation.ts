@@ -1,8 +1,8 @@
 import { MonteCarloEngine } from './MonteCarloEngine'
-import { SimulationMetadata, ParameterDefinition, SimulationResults } from './types'
-import { SimulationConfig, ParameterConfig } from '../cli/config/schema'
+import { ParameterDefinition, SimulationMetadata, SimulationResults } from './types'
+import { ParameterConfig, SimulationConfig } from '../cli/config/schema'
 import { toId } from '../cli/utils/name-converter'
-import { globalARRInjector, ARRBusinessContextInjector } from './ARRBusinessContext'
+import { ARRBusinessContextInjector, globalARRInjector } from './ARRBusinessContext'
 
 export class ConfigurableSimulation extends MonteCarloEngine {
   private arrInjector: ARRBusinessContextInjector
@@ -114,17 +114,7 @@ export class ConfigurableSimulation extends MonteCarloEngine {
   }
   
   getParameterDefinitions(): ParameterDefinition[] {
-    return this.enhancedConfig.parameters.map(param => ({
-      key: param.key,
-      label: param.label,
-      type: param.type,
-      defaultValue: param.default,
-      min: param.min,
-      max: param.max,
-      step: param.step,
-      options: param.options,
-      description: param.description || ''
-    }))
+    return this.enhancedConfig.parameters
   }
   
   simulateScenario(parameters: Record<string, unknown>): Record<string, number | string | boolean> {
@@ -248,7 +238,7 @@ export class ConfigurableSimulation extends MonteCarloEngine {
       // Test with default parameters
       const defaultParams: Record<string, unknown> = {}
       this.getParameterDefinitions().forEach(param => {
-        defaultParams[param.key] = param.defaultValue
+        defaultParams[param.key] = param.default
       })
       
       const result = this.simulateScenario(defaultParams)
@@ -275,7 +265,7 @@ export class ConfigurableSimulation extends MonteCarloEngine {
   /**
    * Run Monte Carlo simulation with multiple iterations and statistical analysis
    */
-  async runSimulation(parameters: Record<string, unknown>, iterations: number = 1000, onProgress?: (_progress: number, _iteration: number) => void): Promise<SimulationResults> {
+  async runSimulation(parameters: Record<string, unknown>, iterations = 1000, onProgress?: (_progress: number, _iteration: number) => void): Promise<SimulationResults> {
     const startTime = new Date()
     const results: any[] = []
     

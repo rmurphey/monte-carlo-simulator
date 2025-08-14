@@ -133,7 +133,7 @@ export class ParameterSchema {
   getDefaultParameters(): Record<string, unknown> {
     const defaults: Record<string, unknown> = {}
     for (const def of this.definitions.values()) {
-      defaults[def.key] = def.defaultValue
+      defaults[def.key] = def.default
     }
     return defaults
   }
@@ -218,7 +218,7 @@ export class ParameterSchema {
       key: def.key,
       label: def.label,
       type: def.type,
-      defaultValue: def.defaultValue,
+      defaultValue: def.default,
       constraints: Object.keys(constraints).length > 0 ? constraints : undefined,
       options: def.options,
       description: def.description
