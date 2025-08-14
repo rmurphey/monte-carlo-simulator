@@ -194,48 +194,22 @@ export class DocumentGenerator {
   }
 
   private generateModelDiscussion(config: SimulationConfig, parameters: Record<string, any>, results: CLISimulationResults): string {
+    // Try explicit config first if available
+    if ((config as any).modelOverview) {
+      return (config as any).modelOverview
+    }
+    
     const discussion = []
     const name = config.name.toLowerCase()
     const summary = results.summary
     
-    // Model overview based on simulation type
-    if (name.includes('roi') || name.includes('investment')) {
-      discussion.push('**What this model shows:**')
-      discussion.push('This Monte Carlo simulation models the financial return on investment by running thousands of scenarios with varying assumptions. The model accounts for uncertainty in key variables like costs, benefits, and market conditions to provide a realistic range of possible outcomes rather than a single point estimate.')
-      
-      // Find ROI metric with flexible naming
-      const roiStats = summary.roi || summary.roiPercentage || summary['ROI Percentage']
-      if (roiStats) {
-        const confidence = Math.abs((roiStats.percentile90 - roiStats.percentile10) / roiStats.mean * 100).toFixed(0)
-        discussion.push(``)
-        discussion.push(`The analysis shows an expected ROI of ${this.formatValue(roiStats.mean)}%, but with significant variability (${confidence}% confidence range). This uncertainty reflects real-world conditions where actual results can vary substantially from initial projections.`)
-      }
-      
-      // Add payback period insight if available
-      const paybackStats = summary.paybackPeriod || summary['Payback Period (Months)']
-      if (paybackStats) {
-        discussion.push(`The payback period averages ${this.formatValue(paybackStats.mean)} months, with outcomes ranging from ${this.formatValue(paybackStats.percentile10)} to ${this.formatValue(paybackStats.percentile90)} months in 80% of scenarios.`)
-      }
-    } else if (name.includes('qa') || name.includes('quality') || name.includes('testing')) {
-      discussion.push('**What this model shows:**')
-      discussion.push('This simulation models the economic impact of quality assurance by comparing the costs of QA activities against the value of prevented defects. It accounts for variability in bug rates, fix costs, customer impact, and testing effectiveness to provide a comprehensive cost-benefit analysis.')
-      
-      const bugsPreventedStats = summary.bugsPreventedPerYear || summary.bugsPrevented
-      const totalSavingsStats = summary.totalAnnualSavings || summary.totalSavings
-      if (bugsPreventedStats && totalSavingsStats) {
-        const avgBugsPerRelease = (bugsPreventedStats.mean / (parameters.releasesPerYear || 12)).toFixed(1)
-        discussion.push(``)
-        discussion.push(`The model shows QA preventing approximately ${this.formatValue(bugsPreventedStats.mean)} bugs annually (${avgBugsPerRelease} per release), generating ${this.formatValue(totalSavingsStats.mean)} in total value. The wide range in outcomes reflects the unpredictable nature of software defects and their varying business impact.`)
-      }
-    } else if (name.includes('team') || name.includes('scaling') || name.includes('hiring')) {
-      discussion.push('**What this model shows:**')
-      discussion.push('This model evaluates team scaling decisions by comparing the costs of additional personnel against productivity gains. It factors in hiring costs, onboarding time, coordination overhead, and the diminishing returns that often occur with larger teams.')
-    } else if (name.includes('technology') || name.includes('tool')) {
-      discussion.push('**What this model shows:**')
-      discussion.push('This analysis models technology investment returns by comparing tool costs against productivity improvements. The simulation accounts for adoption curves, training time, maintenance costs, and the varying impact of tools across different team members and use cases.')
+    // Try pattern-based discussion
+    const patternDiscussion = this.generateModelDiscussionByPattern(name, summary, parameters)
+    if (patternDiscussion.length > 0) {
+      discussion.push(...patternDiscussion)
     } else {
-      discussion.push('**What this model shows:**')
-      discussion.push('This Monte Carlo simulation models the range of possible outcomes for this business decision by running thousands of scenarios with different assumptions. Rather than providing a single answer, it shows the probability distribution of results to support risk-aware decision making.')
+      // Enhanced fallback using metric analysis
+      discussion.push(...this.generateModelDiscussionFromMetrics(config, summary, results))
     }
     
     // Add key modeling insights
@@ -247,11 +221,124 @@ export class DocumentGenerator {
     return discussion.join('\n')
   }
 
+  private generateModelDiscussionByPattern(name: string, summary: Record<string, StatisticalSummary>, parameters: Record<string, any>): string[] {
+    const discussion = []
+    
+    // Model overview based on simulation type
+    if (name.includes('roi') || name.includes('investment')) {
+      discussion.push('**What this model shows:**')
+      discussion.push('This Monte Carlo simulation models the financial return on investment by running thousands of scenarios with varying assumptions. The model accounts for uncertainty in key variables like costs, benefits, and market conditions to provide a realistic range of possible outcomes rather than a single point estimate.')
+      
+      // Find ROI metric with flexible naming using regex patterns
+      const roiStats = this.findMetricByPattern(summary, /roi|return/i)
+      if (roiStats) {
+        const confidence = Math.abs((roiStats.percentile90 - roiStats.percentile10) / roiStats.mean * 100).toFixed(0)
+        discussion.push(``)
+        discussion.push(`The analysis shows an expected ROI of ${this.formatValue(roiStats.mean)}%, but with significant variability (${confidence}% confidence range). This uncertainty reflects real-world conditions where actual results can vary substantially from initial projections.`)
+      }
+      
+      // Add payback period insight if available
+      const paybackStats = this.findMetricByPattern(summary, /payback.*period/i)
+      if (paybackStats) {
+        discussion.push(`The payback period averages ${this.formatValue(paybackStats.mean)} months, with outcomes ranging from ${this.formatValue(paybackStats.percentile10)} to ${this.formatValue(paybackStats.percentile90)} months in 80% of scenarios.`)
+      }
+    } else if (name.includes('qa') || name.includes('quality') || name.includes('testing')) {
+      discussion.push('**What this model shows:**')
+      discussion.push('This simulation models the economic impact of quality assurance by comparing the costs of QA activities against the value of prevented defects. It accounts for variability in bug rates, fix costs, customer impact, and testing effectiveness to provide a comprehensive cost-benefit analysis.')
+      
+      const bugsPreventedStats = this.findMetricByPattern(summary, /bugs.*prevented/i)
+      const totalSavingsStats = this.findMetricByPattern(summary, /total.*savings/i) || this.findMetricByPattern(summary, /savings/i)
+      if (bugsPreventedStats && totalSavingsStats) {
+        const avgBugsPerRelease = (bugsPreventedStats.mean / (parameters.releasesPerYear || 12)).toFixed(1)
+        discussion.push(``)
+        discussion.push(`The model shows QA preventing approximately ${this.formatValue(bugsPreventedStats.mean)} bugs annually (${avgBugsPerRelease} per release), generating ${this.formatValue(totalSavingsStats.mean)} in total value. The wide range in outcomes reflects the unpredictable nature of software defects and their varying business impact.`)
+      }
+    } else if (name.includes('team') || name.includes('scaling') || name.includes('hiring')) {
+      discussion.push('**What this model shows:**')
+      discussion.push('This model evaluates team scaling decisions by comparing the costs of additional personnel against productivity gains. It factors in hiring costs, onboarding time, coordination overhead, and the diminishing returns that often occur with larger teams.')
+    } else if (name.includes('technology') || name.includes('tool')) {
+      discussion.push('**What this model shows:**')
+      discussion.push('This analysis models technology investment returns by comparing tool costs against productivity improvements. The simulation accounts for adoption curves, training time, maintenance costs, and the varying impact of tools across different team members and use cases.')
+    }
+    
+    return discussion
+  }
+
+  private generateModelDiscussionFromMetrics(_config: SimulationConfig, summary: Record<string, StatisticalSummary>, _results: CLISimulationResults): string[] {
+    const discussion = []
+    const metricCategories = this.categorizeMetrics(summary)
+    
+    discussion.push('**What this model shows:**')
+    
+    // Build description based on available metrics
+    if (metricCategories.financial.length > 0) {
+      const hasROI = metricCategories.roi.length > 0
+      const hasCosts = metricCategories.cost.length > 0
+      const hasBenefits = metricCategories.benefit.length > 0
+      
+      if (hasROI) {
+        discussion.push('This Monte Carlo simulation evaluates the financial returns and risks of your business decision by running thousands of scenarios with varying assumptions.')
+      } else if (hasCosts && hasBenefits) {
+        discussion.push('This analysis compares the costs against benefits across multiple scenarios to provide a comprehensive cost-benefit assessment with uncertainty modeling.')
+      } else if (hasCosts) {
+        discussion.push('This simulation models cost implications across different scenarios to help understand the financial requirements and risks.')
+      } else {
+        discussion.push('This financial analysis models the monetary implications of your decision across multiple scenarios.')
+      }
+    } else if (metricCategories.time.length > 0) {
+      discussion.push('This simulation models time-based outcomes to help understand project timelines and duration risks.')
+    } else {
+      discussion.push('This Monte Carlo simulation models the range of possible outcomes for your decision by running thousands of scenarios with different assumptions.')
+    }
+    
+    // Add specific insights from top metrics
+    const sortedMetrics = Object.entries(summary).sort((a, b) => {
+      // Prioritize important business metrics
+      const importance = (key: string) => {
+        if (key.match(/roi|return/i)) return 10
+        if (key.match(/benefit|saving/i)) return 8
+        if (key.match(/cost|expense/i)) return 7
+        if (key.match(/revenue|income/i)) return 6
+        return 1
+      }
+      return importance(b[0]) - importance(a[0])
+    }).slice(0, 2) // Top 2 metrics
+    
+    if (sortedMetrics.length > 0) {
+      discussion.push('')
+      const [topMetricKey, topMetricStats] = sortedMetrics[0]
+      const metricLabel = this.formatKey(topMetricKey)
+      const variance = (topMetricStats.standardDeviation / Math.abs(topMetricStats.mean)) * 100
+      
+      if (variance > 50) {
+        discussion.push(`The analysis shows ${metricLabel} averaging ${this.formatValue(topMetricStats.mean)}, but with high variability (${variance.toFixed(0)}% coefficient of variation). This uncertainty highlights the importance of considering multiple scenarios rather than relying on single estimates.`)
+      } else {
+        discussion.push(`The analysis shows ${metricLabel} averaging ${this.formatValue(topMetricStats.mean)} with moderate uncertainty, ranging from ${this.formatValue(topMetricStats.percentile10)} to ${this.formatValue(topMetricStats.percentile90)} in 80% of scenarios.`)
+      }
+    }
+    
+    return discussion
+  }
+
   private generateBusinessQuestion(config: SimulationConfig, parameters: Record<string, any>): string {
+    // Try explicit config first if available
+    if ((config as any).businessQuestion) {
+      return `**"${(config as any).businessQuestion}"**\n\nThis analysis helps evaluate the decision with Monte Carlo risk modeling.`
+    }
+    
     // Generate plain-language business question based on simulation type and parameters
     const name = config.name.toLowerCase()
     const category = config.category?.toLowerCase() || ''
     
+    // Try pattern-based detection (existing logic)
+    const patternResult = this.generateBusinessQuestionByPattern(name, category, parameters)
+    if (patternResult) return patternResult
+    
+    // Enhanced fallback using simulation context
+    return this.generateBusinessQuestionFromContext(config, parameters)
+  }
+
+  private generateBusinessQuestionByPattern(name: string, category: string, parameters: Record<string, any>): string | null {
     // ROI and Investment simulations
     if (name.includes('roi') || name.includes('investment')) {
       const investment = parameters.initialInvestment || parameters.investment || parameters.toolCost || 'investment'
@@ -292,8 +379,101 @@ export class DocumentGenerator {
       return `**"Should we hire more people for our team, and will increased productivity offset the additional costs?"**\n\nThis analysis weighs hiring costs against productivity gains while considering coordination overhead and onboarding time.`
     }
     
-    // Generic business decision
-    return `**"What are the expected outcomes of this business decision, and what are the risks?"**\n\nThis Monte Carlo analysis models the range of possible outcomes to support data-driven decision making under uncertainty.`
+    return null // No pattern match
+  }
+
+  private generateBusinessQuestionFromContext(config: SimulationConfig, parameters: Record<string, any>): string {
+    // Dynamic question generation from config and parameters
+    const description = config.description || ''
+    const name = config.name
+    
+    // Extract key parameter types to infer business context
+    const paramTypes = this.analyzeParameterTypes(parameters)
+    const hasFinancialParams = paramTypes.financial.length > 0
+    const hasTimeParams = paramTypes.time.length > 0
+    const hasTeamParams = paramTypes.team.length > 0
+    
+    let question = ''
+    let context = ''
+    
+    // Build question from parameter analysis
+    if (hasFinancialParams && hasTimeParams) {
+      const costParam = paramTypes.financial[0]
+      question = `Should we proceed with this ${costParam.key.toLowerCase().includes('invest') ? 'investment' : 'initiative'} and what are the financial and timing implications?`
+      context = `This analysis evaluates the financial returns and timeline considerations for your business decision.`
+    } else if (hasFinancialParams) {
+      const financialParam = paramTypes.financial[0]
+      const amount = this.formatValue(financialParam.value)
+      question = `Is this $${amount} business decision financially worthwhile, and what are the risks?`
+      context = `This analysis evaluates whether the financial investment will deliver sufficient returns to justify the cost and risk.`
+    } else if (hasTeamParams) {
+      const teamParam = paramTypes.team[0]
+      question = `How will this decision impact our team of ${teamParam.value} people, and what are the expected outcomes?`
+      context = `This analysis models the impact on team productivity and effectiveness.`
+    } else if (description.length > 20) {
+      // Extract intent from description
+      const descLower = description.toLowerCase()
+      if (descLower.includes('cost') || descLower.includes('benefit') || descLower.includes('value')) {
+        question = `What are the cost-benefit implications of this decision?`
+        context = `This analysis weighs the costs against benefits with uncertainty modeling.`
+      } else if (descLower.includes('risk') || descLower.includes('uncertainty')) {
+        question = `What are the risks and potential outcomes of this decision?`
+        context = `This analysis models the range of possible outcomes and their likelihood.`
+      } else {
+        question = `What are the expected outcomes of ${description.toLowerCase()}?`
+        context = `This Monte Carlo simulation explores different scenarios to understand possible results.`
+      }
+    } else {
+      // Final fallback using simulation name
+      question = `What are the expected outcomes of "${name}", and what factors affect the results?`
+      context = `This analysis models uncertainty in key variables to show the range of possible outcomes rather than a single estimate.`
+    }
+    
+    return `**"${question}"**\n\n${context}`
+  }
+
+  private analyzeParameterTypes(parameters: Record<string, any>): {
+    financial: Array<{key: string, value: number}>
+    time: Array<{key: string, value: number}>
+    team: Array<{key: string, value: number}>
+    other: Array<{key: string, value: any}>
+  } {
+    const result: {
+      financial: Array<{key: string, value: number}>
+      time: Array<{key: string, value: number}>
+      team: Array<{key: string, value: number}>
+      other: Array<{key: string, value: any}>
+    } = { financial: [], time: [], team: [], other: [] }
+    
+    for (const [key, value] of Object.entries(parameters)) {
+      const keyLower = key.toLowerCase()
+      
+      // Financial parameters
+      if (keyLower.includes('cost') || keyLower.includes('investment') || keyLower.includes('price') || 
+          keyLower.includes('budget') || keyLower.includes('salary') || keyLower.includes('revenue') ||
+          keyLower.includes('benefit') || keyLower.includes('saving') || keyLower.includes('fee') ||
+          keyLower.includes('amount') || keyLower.includes('value') && typeof value === 'number') {
+        result.financial.push({key, value: value as number})
+      }
+      // Time parameters  
+      else if (keyLower.includes('time') || keyLower.includes('period') || keyLower.includes('month') ||
+               keyLower.includes('year') || keyLower.includes('duration') || keyLower.includes('frequency') ||
+               keyLower.includes('deadline') && typeof value === 'number') {
+        result.time.push({key, value: value as number})
+      }
+      // Team parameters
+      else if (keyLower.includes('team') || keyLower.includes('person') || keyLower.includes('people') ||
+               keyLower.includes('staff') || keyLower.includes('developer') || keyLower.includes('employee') ||
+               keyLower.includes('size') && typeof value === 'number') {
+        result.team.push({key, value: value as number})  
+      }
+      // Everything else
+      else {
+        result.other.push({key, value})
+      }
+    }
+    
+    return result
   }
 
   private generateHistogram(values: number[]): string {
@@ -366,52 +546,101 @@ export class DocumentGenerator {
     const insights = []
     const summary = results.summary
     
-    // ROI insights
-    if (summary.roi || summary.roiPercentage) {
-      const roiStats = summary.roi || summary.roiPercentage
-      if (roiStats.mean > 50) {
-        insights.push(`🚀 Strong ROI: ${this.formatValue(roiStats.mean)}% average return significantly exceeds market benchmarks`)
-      } else if (roiStats.mean > 15) {
-        insights.push(`📈 Positive ROI: ${this.formatValue(roiStats.mean)}% average return shows good value`)
-      } else if (roiStats.mean > 0) {
-        insights.push(`📊 Marginal ROI: ${this.formatValue(roiStats.mean)}% average return requires careful consideration`)
-      } else {
-        insights.push(`⚠️ Negative ROI: ${this.formatValue(roiStats.mean)}% average indicates investment may not be worthwhile`)
-      }
-      
-      const riskLevel = roiStats.standardDeviation / Math.abs(roiStats.mean)
-      if (riskLevel > 1) {
-        insights.push(`🎲 High uncertainty: ROI variance is ${(riskLevel * 100).toFixed(0)}% of mean - consider risk mitigation`)
-      }
+    // Guard against empty or invalid summary
+    if (!summary || Object.keys(summary).length === 0) {
+      insights.push(`📊 Analysis complete with ${results.results.length} iterations - see detailed results below`)
+      return insights
     }
-
-    // Cost vs benefit insights
-    const costKeys = Object.keys(summary).filter(k => k.toLowerCase().includes('cost'))
-    const benefitKeys = Object.keys(summary).filter(k => k.toLowerCase().includes('benefit') || k.toLowerCase().includes('saving'))
     
-    if (costKeys.length > 0 && benefitKeys.length > 0) {
-      const totalCost = costKeys.reduce((sum, key) => sum + (summary[key]?.mean || 0), 0)
-      const totalBenefit = benefitKeys.reduce((sum, key) => sum + (summary[key]?.mean || 0), 0)
-      const ratio = totalBenefit / totalCost
-      
-      if (ratio > 3) {
-        insights.push(`💰 Excellent value: Benefits exceed costs by ${ratio.toFixed(1)}x`)
-      } else if (ratio > 1.5) {
-        insights.push(`✅ Good value: Benefits exceed costs by ${ratio.toFixed(1)}x`)
-      } else if (ratio > 1) {
-        insights.push(`⚖️ Marginal value: Benefits slightly exceed costs (${ratio.toFixed(1)}x)`)
+    try {
+      // ROI insights with flexible metric discovery
+      const roiStats = this.findMetricByPattern(summary, /roi|return/i)
+      if (roiStats && typeof roiStats.mean === 'number' && !isNaN(roiStats.mean)) {
+        if (roiStats.mean > 50) {
+          insights.push(`🚀 Strong ROI: ${this.formatValue(roiStats.mean)}% average return significantly exceeds market benchmarks`)
+        } else if (roiStats.mean > 15) {
+          insights.push(`📈 Positive ROI: ${this.formatValue(roiStats.mean)}% average return shows good value`)
+        } else if (roiStats.mean > 0) {
+          insights.push(`📊 Marginal ROI: ${this.formatValue(roiStats.mean)}% average return requires careful consideration`)
+        } else {
+          insights.push(`⚠️ Negative ROI: ${this.formatValue(roiStats.mean)}% average indicates investment may not be worthwhile`)
+        }
+        
+        if (typeof roiStats.standardDeviation === 'number' && !isNaN(roiStats.standardDeviation) && roiStats.mean !== 0) {
+          const riskLevel = roiStats.standardDeviation / Math.abs(roiStats.mean)
+          if (riskLevel > 1) {
+            insights.push(`🎲 High uncertainty: ROI variance is ${(riskLevel * 100).toFixed(0)}% of mean - consider risk mitigation`)
+          }
+        }
       }
+
+      // Cost vs benefit insights with error handling
+      const metricCategories = this.categorizeMetrics(summary)
+      const costMetrics = metricCategories.cost
+      const benefitMetrics = metricCategories.benefit
+      
+      if (costMetrics.length > 0 && benefitMetrics.length > 0) {
+        const totalCost = costMetrics.reduce((sum, key) => {
+          const stats = summary[key]
+          return sum + (stats && typeof stats.mean === 'number' && !isNaN(stats.mean) ? stats.mean : 0)
+        }, 0)
+        const totalBenefit = benefitMetrics.reduce((sum, key) => {
+          const stats = summary[key]
+          return sum + (stats && typeof stats.mean === 'number' && !isNaN(stats.mean) ? stats.mean : 0)
+        }, 0)
+        
+        if (totalCost > 0 && totalBenefit > 0) {
+          const ratio = totalBenefit / totalCost
+          if (ratio > 3) {
+            insights.push(`💰 Excellent value: Benefits exceed costs by ${ratio.toFixed(1)}x`)
+          } else if (ratio > 1.5) {
+            insights.push(`✅ Good value: Benefits exceed costs by ${ratio.toFixed(1)}x`)
+          } else if (ratio > 1) {
+            insights.push(`⚖️ Marginal value: Benefits slightly exceed costs (${ratio.toFixed(1)}x)`)
+          }
+        }
+      }
+
+      // Automation insights (for QA simulations) with safer parameter access
+      if (config.name.toLowerCase().includes('qa') || config.name.toLowerCase().includes('quality')) {
+        const qaStrategy = parameters?.qaStrategy
+        if (qaStrategy === 'automated') {
+          insights.push(`🤖 Automation advantage: Significantly faster test execution and better scalability`)
+        } else if (qaStrategy === 'hybrid') {
+          insights.push(`🎯 Balanced approach: Combines automation efficiency with human insight`)
+        } else if (qaStrategy === 'manual') {
+          insights.push(`👥 Manual testing: Better edge case detection but limited scalability`)
+        }
+      }
+
+      // Add general insights if no specific patterns matched
+      if (insights.length === 0) {
+        const sortedMetrics = Object.entries(summary)
+          .filter(([_, stats]) => stats && typeof stats.mean === 'number' && !isNaN(stats.mean))
+          .sort((a, b) => Math.abs(b[1].mean) - Math.abs(a[1].mean))
+          .slice(0, 2)
+        
+        for (const [key, stats] of sortedMetrics) {
+          const label = this.formatKey(key)
+          const variance = stats.standardDeviation && !isNaN(stats.standardDeviation) && stats.mean !== 0 
+            ? (Math.abs(stats.standardDeviation) / Math.abs(stats.mean)) * 100 
+            : 0
+            
+          if (variance > 50) {
+            insights.push(`📊 ${label}: High variability (${variance.toFixed(0)}% coefficient of variation) suggests significant uncertainty`)
+          } else if (Math.abs(stats.mean) > 1000) {
+            insights.push(`💼 ${label}: Significant impact with average of ${this.formatValue(stats.mean)}`)
+          }
+        }
+      }
+    } catch (error) {
+      // Fallback insight if analysis fails
+      insights.push(`📊 Analysis completed with ${results.results.length} iterations - detailed metrics available below`)
     }
 
-    // Automation insights (for QA simulations)
-    if (config.name.toLowerCase().includes('qa') || config.name.toLowerCase().includes('quality')) {
-      if (parameters.qaStrategy === 'automated') {
-        insights.push(`🤖 Automation advantage: Significantly faster test execution and better scalability`)
-      } else if (parameters.qaStrategy === 'hybrid') {
-        insights.push(`🎯 Balanced approach: Combines automation efficiency with human insight`)
-      } else if (parameters.qaStrategy === 'manual') {
-        insights.push(`👥 Manual testing: Better edge case detection but limited scalability`)
-      }
+    // Ensure we always return at least one insight
+    if (insights.length === 0) {
+      insights.push(`📊 Simulation completed successfully with ${results.results.length} iterations across ${Object.keys(summary).length} metrics`)
     }
 
     return insights
@@ -421,34 +650,84 @@ export class DocumentGenerator {
     const risks = []
     const summary = results.summary
     
-    // Analyze downside risk
-    const keyMetrics = ['roi', 'netBenefit', 'totalSavings', 'netAnnualBenefit']
-    for (const metric of keyMetrics) {
-      if (summary[metric]) {
+    // Guard against invalid summary
+    if (!summary || Object.keys(summary).length === 0) {
+      risks.push(`📊 Risk analysis requires metric data - see detailed results below`)
+      return risks
+    }
+    
+    try {
+      // Flexible metric discovery for risk analysis
+      const metricCategories = this.categorizeMetrics(summary)
+      const keyMetrics = [
+        ...metricCategories.roi,
+        ...metricCategories.benefit,
+        ...metricCategories.financial.slice(0, 3) // Top 3 financial metrics
+      ]
+      
+      let analysisCount = 0
+      for (const metric of keyMetrics) {
         const stats = summary[metric]
-        const downsideRisk = (stats.mean - stats.percentile10) / stats.mean
+        if (!stats || typeof stats.mean !== 'number' || isNaN(stats.mean)) continue
         
-        if (downsideRisk > 0.5) {
-          risks.push(`⚠️ High downside risk in ${this.formatKey(metric)}: 10% chance of ${(downsideRisk * 100).toFixed(0)}% below average`)
+        // Calculate downside risk with error handling
+        if (typeof stats.percentile10 === 'number' && !isNaN(stats.percentile10) && stats.mean !== 0) {
+          const downsideRisk = (stats.mean - stats.percentile10) / Math.abs(stats.mean)
+          
+          if (downsideRisk > 0.5) {
+            risks.push(`⚠️ High downside risk in ${this.formatKey(metric)}: 10% chance of ${(downsideRisk * 100).toFixed(0)}% below average`)
+            analysisCount++
+          }
         }
         
-        // Probability of negative outcomes
-        const negativeCount = results.results.filter(r => {
-          const value = r[metric]
-          return typeof value === 'number' && value < 0
-        }).length
-        const negativeProbability = (negativeCount / results.results.length) * 100
+        // Probability of negative outcomes with safe filtering
+        try {
+          const negativeCount = results.results.filter(r => {
+            const value = r[metric]
+            return typeof value === 'number' && !isNaN(value) && value < 0
+          }).length
+          
+          if (results.results.length > 0) {
+            const negativeProbability = (negativeCount / results.results.length) * 100
+            
+            if (negativeProbability > 10) {
+              risks.push(`🚨 Loss probability: ${negativeProbability.toFixed(0)}% chance of negative ${this.formatKey(metric)}`)
+              analysisCount++
+            } else if (negativeProbability > 0) {
+              risks.push(`📊 Low loss risk: ${negativeProbability.toFixed(1)}% chance of negative ${this.formatKey(metric)}`)
+              analysisCount++
+            }
+          }
+        } catch (error) {
+          // Skip this metric's negative analysis if data is malformed
+          continue
+        }
         
-        if (negativeProbability > 10) {
-          risks.push(`🚨 Loss probability: ${negativeProbability.toFixed(0)}% chance of negative ${this.formatKey(metric)}`)
-        } else if (negativeProbability > 0) {
-          risks.push(`📊 Low loss risk: ${negativeProbability.toFixed(1)}% chance of negative ${this.formatKey(metric)}`)
+        // Limit to prevent overwhelming output
+        if (analysisCount >= 3) break
+      }
+      
+      // If no specific risks found, analyze variability
+      if (risks.length === 0) {
+        const highVariabilityMetrics = Object.entries(summary)
+          .filter(([_, stats]) => {
+            if (!stats || typeof stats.mean !== 'number' || typeof stats.standardDeviation !== 'number') return false
+            if (isNaN(stats.mean) || isNaN(stats.standardDeviation) || stats.mean === 0) return false
+            return (stats.standardDeviation / Math.abs(stats.mean)) > 0.7
+          })
+          .slice(0, 2)
+        
+        if (highVariabilityMetrics.length > 0) {
+          for (const [key, stats] of highVariabilityMetrics) {
+            const cv = ((stats.standardDeviation / Math.abs(stats.mean)) * 100).toFixed(0)
+            risks.push(`📊 High variability in ${this.formatKey(key)}: ${cv}% coefficient of variation indicates significant uncertainty`)
+          }
+        } else {
+          risks.push(`✅ Low risk profile: All key metrics show consistent positive outcomes`)
         }
       }
-    }
-
-    if (risks.length === 0) {
-      risks.push(`✅ Low risk profile: All key metrics show consistent positive outcomes`)
+    } catch (error) {
+      risks.push(`📊 Risk analysis completed - see statistical details below for variability assessment`)
     }
 
     return risks
@@ -532,6 +811,56 @@ export class DocumentGenerator {
     } else {
       return String(value)
     }
+  }
+
+  private findMetricByPattern(summary: Record<string, StatisticalSummary>, pattern: RegExp): StatisticalSummary | null {
+    for (const [key, stats] of Object.entries(summary)) {
+      if (pattern.test(key)) {
+        return stats
+      }
+    }
+    return null
+  }
+
+  private categorizeMetrics(summary: Record<string, StatisticalSummary>): {
+    roi: string[]
+    cost: string[]
+    benefit: string[]
+    time: string[]
+    financial: string[]
+    risk: string[]
+  } {
+    const categories: {
+      roi: string[]
+      cost: string[]
+      benefit: string[]
+      time: string[]
+      financial: string[]
+      risk: string[]
+    } = { roi: [], cost: [], benefit: [], time: [], financial: [], risk: [] }
+    
+    for (const key of Object.keys(summary)) {
+      const keyLower = key.toLowerCase()
+      
+      if (keyLower.match(/roi|return/i)) {
+        categories.roi.push(key)
+        categories.financial.push(key)
+      } else if (keyLower.match(/cost|expense|fee|price/i)) {
+        categories.cost.push(key)
+        categories.financial.push(key)
+      } else if (keyLower.match(/benefit|saving|revenue|income|profit/i)) {
+        categories.benefit.push(key)
+        categories.financial.push(key)
+      } else if (keyLower.match(/time|period|duration|month|year|day/i)) {
+        categories.time.push(key)
+      } else if (keyLower.match(/risk|variance|deviation|uncertainty/i)) {
+        categories.risk.push(key)
+      } else if (keyLower.match(/\$|dollar|amount|value/) && typeof summary[key].mean === 'number') {
+        categories.financial.push(key)
+      }
+    }
+    
+    return categories
   }
 }
 
