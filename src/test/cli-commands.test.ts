@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { runSimulation } from '../cli/commands/run-simulation'
 import { listSimulationParameters } from '../cli/commands/list-simulation-parameters'
-import { writeFileSync, unlinkSync, mkdtempSync } from 'fs'
+import { mkdtempSync, unlinkSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { tmpdir } from 'os'
 

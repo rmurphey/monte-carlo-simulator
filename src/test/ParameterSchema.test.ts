@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { ParameterSchema } from '../framework/ParameterSchema'
 import { ParameterDefinition } from '../framework/types'
 
@@ -8,7 +8,7 @@ describe('ParameterSchema', () => {
       key: 'iterations',
       label: 'Number of Iterations',
       type: 'number',
-      defaultValue: 1000,
+      default: 1000,
       min: 100,
       max: 10000,
       step: 100
@@ -17,7 +17,7 @@ describe('ParameterSchema', () => {
       key: 'riskFree',
       label: 'Risk-free Rate',
       type: 'number',
-      defaultValue: 0.03,
+      default: 0.03,
       min: 0,
       max: 0.1,
       step: 0.001
@@ -26,13 +26,13 @@ describe('ParameterSchema', () => {
       key: 'useAdvancedModel',
       label: 'Use Advanced Model',
       type: 'boolean',
-      defaultValue: false
+      default: false
     },
     {
       key: 'scenario',
       label: 'Scenario Type',
       type: 'select',
-      defaultValue: 'conservative',
+      default: 'conservative',
       options: ['conservative', 'moderate', 'aggressive']
     }
   ]

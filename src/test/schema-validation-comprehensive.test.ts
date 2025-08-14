@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { readdirSync, statSync } from 'fs'
-import { join, extname } from 'path'
+import { extname, join } from 'path'
 import { ConfigurationLoader } from '../cli/config/loader'
 
 /**
@@ -180,8 +180,8 @@ simulation:
     // Validate that this test YAML is valid
     try {
       // Test by parsing the content directly through the loader's YAML parser
-      const yaml = require('yaml')
-      const parsed = yaml.parse(testYamlContent)
+      const { parse } = await import('yaml')
+      const parsed = parse(testYamlContent)
       
       // Validate structure manually since we can't write to filesystem in tests
       expect(parsed.name).toBe('Schema Test Simulation')

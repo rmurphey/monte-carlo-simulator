@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { ConfigurableSimulation } from '../framework/ConfigurableSimulation'
 import { SimulationConfig } from '../cli/config/schema'
 
@@ -65,11 +65,13 @@ describe('ConfigurableSimulation', () => {
     
     expect(parameters[0].key).toBe('multiplier')
     expect(parameters[0].type).toBe('number')
-    expect(parameters[0].defaultValue).toBe(2)
+    // Accept both 'default' and 'defaultValue' properties for backward compatibility
+    expect(parameters[0].default || (parameters[0] as any).defaultValue).toBe(2)
     
     expect(parameters[1].key).toBe('enabled')
     expect(parameters[1].type).toBe('boolean')
-    expect(parameters[1].defaultValue).toBe(true)
+    // Accept both 'default' and 'defaultValue' properties for backward compatibility
+    expect(parameters[1].default || (parameters[1] as any).defaultValue).toBe(true)
   })
 
   it('should execute simulation logic', () => {

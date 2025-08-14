@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { runSimulation } from '../cli/commands/run-simulation'
 import { RunOptions } from '../cli/config/schema'
 

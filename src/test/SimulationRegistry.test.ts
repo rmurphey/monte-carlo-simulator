@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { SimulationRegistry } from '../framework/SimulationRegistry'
 import { MonteCarloEngine } from '../framework/MonteCarloEngine'
 import { ParameterDefinition, SimulationMetadata } from '../framework/types'
@@ -21,7 +21,7 @@ class MockAISimulation extends MonteCarloEngine {
         key: 'initialInvestment',
         label: 'Initial Investment',
         type: 'number',
-        defaultValue: 100000,
+        default: 100000,
         min: 1000,
         max: 1000000
       }
@@ -50,7 +50,7 @@ class MockPortfolioSimulation extends MonteCarloEngine {
         key: 'portfolioValue',
         label: 'Portfolio Value',
         type: 'number',
-        defaultValue: 500000,
+        default: 500000,
         min: 10000
       }
     ]
@@ -78,7 +78,7 @@ class MockProductSimulation extends MonteCarloEngine {
         key: 'marketSize',
         label: 'Market Size',
         type: 'number',
-        defaultValue: 1000000
+        default: 1000000
       }
     ]
   }

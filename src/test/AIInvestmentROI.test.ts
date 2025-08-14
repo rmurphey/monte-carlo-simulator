@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { AIInvestmentROI } from '../simulations/AIInvestmentROI'
 import { SimulationRegistry } from '../framework/SimulationRegistry'
 import { registerAllSimulations } from '../simulations'

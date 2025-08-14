@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { toClassName, toId, toCamelCase } from '../cli/utils/name-converter'
+import { describe, expect, it } from 'vitest'
+import { toCamelCase, toClassName, toId } from '../cli/utils/name-converter'
 
 describe('name-converter', () => {
   describe('toClassName', () => {

@@ -114,6 +114,7 @@ export class ConfigurableSimulation extends MonteCarloEngine {
   }
   
   getParameterDefinitions(): ParameterDefinition[] {
+    // Return parameters as-is since they should already be ParameterConfig objects
     return this.enhancedConfig.parameters
   }
   
