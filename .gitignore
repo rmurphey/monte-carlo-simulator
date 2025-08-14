@@ -27,8 +27,8 @@ dist/
 .eslintcache
 
 # User workspace (only root-level simulations directory, not examples/simulations)
-simulations/
-!examples/simulations/
+/simulations/*
+!/examples/
 
 # Coverage
 coverage/
