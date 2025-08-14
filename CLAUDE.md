@@ -48,6 +48,14 @@ npm run test:docs
 npm run cli run simulation-name --list-params
 ```
 
+### Context Scripts (Token Optimization)
+Use these scripts instead of individual bash commands to save tokens:
+- `npm run context:docs` - Documentation command context (status, files, recent changes)
+- `npm run context:todo` - Todo command context (priorities, completions) 
+- `npm run context:archive` - Archive command context (completed work, plans)
+- `npm run context:commit` - Commit command context (staged changes, recent commits)
+- `npm run context:next` - Next task context (project phase, priorities)
+
 ### Pre-approved Commands
 The following npm commands can be run without user approval for validation and analysis:
 - `npm run validate:repo-clean` - Check for uncommitted changes
