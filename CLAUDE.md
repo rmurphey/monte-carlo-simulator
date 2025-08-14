@@ -11,7 +11,7 @@ This is an open-source project optimized for individual contributors and communi
 
 ### OSS Development Workflow
 - **Flexible approach**: Direct commits to main for solo work, PRs for community contributions
-- **Quality focus**: Clean code, working examples, good documentation
+- **Quality focus**: Clean code, working examples, good documentation, high test coverage, no errors
 - **Community-friendly**: Clear documentation, helpful error messages, easy onboarding
 - **AI-assisted**: Leverage Claude for code quality and consistency
 
