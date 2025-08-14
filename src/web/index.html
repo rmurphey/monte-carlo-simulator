@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monte Carlo Simulation Studio</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8fafc;
+            color: #1f2937;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+        
+        .header {
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #111827;
+            font-size: 28px;
+        }
+        
+        .header p {
+            margin: 8px 0 0 0;
+            color: #6b7280;
+        }
+        
+        .layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 24px;
+        }
+        
+        .sidebar {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .section {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .section h2 {
+            margin: 0 0 16px 0;
+            color: #374151;
+            font-size: 18px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 8px;
+        }
+        
+        /* Parameter Forms */
+        .parameter-field {
+            margin-bottom: 16px;
+        }
+        
+        .parameter-field label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .parameter-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .parameter-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+        
+        .parameter-input.invalid {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 1px #ef4444;
+        }
+        
+        .parameter-input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        
+        .btn:hover {
+            background: #2563eb;
+        }
+        
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        /* Configuration */
+        .config-section {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 16px;
+            margin-top: 16px;
+        }
+        
+        .config-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            resize: vertical;
+        }
+        
+        /* Charts */
+        .chart-container {
+            margin-bottom: 24px;
+            height: 300px;
+        }
+        
+        /* Statistics Table */
+        .statistics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        
+        .statistics-table th,
+        .statistics-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .statistics-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .statistics-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        /* Status */
+        .status {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .status-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+        
+        .status-error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Monte Carlo Simulation Studio</h1>
+            <p>Interactive parameter editing and real-time visualization</p>
+        </div>
+        
+        <div class="layout">
+            <!-- Sidebar: Parameters and Controls -->
+            <div class="sidebar">
+                <h2>Simulation Parameters</h2>
+                <div id="parameter-form-container"></div>
+                
+                <div class="button-group">
+                    <button id="run-simulation" class="btn">Run Simulation</button>
+                    <button id="clear-results" class="btn btn-secondary">Clear</button>
+                </div>
+                
+                <div id="status-container"></div>
+                
+                <!-- Configuration Copy/Paste -->
+                <div class="config-section">
+                    <h3>Configuration</h3>
+                    <textarea 
+                        id="config-textarea" 
+                        class="config-textarea" 
+                        placeholder="Configuration will appear here..."
+                        readonly
+                    ></textarea>
+                    <div class="button-group">
+                        <button id="copy-config" class="btn btn-secondary">Copy Config</button>
+                        <button id="paste-config" class="btn btn-secondary">Paste Config</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content: Results and Visualizations -->
+            <div class="main-content">
+                <!-- Charts -->
+                <div class="section">
+                    <h2>Histograms</h2>
+                    <div id="charts-container">
+                        <p style="color: #6b7280; text-align: center; padding: 40px;">
+                            Run a simulation to see histogram visualizations
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Statistics -->
+                <div class="section">
+                    <h2>Statistical Summary</h2>
+                    <div id="statistics-container">
+                        <p style="color: #6b7280; text-align: center; padding: 40px;">
+                            Run a simulation to see statistical analysis
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chart.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <!-- Main Application -->
+    <script type="module" src="./web/main.js"></script>
+</body>
+</html>

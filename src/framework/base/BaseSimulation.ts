@@ -1,4 +1,4 @@
-import { SimulationConfig, ParameterConfig, OutputConfig } from '@/cli/config/schema'
+import { OutputConfig, ParameterConfig, SimulationConfig } from '../../web/types'
 
 export interface ParameterValues {
   [key: string]: number | string | boolean
@@ -94,7 +94,7 @@ export abstract class BaseSimulation {
     return Math.random()
   }
 
-  protected round(value: number, decimals: number = 0): number {
+  protected round(value: number, decimals = 0): number {
     const factor = Math.pow(10, decimals)
     return Math.round(value * factor) / factor
   }
@@ -176,7 +176,7 @@ export abstract class BaseSimulation {
   private initializeFromConfig(config: SimulationConfig): void {
     // Extract default values from parameters
     const defaultParams: ParameterValues = {}
-    config.parameters.forEach(param => {
+    config.parameters.forEach((param: ParameterConfig) => {
       defaultParams[param.key] = param.default
     })
     this.parameters = defaultParams

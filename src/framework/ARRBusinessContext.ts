@@ -1,4 +1,4 @@
-import { ParameterConfig } from '@/cli/config/schema'
+import { ParameterConfig } from '../web/types'
 
 export interface ARRParameters {
   annualRecurringRevenue: number
@@ -28,7 +28,7 @@ export class ARRBusinessContextInjector {
   /**
    * Get ARR parameter definition for strategic simulations
    */
-  getARRParameterDefinition(category: string = 'Strategic Investment'): ParameterConfig {
+  getARRParameterDefinition(category = 'Strategic Investment'): ParameterConfig {
     return {
       key: 'annualRecurringRevenue',
       label: 'Annual Recurring Revenue (ARR)',
@@ -100,7 +100,7 @@ const calculateCAC = (marketingSpend, customersAcquired) => {
   /**
    * Create business context for a strategic simulation
    */
-  createBusinessContext(arr: number, budgetPercent: number = 10): BusinessContextInjection {
+  createBusinessContext(arr: number, budgetPercent = 10): BusinessContextInjection {
     const arrBudget = arr * (budgetPercent / 100)
     
     return {
