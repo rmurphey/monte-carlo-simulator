@@ -15,6 +15,7 @@ Add an interactive static web-based visualization interface to the Monte Carlo s
   - Summary statistics tables
   - Real-time updates as parameters change
   - Parameter sensitivity analysis
+  - Copy/paste current configuration as parameters are updated
 
 ## Current State Analysis
 
@@ -57,6 +58,7 @@ src/web/
 - **Simulation Engine**: Port TypeScript simulation logic to vanilla JavaScript
 - **Parameter Forms**: HTML forms for parameter editing
 - **Chart Rendering**: Basic histogram visualizations with Chart.js
+- **Configuration Export**: Copy current parameter configuration to clipboard
 
 ### Data Flow (Browser Only)
 1. User opens `index.html` in browser
@@ -77,6 +79,7 @@ src/web/
 3. Add Chart.js histogram visualization
 4. Connect form changes to real-time chart updates
 5. Add basic statistics table
+6. Add copy/paste functionality for current configuration
 
 **Deliverables**:
 - Single HTML file that works offline
@@ -84,6 +87,7 @@ src/web/
 - Histogram charts showing result distributions
 - Summary statistics tables
 - Real-time updates as parameters change
+- Copy current configuration to clipboard functionality
 
 ## Technical Implementation Details
 
@@ -127,6 +131,24 @@ function updateCharts(results) {
   // Update existing charts without full re-render
   histogramChart.data = histogram
   histogramChart.update('none') // No animation for smooth updates
+}
+```
+
+### Configuration Copy/Paste
+```javascript
+function copyCurrentConfig() {
+  const currentParams = getCurrentParameterValues()
+  const configText = JSON.stringify(currentParams, null, 2)
+  navigator.clipboard.writeText(configText)
+  showNotification('Configuration copied to clipboard!')
+}
+
+function getCurrentParameterValues() {
+  const params = {}
+  document.querySelectorAll('.parameter-input').forEach(input => {
+    params[input.name] = parseInputValue(input.value, input.type)
+  })
+  return params
 }
 ```
 
@@ -192,6 +214,7 @@ npm run build:web
 - [ ] Interactive histograms display result distributions
 - [ ] Real-time updates as user adjusts parameters
 - [ ] Basic statistics tables show mean, std dev, percentiles
+- [ ] Copy current configuration to clipboard functionality
 - [ ] Single HTML file works completely offline
 
 ## Risk Mitigation
