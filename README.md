@@ -89,7 +89,7 @@ curl -O https://raw.githubusercontent.com/rmurphey/monte-carlo-simulator/main/ex
 ### 3. Run Your Custom Analysis
 ```bash
 # Validate your changes (if you downloaded the file)
-npx monte-carlo-simulator validate simple-roi-analysis.yaml
+npx monte-carlo-simulator validate examples/simulations/simple-roi-analysis.yaml
 
 # Run with your parameters
 npx monte-carlo-simulator run simple-roi-analysis
@@ -492,7 +492,7 @@ npx monte-carlo-simulator run technology-investment --set toolCost=30000
 
 # Parameter discovery and validation
 npx monte-carlo-simulator run simple-roi-analysis --list-params
-npx monte-carlo-simulator validate simple-roi-analysis
+npx monte-carlo-simulator validate examples/simulations/simple-roi-analysis.yaml
 ```
 
 ### Current Capabilities
