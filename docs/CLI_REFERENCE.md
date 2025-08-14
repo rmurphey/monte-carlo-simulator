@@ -44,14 +44,59 @@ npx monte-carlo-simulator run <simulation> [options]
 ```
 
 **Key Options:**
-- `-i, --iterations <number>` - Number of Monte Carlo iterations (default: 1000)
+- `-i, --iterations <number>` - Number of Monte Carlo iterations (default: 100)
 - `-f, --format <format>` - Output format: table, json, csv, document, quiet (default: table)
+- `-v, --verbose` - Show detailed visualizations and histograms for all outputs
 - `-o, --output <file>` - Save results to file
 - `--set <param=value>` - Override parameters with validation
 - `-p, --params <file>` - Load parameters from JSON/YAML file
 - `--interactive` - Real-time parameter adjustment mode
 - `--list-params` - Discover available parameters
-- `-v, --verbose` - Detailed output with configuration display
+
+## 📊 Monte Carlo Visualizations
+
+Every simulation run includes comprehensive visual analysis:
+
+```bash
+# Standard output includes visualizations for primary metric:
+npx monte-carlo-simulator run simple-roi-analysis
+
+# Verbose mode shows histograms for all outputs:
+npx monte-carlo-simulator run simple-roi-analysis --verbose
+```
+
+**Visualization Components:**
+
+**📈 Confidence Intervals** - Visual distribution summary
+```
+📈 ROI Percentage - Confidence Intervals
+──────────────────────────────────────────────────────────────────────
+      -15.9 ─────├──●───┼─────┤───── 51.6
+           ├────── 80% confidence interval ──────┤
+           P10: -10.6 | P50: 20.2 | P90: 47.7
+           Mean: 18.23 ●
+```
+
+**📊 Histogram Distributions** - Probability distribution with percentages
+```
+📊 ROI Percentage
+──────────────────────────────────────────────────────────────────────
+ Value Range │Distribution                              │ Count
+──────────────────────────────────────────────────────────────────────
+      -15.90 │█████████████████████████░░░░░░░░░░░░░░░│ 5    (5.0%)
+      -12.35 │███████████████████████████████████░░░░░│ 7    (7.0%)
+       -8.80 │████████████████████████████████████████│ 8    (8.0%)
+```
+
+**⚡ Risk Analysis** - Downside risk metrics
+```
+⚡ ROI Percentage - Risk Analysis
+──────────────────────────────────────────────────
+Probability of Loss      : 30.0%
+Value at Risk (95%)      : -12.10
+Value at Risk (99%)      : -15.90
+Expected Shortfall (95%) : -14.57
+```
 
 **Parameter Override Examples:**
 ```bash
@@ -87,9 +132,9 @@ npm run cli run technology-investment --format=document --output=analysis.md
 # Features:
 # - Executive summary with key insights
 # - Statistical analysis with confidence intervals
-# - Text-based visualizations (histograms, confidence charts)
-# - Risk analysis and strategic recommendations
-# - Business intelligence interpretation
+# - ASCII visualizations (histograms, confidence intervals, risk analysis)
+# - Strategic recommendations with business interpretation
+# - Complete Monte Carlo distribution analysis
 ```
 
 **Interactive Mode:**

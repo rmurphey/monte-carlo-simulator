@@ -74,8 +74,11 @@ npx monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml
 npx monte-carlo-simulator run examples/simulations/technology-investment.yaml
 npx monte-carlo-simulator run examples/simulations/team-scaling-decision.yaml
 
-# AI tool adoption analysis
+# AI tool adoption analysis  
 npx monte-carlo-simulator run examples/simulations/ai-tool-adoption/ai-tool-adoption.yaml
+
+# Get comprehensive Monte Carlo visualizations (histograms, risk analysis)
+npx monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --verbose
 ```
 
 ### Parameter Discovery & Validation
@@ -94,6 +97,7 @@ npx monte-carlo-simulator run examples/simulations/simple-roi-analysis.yaml --se
 - **Zero setup required** - Works immediately without git clone or npm install
 - **Bulletproof validation** - All YAML checked with detailed error messages  
 - **Parameter discovery** - Dynamic parameter listing without static documentation
+- **Rich visualizations** - ASCII histograms, confidence intervals, risk analysis included
 - **Production reliability** - 87 tests ensure consistent behavior
 
 ## 📋 YAML Schema Requirements

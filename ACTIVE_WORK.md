@@ -40,6 +40,7 @@ Four strategic plans ready for implementation prioritization:
 - **Foundation is solid** - ready for advanced feature development
 
 ## Recently Completed ✅
+- **Monte Carlo Visualizations** - Complete visual analysis with histograms, confidence intervals, risk metrics (August 2025)
 - **NPM Package Distribution** - Published to npm registry, clean distribution without git artifacts
 - **Document Generation System** - Business-friendly reports with narrative explanations (August 2025)
 - **Template Consolidation** - All 13 templates organized in `examples/simulations/`  

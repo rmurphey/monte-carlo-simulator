@@ -91,11 +91,31 @@ curl -O https://raw.githubusercontent.com/rmurphey/monte-carlo-simulator/main/ex
 # Validate your changes (if you downloaded the file)
 npx monte-carlo-simulator validate examples/simulations/simple-roi-analysis.yaml
 
-# Run with your parameters
+# Run with your parameters - includes comprehensive Monte Carlo visualizations
 npx monte-carlo-simulator run simple-roi-analysis
 
 # Override parameters on the fly
 npx monte-carlo-simulator run simple-roi-analysis --set initialInvestment=250000
+
+# Get detailed statistical analysis with histograms for all outputs
+npx monte-carlo-simulator run simple-roi-analysis --verbose
+```
+
+### 📊 Monte Carlo Visualizations
+
+Every simulation includes comprehensive visual analysis:
+
+- **📈 Confidence Intervals**: Visual representation of outcome ranges (P10, P50, P90)
+- **📊 Histogram Distributions**: ASCII bar charts showing probability distributions  
+- **⚡ Risk Analysis**: Probability of loss, Value at Risk (95%, 99%), Expected Shortfall
+- **📋 Statistical Summaries**: Complete percentile breakdowns and business interpretations
+
+```bash
+# Example output includes:
+#   🎲 MONTE CARLO ANALYSIS
+#   📈 ROI Percentage - Confidence Intervals  
+#   📊 ROI Percentage [histogram with probability percentages]
+#   ⚡ ROI Percentage - Risk Analysis
 ```
 
 ### Available Business Templates
