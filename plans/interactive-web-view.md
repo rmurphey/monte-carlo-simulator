@@ -8,7 +8,7 @@ Add an interactive static web-based visualization interface to the Monte Carlo s
 
 - **Deployment**: Static HTML file (open directly in browser)
 - **Core Feature**: Interactive parameter editing via HTML forms
-- **Technology Stack**: Vanilla JavaScript + Chart.js
+- **Technology Stack**: TypeScript + Chart.js (compiled to JavaScript)
 - **Target Users**: Business analysts (presentations, "what-if" scenarios) and developers (debugging, validation)
 - **Core Visualizations**:
   - Histogram/distribution charts showing result spread
@@ -38,35 +38,34 @@ Add an interactive static web-based visualization interface to the Monte Carlo s
 ```
 src/web/
 ├── index.html              # Single-page application
-├── js/
-│   ├── monte-carlo.js      # Core simulation engine (ported from TypeScript)
-│   ├── yaml-parser.js      # YAML config parsing
-│   ├── parameter-forms.js  # Dynamic form generation
-│   ├── charts.js           # Chart.js visualizations
-│   ├── statistics.js       # Statistical analysis
-│   └── app.js             # Main application controller
-├── css/
-│   └── styles.css         # Responsive styling
-├── data/
-│   └── simulations/       # Embedded YAML simulation configs
-└── lib/
-    ├── js-yaml.min.js     # YAML parsing library
-    └── chart.min.js       # Chart.js library
+├── types.ts                # Web-specific types (reuses framework types)
+├── simulation-engine.ts    # Export alias to existing ConfigurableSimulation
+├── parameter-forms.ts      # HTML form generation and management
+├── charts.ts               # Chart.js histogram rendering
+├── statistics.ts           # Statistics table display (reuses StatisticalAnalyzer)
+├── config-manager.ts       # Copy/paste configuration functionality
+├── main.ts                 # Main application coordinator
+└── styles.css              # Basic styling
+
+dist/web/                   # Compiled output
+├── monte-carlo-web.html    # Self-contained HTML file
+└── monte-carlo-web.js      # Compiled TypeScript bundle
 ```
 
 ### Core Components (No Server)
-- **Simulation Engine**: Port TypeScript simulation logic to vanilla JavaScript
-- **Parameter Forms**: HTML forms for parameter editing
-- **Chart Rendering**: Basic histogram visualizations with Chart.js
-- **Configuration Export**: Copy current parameter configuration to clipboard
+- **Simulation Engine**: Direct reuse of existing ConfigurableSimulation class
+- **Parameter Forms**: HTML forms generated from existing ParameterDefinition types
+- **Chart Rendering**: Chart.js histogram visualizations  
+- **Statistics Display**: Reuses existing StatisticalAnalyzer output format
+- **Configuration Management**: Copy/paste functionality using existing validation rules
 
 ### Data Flow (Browser Only)
-1. User opens `index.html` in browser
-2. JavaScript loads embedded YAML simulation configs
-3. User selects simulation, form auto-generates from schema
-4. Parameter changes trigger immediate re-calculation
-5. Charts update in real-time as user adjusts parameters
-6. Results can be exported locally
+1. User opens compiled HTML file in browser
+2. Compiled JavaScript loads embedded simulation configurations
+3. User selects simulation, existing ConfigurableSimulation instance created
+4. Parameter forms generated from existing ParameterDefinition schema
+5. Parameter changes trigger ConfigurableSimulation.runSimulation() 
+6. Charts and statistics update using existing StatisticalAnalyzer output
 
 ## Implementation Plan - Static Site
 
@@ -74,12 +73,13 @@ src/web/
 **Goal**: Interactive parameter editing with histogram visualization
 
 **Tasks**:
-1. Port `ConfigurableSimulation` class to vanilla JavaScript
-2. Create HTML forms for parameter editing
-3. Add Chart.js histogram visualization
-4. Connect form changes to real-time chart updates
-5. Add basic statistics table
-6. Add copy/paste functionality for current configuration
+1. Create TypeScript modules that reuse existing framework components
+2. Build HTML form generation using existing ParameterDefinition types
+3. Add Chart.js histogram visualization for simulation results
+4. Connect form changes to trigger existing ConfigurableSimulation.runSimulation()
+5. Display statistics using existing StatisticalAnalyzer output format
+6. Add copy/paste functionality for current parameter configuration
+7. Set up TypeScript compilation and bundling for single-file deployment
 
 **Deliverables**:
 - Single HTML file that works offline
@@ -154,9 +154,16 @@ function getCurrentParameterValues() {
 
 ### Build Process
 ```bash
-# Build script creates single deployable HTML file
+# TypeScript compilation and bundling for web deployment
 npm run build:web
-# Output: dist/monte-carlo-web.html (self-contained)
+# Output: dist/web/monte-carlo-web.html (self-contained)
+#         dist/web/monte-carlo-web.js (compiled TypeScript bundle)
+
+# Build process:
+# 1. Compile TypeScript modules to JavaScript
+# 2. Bundle with existing framework components  
+# 3. Embed simulation configurations as JSON
+# 4. Create single HTML file with embedded JS and CSS
 ```
 
 ## Integration with Existing Framework

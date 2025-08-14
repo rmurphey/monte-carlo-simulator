@@ -33,7 +33,8 @@ Business analysts and developers need an interactive, visual interface to explor
 ### Architecture Overview
 
 **Static Single-Page Application**
-- Self-contained HTML file with embedded JavaScript
+- Self-contained HTML file with compiled TypeScript bundle
+- Direct reuse of existing framework components (no porting required)
 - No server dependencies - runs entirely in browser
 - Offline-capable for sensitive business data
 - Easy distribution via email or file sharing
@@ -61,93 +62,57 @@ Business analysts and developers need an interactive, visual interface to explor
 └─────────────────────────────────────────┘
 ```
 
-### Core JavaScript Modules
+### Core TypeScript Modules
 
-**monte-carlo.js**
-```javascript
-class ConfigurableSimulation {
-  constructor(config) {
-    this.config = config
-    this.parameters = this.parseParameters(config.parameters)
-  }
-  
-  run(iterations, parameterOverrides) {
-    // Port of existing TypeScript simulation logic
-    const results = []
-    for (let i = 0; i < iterations; i++) {
-      results.push(this.executeIteration(parameterOverrides))
-    }
-    return this.calculateStatistics(results)
-  }
-  
-  executeIteration(params) {
-    // Execute simulation logic from YAML config
-    // Return single iteration result object
-  }
+**simulation-engine.ts**
+```typescript
+// Direct export of existing ConfigurableSimulation - no duplication
+export { ConfigurableSimulation as WebSimulationEngine } from '../framework/ConfigurableSimulation'
+```
+
+**parameter-forms.ts**  
+```typescript
+import type { ParameterDefinition } from '../framework/types'
+
+export class ParameterFormManager {
+  // Generates HTML forms from existing ParameterDefinition types
+  // Uses existing validation rules and type definitions
+  generateForm(parameters: ParameterDefinition[]) { /* ... */ }
+  getCurrentValues(): Record<string, any> { /* ... */ }
 }
 ```
 
-**parameter-forms.js**
-```javascript
-function createParameterForm(simulation) {
-  return simulation.parameters.map(param => {
-    const field = createInputField(param)
-    field.addEventListener('input', debounce(runSimulation, 300))
-    return field
-  })
-}
+**charts.ts**
+```typescript  
+import { Chart, registerables } from 'chart.js'
 
-function createInputField(param) {
-  switch(param.type) {
-    case 'number': return createNumberInput(param)
-    case 'boolean': return createCheckboxInput(param)
-    case 'range': return createRangeInput(param)
-    default: return createTextInput(param)
-  }
-}
-```
-
-**charts.js**
-```javascript
-function createHistogram(results, outputKey) {
-  const values = results.map(r => r[outputKey])
-  return new Chart(ctx, {
-    type: 'bar',
-    data: createHistogramData(values),
-    options: {
-      responsive: true,
-      plugins: {
-        title: { text: `Distribution of ${outputKey}` }
-      }
-    }
-  })
-}
-
-function updateHistogram(chart, newResults, outputKey) {
-  const values = newResults.map(r => r[outputKey])
-  chart.data = createHistogramData(values)
-  chart.update('none') // No animation for smooth real-time updates
+export class ChartManager {
+  // Creates histograms from simulation results
+  // Uses existing StatisticalAnalyzer output format
+  createHistograms(results: Array<Record<string, any>>) { /* ... */ }
+  updateHistograms(results: Array<Record<string, any>>) { /* ... */ }
 }
 ```
 
 ### Data Flow Design
 
-1. **Initialization**: Load embedded YAML simulation configs
-2. **Parameter Editing**: Form changes trigger debounced simulation runs
-3. **Simulation Execution**: Run in main thread (simple business math)
-4. **Chart Updates**: Update existing charts without full re-render
-5. **Configuration Export**: Capture current form state to clipboard
+1. **Initialization**: Load compiled simulation configurations as embedded JSON
+2. **Parameter Editing**: Form changes trigger existing ConfigurableSimulation.runSimulation()
+3. **Simulation Execution**: Direct use of existing framework simulation logic
+4. **Chart Updates**: Display results using existing StatisticalAnalyzer output format
+5. **Configuration Export**: Use existing parameter validation for clipboard export
 
 ### Integration with Existing Framework
 
-**Simulation Logic Compatibility**
-- Port `ConfigurableSimulation` class to vanilla JavaScript
-- Maintain identical parameter validation rules
-- Preserve statistical analysis calculations
-- Same random number generation approach
+**Zero Duplication Approach**
+- Direct import and reuse of ConfigurableSimulation class
+- Reuse existing ParameterDefinition and StatisticalSummary types
+- Leverage existing parameter validation rules without modification
+- Same simulation logic, statistical analysis, and random number generation
 
-**YAML Configuration Reuse**
-- Embed existing simulation YAML files as JavaScript objects
+**Configuration Reuse**
+- Convert existing YAML simulation files to embedded JSON during build
+- No changes to simulation configuration schema or validation
 - No changes to YAML schema required
 - Form generation driven by existing parameter definitions
 - Same validation rules as CLI interface
@@ -192,17 +157,17 @@ function updateHistogram(chart, newResults, outputKey) {
 
 ## Implementation Plan
 
-### Phase 1: Core Engine Port (Priority 1)
+### Phase 1: Framework Integration (Priority 1)
 **Deliverables:**
-- JavaScript port of `ConfigurableSimulation` class
-- Statistical analysis functions (mean, std dev, percentiles)
-- Parameter validation logic matching CLI
-- Browser-compatible random number generation
+- TypeScript modules that directly import existing ConfigurableSimulation
+- Reuse of existing ParameterDefinition and StatisticalSummary types
+- Web-specific UI components only (no business logic duplication)
+- TypeScript compilation setup for browser deployment
 
 **Acceptance Criteria:**
-- All 9 existing simulations execute with identical results to CLI
-- Statistical outputs match CLI within floating-point precision
-- Parameter validation prevents same invalid configurations as CLI
+- All 9 existing simulations execute with identical results to CLI (guaranteed by code reuse)
+- Parameter validation identical to CLI (same validation code)
+- Statistical outputs identical to CLI (same StatisticalAnalyzer)
 
 ### Phase 2: Basic Interface (Priority 1)  
 **Deliverables:**
@@ -308,14 +273,20 @@ function updateHistogram(chart, newResults, outputKey) {
 - *Strategy*: Create compelling examples showing visual insights not available in CLI
 
 **Maintenance Overhead**
-- *Risk*: Maintaining parallel JavaScript and TypeScript implementations
-- *Mitigation*: Port logic once, then keep minimal ongoing sync with framework changes
-- *Strategy*: Automate validation testing to catch drift between implementations
+- *Risk*: None - no parallel implementations required
+- *Mitigation*: Direct reuse of existing framework components eliminates drift
+- *Strategy*: Standard TypeScript compilation ensures consistency
 
 ## Timeline Estimate
 
 **Total Development**: 1-2 effective days with Claude Code assistance
-**Phase 1-2**: 1 day (core engine and basic interface)
+**Phase 1-2**: 1 day (framework integration and basic interface)
 **Phase 3-4**: 0.5-1 day (visualization and advanced features)
 
 **Cost Estimate**: $30-60 in Claude Code usage
+
+**Key Efficiency Gains from Zero Duplication:**
+- No porting or reimplementation required
+- Guaranteed consistency with CLI behavior
+- Reduced testing overhead (business logic already tested)
+- Focus development time on UI/UX improvements only
