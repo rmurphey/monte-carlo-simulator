@@ -1,20 +1,19 @@
 # Claude Code Collaboration Guidelines
 
 ## Project Configuration
-- **Quality Level**: strict
-- **Team Size**: large
-- **Warning Threshold**: 0
+- **Quality Level**: standard
+- **Team Size**: solo
+- **Warning Threshold**: reasonable
 - **Coverage Target**: 70%
 
 ## Development Standards
-This project follows strict quality standards optimized for large team coordination.
+This is an open-source project optimized for individual contributors and community collaboration.
 
-### Large Team Workflow
-- **Structured branching**: Feature branches, release branches, strict review process
-- **Process consistency**: Standardized commits, comprehensive documentation
-- **Knowledge management**: Detailed specs, architecture decisions, team handoffs
-- **AI governance**: Use Claude with team guidelines for consistent code standards
-- Commit after every todo is completed
+### OSS Development Workflow
+- **Flexible approach**: Direct commits to main for solo work, PRs for community contributions
+- **Quality focus**: Clean code, working examples, good documentation
+- **Community-friendly**: Clear documentation, helpful error messages, easy onboarding
+- **AI-assisted**: Leverage Claude for code quality and consistency
 
 ## Custom Commands
 Use the following commands for structured development:
@@ -59,21 +58,18 @@ The following npm commands can be run without user approval for validation and a
 - `npm run commit:size` - Show staged changes statistics
 - `npm run status:full` - Comprehensive git status with unpushed commits
 
-### Large Team Commands
-- `/design` - Formal feature design documentation
-- `/estimate` - Detailed project estimation
-- `/maintainability` - Code health analysis
-- `/version-tag` - Release management
-- `/defer` - Formal backlog management
+### OSS Development Commands
+- `/hygiene` - Quick code quality check
+- `/commit` - Commit with good practices
+- `/docs` - Update documentation when needed
 
 ## Quality Guidelines
-- Maintain strict code quality standards
-- Keep warnings at zero
-- Target 70% test coverage
-- Enforce strict process compliance for team coordination
-- Require comprehensive documentation and testing
-- Use AI assistance for maintaining consistency across large codebase
-- Implement formal code review and approval processes
+- Maintain good code quality without being overly strict
+- Address warnings that matter, ignore noise
+- Target 70% test coverage for core functionality
+- Focus on user experience and clear documentation
+- Use AI assistance for code improvements and consistency
+- Welcome community contributions with clear guidelines
 
 ## Collaboration
 This project is set up for AI-assisted development with Claude Code.
