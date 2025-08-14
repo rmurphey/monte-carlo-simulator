@@ -18,7 +18,7 @@ export class AIInvestmentROI extends MonteCarloEngine {
         key: 'initialInvestment',
         label: 'Initial Investment ($)',
         type: 'number',
-        defaultValue: 100000,
+        default: 100000,
         min: 10000,
         max: 10000000,
         step: 10000,
@@ -28,7 +28,7 @@ export class AIInvestmentROI extends MonteCarloEngine {
         key: 'implementationTime',
         label: 'Implementation Time (months)',
         type: 'number',
-        defaultValue: 6,
+        default: 6,
         min: 1,
         max: 24,
         step: 1,
@@ -38,7 +38,7 @@ export class AIInvestmentROI extends MonteCarloEngine {
         key: 'productivityGain',
         label: 'Productivity Gain (%)',
         type: 'number',
-        defaultValue: 0.15,
+        default: 0.15,
         min: 0,
         max: 1,
         step: 0.01,
@@ -48,7 +48,7 @@ export class AIInvestmentROI extends MonteCarloEngine {
         key: 'costSaving',
         label: 'Cost Saving (%)',
         type: 'number',
-        defaultValue: 0.08,
+        default: 0.08,
         min: 0,
         max: 0.5,
         step: 0.01,
@@ -58,7 +58,7 @@ export class AIInvestmentROI extends MonteCarloEngine {
         key: 'marketGrowth',
         label: 'Market Growth Rate (%)',
         type: 'number',
-        defaultValue: 0.12,
+        default: 0.12,
         min: -0.1,
         max: 0.5,
         step: 0.01,
@@ -68,7 +68,7 @@ export class AIInvestmentROI extends MonteCarloEngine {
         key: 'adoptionRate',
         label: 'Employee Adoption Rate (%)',
         type: 'number',
-        defaultValue: 0.7,
+        default: 0.7,
         min: 0.1,
         max: 1,
         step: 0.05,
@@ -78,7 +78,7 @@ export class AIInvestmentROI extends MonteCarloEngine {
         key: 'maintenanceCost',
         label: 'Annual Maintenance Cost (%)',
         type: 'number',
-        defaultValue: 0.1,
+        default: 0.1,
         min: 0.05,
         max: 0.3,
         step: 0.01,
@@ -88,7 +88,7 @@ export class AIInvestmentROI extends MonteCarloEngine {
         key: 'riskFactor',
         label: 'Risk/Uncertainty Factor',
         type: 'number',
-        defaultValue: 0.2,
+        default: 0.2,
         min: 0.05,
         max: 0.5,
         step: 0.05,
@@ -98,7 +98,7 @@ export class AIInvestmentROI extends MonteCarloEngine {
         key: 'evaluationPeriod',
         label: 'Evaluation Period (years)',
         type: 'number',
-        defaultValue: 5,
+        default: 5,
         min: 1,
         max: 10,
         step: 1,
@@ -181,7 +181,7 @@ export class AIInvestmentROI extends MonteCarloEngine {
     }
   }
 
-  private randomize(baseValue: number, uncertainty: number = 0.2): number {
+  private randomize(baseValue: number, uncertainty = 0.2): number {
     const min = baseValue * (1 - uncertainty)
     const max = baseValue * (1 + uncertainty)
     return min + Math.random() * (max - min)

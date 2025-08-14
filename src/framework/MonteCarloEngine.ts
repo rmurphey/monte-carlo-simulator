@@ -28,7 +28,7 @@ export abstract class MonteCarloEngine {
 
   async runSimulation(
     parameters: Record<string, unknown>, 
-    iterations: number = 1000,
+    iterations = 1000,
     onProgress?: (_progress: number, _iteration: number) => void
   ): Promise<SimulationResults> {
     const startTime = new Date()

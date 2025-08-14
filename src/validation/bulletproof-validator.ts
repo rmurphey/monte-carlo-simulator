@@ -1,7 +1,7 @@
 import { readFile, readdir } from 'fs/promises'
 import { resolve } from 'path'
 import * as yaml from 'js-yaml'
-import Ajv, { JSONSchemaType, ErrorObject } from 'ajv'
+import Ajv, { ErrorObject, JSONSchemaType } from 'ajv'
 
 /**
  * BULLETPROOF SCHEMA VALIDATOR

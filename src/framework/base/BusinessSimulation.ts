@@ -28,7 +28,7 @@ export abstract class BusinessSimulation extends BaseSimulation {
   /**
    * Calculate return on investment percentage
    */
-  protected calculateROI(investment: number, returns: number, timeframe: number = 1): number {
+  protected calculateROI(investment: number, returns: number, timeframe = 1): number {
     if (investment <= 0) return 0
     return ((returns - investment) / investment) * 100 / timeframe
   }
@@ -61,7 +61,7 @@ export abstract class BusinessSimulation extends BaseSimulation {
   /**
    * Calculate Customer Lifetime Value
    */
-  protected calculateCLV(avgOrderValue: number, purchaseFrequency: number, customerLifespan: number, grossMargin: number = 0.3): number {
+  protected calculateCLV(avgOrderValue: number, purchaseFrequency: number, customerLifespan: number, grossMargin = 0.3): number {
     return avgOrderValue * purchaseFrequency * customerLifespan * grossMargin
   }
 
@@ -93,7 +93,7 @@ export abstract class BusinessSimulation extends BaseSimulation {
   /**
    * Calculate team scaling costs with coordination overhead
    */
-  protected calculateTeamScalingCost(currentTeamSize: number, newHires: number, avgSalary: number, coordinationOverhead: number = 0.15): number {
+  protected calculateTeamScalingCost(currentTeamSize: number, newHires: number, avgSalary: number, coordinationOverhead = 0.15): number {
     const baseCost = newHires * avgSalary
     const coordinationCost = (currentTeamSize + newHires) * coordinationOverhead * avgSalary
     return baseCost + coordinationCost
@@ -106,8 +106,8 @@ export abstract class BusinessSimulation extends BaseSimulation {
     revenue: number,
     costs: number,
     investment: number,
-    customersAcquired: number = 0,
-    marketingSpend: number = 0
+    customersAcquired = 0,
+    marketingSpend = 0
   ): BusinessKPIs {
     const netProfit = revenue - costs
     const roi = this.calculateROI(investment, revenue)
@@ -156,7 +156,7 @@ export abstract class BusinessSimulation extends BaseSimulation {
   /**
    * Calculate confidence intervals for results
    */
-  protected calculateConfidenceInterval(values: number[], confidence: number = 0.95): { lower: number; upper: number; mean: number } {
+  protected calculateConfidenceInterval(values: number[], confidence = 0.95): { lower: number; upper: number; mean: number } {
     const sorted = values.slice().sort((a, b) => a - b)
     const alpha = 1 - confidence
     const lowerIndex = Math.floor(sorted.length * (alpha / 2))
@@ -173,7 +173,7 @@ export abstract class BusinessSimulation extends BaseSimulation {
   /**
    * Run Monte Carlo simulation with multiple iterations
    */
-  runMonteCarloAnalysis(parameters: ParameterValues, iterations: number = 1000): {
+  runMonteCarloAnalysis(parameters: ParameterValues, iterations = 1000): {
     results: ScenarioResults[]
     statistics: {
       mean: Record<string, number>

@@ -51,7 +51,7 @@ export class StatisticalAnalyzer {
     return sortedValues[lower] * (1 - weight) + sortedValues[upper] * weight
   }
 
-  calculateHistogram(values: number[], bins: number = 20): { binStart: number; binEnd: number; count: number; percentage: number }[] {
+  calculateHistogram(values: number[], bins = 20): { binStart: number; binEnd: number; count: number; percentage: number }[] {
     if (values.length === 0) return []
 
     const min = Math.min(...values)
@@ -77,7 +77,7 @@ export class StatisticalAnalyzer {
     return histogram
   }
 
-  calculateRiskMetrics(values: number[], threshold: number = 0): {
+  calculateRiskMetrics(values: number[], threshold = 0): {
     probabilityOfLoss: number
     valueAtRisk95: number
     valueAtRisk99: number
