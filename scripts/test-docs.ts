@@ -91,7 +91,7 @@ class DocumentationTester {
           }
         }
       } catch (error) {
-        console.log(chalk.gray(`   Skipping ${file} (not found)`))
+        console.log(chalk.gray(`   Skipping ${file} (not found): ${error instanceof Error ? error.message : 'Unknown error'}`))
       }
     }
     
@@ -124,7 +124,7 @@ class DocumentationTester {
           }
         }
       } catch (error) {
-        console.log(chalk.gray(`   Skipping ${file} (not found)`))
+        console.log(chalk.gray(`   Skipping ${file} (not found): ${error instanceof Error ? error.message : 'Unknown error'}`))
       }
     }
     
@@ -156,7 +156,7 @@ class DocumentationTester {
         }
         
       } catch (error) {
-        console.log(chalk.gray(`   Skipping ${file} (not found)`))
+        console.log(chalk.gray(`   Skipping ${file} (not found): ${error instanceof Error ? error.message : 'Unknown error'}`))
       }
     }
     

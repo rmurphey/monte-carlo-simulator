@@ -78,8 +78,8 @@ export class TempConfigManager {
         this.tempPaths.delete(tempPath)
       }
     } catch (error) {
-      // Ignore errors when discarding changes
-      console.warn(`Warning: Could not delete temp file ${tempPath}`)
+      // Log specific error when discarding changes
+      console.warn(`Warning: Could not delete temp file ${tempPath}:`, error instanceof Error ? error.message : 'Unknown error')
     }
   }
 
@@ -104,8 +104,8 @@ export class TempConfigManager {
       try {
         await fs.unlink(tempPath)
       } catch (error) {
-        // Ignore cleanup errors
-        console.warn(`Warning: Could not cleanup temp file ${tempPath}`)
+        // Log cleanup errors with details
+        console.warn(`Warning: Could not cleanup temp file ${tempPath}:`, error instanceof Error ? error.message : 'Unknown error')
       }
     })
 

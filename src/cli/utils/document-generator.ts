@@ -1,5 +1,6 @@
 import { StatisticalSummary } from '../../framework/types'
 import { SimulationConfig } from '../config/schema'
+import { handleFallback, logWarning } from '../../utils/error-handling'
 
 interface DocumentOptions {
   includeCharts?: boolean
@@ -634,8 +635,7 @@ export class DocumentGenerator {
         }
       }
     } catch (error) {
-      // Fallback insight if analysis fails
-      insights.push(`📊 Analysis completed with ${results.results.length} iterations - detailed metrics available below`)
+      insights.push(handleFallback('KeyInsights', error, `📊 Analysis completed with ${results.results.length} iterations - detailed metrics available below`))
     }
 
     // Ensure we always return at least one insight
@@ -699,7 +699,7 @@ export class DocumentGenerator {
             }
           }
         } catch (error) {
-          // Skip this metric's negative analysis if data is malformed
+          logWarning(`NegativeAnalysis-${metric}`, error)
           continue
         }
         
@@ -727,7 +727,7 @@ export class DocumentGenerator {
         }
       }
     } catch (error) {
-      risks.push(`📊 Risk analysis completed - see statistical details below for variability assessment`)
+      risks.push(handleFallback('RiskAnalysis', error, `📊 Risk analysis completed - see statistical details below for variability assessment`))
     }
 
     return risks
