@@ -7,6 +7,7 @@ import { ParameterForm } from './parameter-forms'
 import { Charts } from './charts'
 import { Statistics } from './statistics'
 import { ConfigManager } from './config-manager'
+import { SimulationLoader } from './simulation-loader'
 
 class WebApp {
   private simulation: WebSimulationEngine | null = null
@@ -14,12 +15,14 @@ class WebApp {
   private charts: Charts
   private statistics: Statistics
   private configManager: ConfigManager
+  private simulationLoader: SimulationLoader
   
   constructor() {
     this.parameterForm = new ParameterForm('parameter-form-container')
     this.charts = new Charts('charts-container')
     this.statistics = new Statistics('statistics-container')
     this.configManager = new ConfigManager('config-textarea')
+    this.simulationLoader = new SimulationLoader()
     
     this.setupEventListeners()
     this.loadAvailableSimulations()
@@ -60,19 +63,13 @@ class WebApp {
     if (!dropdown) return
     
     try {
-      // Fetch simulation manifest
-      const response = await fetch('/examples/simulations/manifest.json')
-      if (!response.ok) {
-        throw new Error('Failed to load simulation manifest')
-      }
-      
-      const availableSimulations = await response.json()
+      const availableSimulations = await this.simulationLoader.loadManifest()
       
       // Clear loading text and add default option
       dropdown.innerHTML = '<option value="">Select a simulation...</option>'
       
       // Add simulation options
-      availableSimulations.forEach((sim: any) => {
+      availableSimulations.forEach(sim => {
         const option = document.createElement('option')
         // Use the filename without .yaml extension as the value
         option.value = sim.filename.replace('.yaml', '')
@@ -95,9 +92,9 @@ class WebApp {
       const simulationName = urlParams.get('simulation')
       
       if (simulationName) {
-        // Try to load simulation from YAML file
+        // Try to load simulation using the simulation loader
         try {
-          const simulationConfig = await this.loadSimulationFromYAML(simulationName)
+          const simulationConfig = await this.simulationLoader.loadSimulation(simulationName)
           this.simulation = new WebSimulationEngine(simulationConfig)
           this.parameterForm.generateForm(simulationConfig.parameters)
           this.updateConfiguration()
@@ -207,171 +204,6 @@ class WebApp {
     }
   }
 
-  private async loadSimulationFromYAML(simulationName: string) {
-    // Try to fetch the YAML file
-    const response = await fetch(`/examples/simulations/${simulationName}.yaml`)
-    if (!response.ok) {
-      throw new Error(`Simulation file not found: ${simulationName}.yaml`)
-    }
-    
-    const yamlText = await response.text()
-    
-    // Enhanced YAML parser to handle actual simulation file format
-    const lines = yamlText.split('\n')
-    const simulation: any = {
-      name: '',
-      category: '',
-      description: '',
-      version: '1.0.0',
-      tags: [],
-      parameters: [],
-      outputs: []
-    }
-    
-    let currentSection = ''
-    let currentParameter: any = null
-    let currentOutput: any = null
-    let simulationLogic = ''
-    let inSimulationSection = false
-    let logicIndent = 0
-    
-    for (const line of lines) {
-      const trimmed = line.trim()
-      if (!trimmed || trimmed.startsWith('#')) continue
-      
-      const indent = line.length - line.trimStart().length
-      
-      // Handle simulation logic section
-      if (inSimulationSection && trimmed.startsWith('logic:')) {
-        const logicStart = line.indexOf('|')
-        if (logicStart !== -1) {
-          // Multi-line logic with | indicator
-          continue
-        } else {
-          // Single line logic
-          simulationLogic = trimmed.split(':')[1].trim()
-        }
-        continue
-      }
-      
-      if (inSimulationSection && indent > logicIndent) {
-        // Accumulate logic lines
-        simulationLogic += line.substring(logicIndent) + '\n'
-        continue
-      }
-      
-      // Handle top-level properties
-      if (indent === 0) {
-        inSimulationSection = false
-        
-        if (trimmed.startsWith('name:')) {
-          simulation.name = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-        } else if (trimmed.startsWith('category:')) {
-          simulation.category = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-        } else if (trimmed.startsWith('description:')) {
-          simulation.description = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-        } else if (trimmed.startsWith('version:')) {
-          simulation.version = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-        } else if (trimmed.startsWith('tags:')) {
-          const tagsText = trimmed.split(':')[1].trim()
-          if (tagsText.startsWith('[') && tagsText.endsWith(']')) {
-            simulation.tags = tagsText.slice(1, -1).split(',').map(t => t.trim().replace(/['"]/g, ''))
-          }
-        } else if (trimmed === 'parameters:') {
-          currentSection = 'parameters'
-        } else if (trimmed === 'outputs:') {
-          currentSection = 'outputs'
-        } else if (trimmed === 'simulation:') {
-          currentSection = 'simulation'
-          inSimulationSection = true
-          logicIndent = 4 // Expect logic to be indented 4 spaces
-        }
-      } 
-      // Handle parameters section
-      else if (currentSection === 'parameters' && indent === 2) {
-        if (trimmed.startsWith('- key:')) {
-          if (currentParameter) {
-            simulation.parameters.push(currentParameter)
-          }
-          currentParameter = {
-            key: trimmed.split(':')[1].trim().replace(/['"]/g, ''),
-            label: '',
-            type: 'number',
-            default: 0
-          }
-        }
-      } else if (currentParameter && indent === 4 && currentSection === 'parameters') {
-        if (trimmed.startsWith('label:')) {
-          currentParameter.label = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-        } else if (trimmed.startsWith('type:')) {
-          currentParameter.type = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-        } else if (trimmed.startsWith('default:')) {
-          const defaultValue = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-          currentParameter.default = currentParameter.type === 'number' ? 
-            parseFloat(defaultValue) : 
-            currentParameter.type === 'boolean' ? 
-              defaultValue === 'true' : 
-              defaultValue
-        } else if (trimmed.startsWith('min:')) {
-          currentParameter.min = parseFloat(trimmed.split(':')[1].trim())
-        } else if (trimmed.startsWith('max:')) {
-          currentParameter.max = parseFloat(trimmed.split(':')[1].trim())
-        } else if (trimmed.startsWith('step:')) {
-          currentParameter.step = parseFloat(trimmed.split(':')[1].trim())
-        } else if (trimmed.startsWith('description:')) {
-          currentParameter.description = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-        }
-      }
-      // Handle outputs section
-      else if (currentSection === 'outputs' && indent === 2) {
-        if (trimmed.startsWith('- key:')) {
-          if (currentOutput) {
-            simulation.outputs.push(currentOutput)
-          }
-          currentOutput = {
-            key: trimmed.split(':')[1].trim().replace(/['"]/g, ''),
-            label: '',
-            description: ''
-          }
-        }
-      } else if (currentOutput && indent === 4 && currentSection === 'outputs') {
-        if (trimmed.startsWith('label:')) {
-          currentOutput.label = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-        } else if (trimmed.startsWith('description:')) {
-          currentOutput.description = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-        }
-      }
-    }
-    
-    // Add the last parameter and output
-    if (currentParameter) {
-      simulation.parameters.push(currentParameter)
-    }
-    if (currentOutput) {
-      simulation.outputs.push(currentOutput)
-    }
-    
-    // Add simulation logic
-    simulation.simulation = {
-      logic: simulationLogic.trim() || `
-      // Default simulation logic for ${simulation.name}
-      const results = [];
-      const iterations = params.iterations || 1000;
-      
-      for (let i = 0; i < iterations; i++) {
-        const result = {
-          value: Math.random() * 1000,
-          profit: (Math.random() - 0.5) * 500
-        };
-        results.push(result);
-      }
-      
-      return results;
-      `
-    }
-    
-    return simulation
-  }
   
   private async loadSimulation(simulationName: string) {
     if (!simulationName) {
@@ -386,7 +218,7 @@ class WebApp {
       // Preserve current parameter values before switching
       const currentValues = this.parameterForm.getCurrentValues()
       
-      const simulationConfig = await this.loadSimulationFromYAML(simulationName)
+      const simulationConfig = await this.simulationLoader.loadSimulation(simulationName)
       this.simulation = new WebSimulationEngine(simulationConfig)
       this.parameterForm.generateForm(simulationConfig.parameters)
       
