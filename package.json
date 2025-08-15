@@ -75,23 +75,24 @@
   },
   "lint-staged": {
     "src/{framework,web}/**/*.ts": [
-      "eslint --fix --max-warnings 143",
-      "npm run typecheck"
+      "eslint --fix",
+      "npm run typecheck",
+      "eslint . --ext ts --max-warnings 143"
     ],
     "src/cli/**/!(config)/**/*.ts": [
-      "eslint --fix --max-warnings 143"
+      "eslint --fix"
     ],
     "src/test/**/*.ts": [
-      "eslint --fix --max-warnings 143"
+      "eslint --fix"
     ],
     "scripts/**/*.ts": [
-      "eslint --fix --max-warnings 143"
+      "eslint --fix"
     ],
     "vite.config.ts": [
-      "eslint --fix --max-warnings 143"
+      "eslint --fix"
     ],
     "*.config.ts": [
-      "eslint --fix --max-warnings 143"
+      "eslint --fix"
     ],
     "{examples,simulations}/**/*.{yaml,yml}": [
       "bash -c 'for file in \"$@\"; do npm run cli validate \"$file\"; done' _"
