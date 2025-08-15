@@ -82,6 +82,27 @@ The following npm commands can be run without user approval for validation and a
 - Use AI assistance for code improvements and consistency
 - Welcome community contributions with clear guidelines
 
+## Debugging Guidelines
+Follow these cost-effective debugging practices to avoid expensive token waste:
+
+### 🚨 The 5-Minute Rule
+**If you're not making progress in 5 minutes, STOP and reassess your approach.**
+
+### ✅ Efficient Debugging Pattern
+1. **Find working equivalent** - Locate similar working code in same class/module
+2. **Compare approaches** - What's different between working vs broken code?
+3. **Test fix inline** - Verify solution in test before modifying source
+4. **Use minimal change** - Copy working pattern, don't debug mysteries
+
+### ❌ Expensive Anti-Patterns to Avoid
+- Assuming caching issues without evidence
+- Adding debug code that won't execute
+- Trying multiple variations of same approach
+- Debugging property access when issue is data source
+
+### 📚 Reference
+See `archive/efficient-debugging-guidelines.md` for detailed patterns and case studies.
+
 ## Collaboration
 This project is set up for AI-assisted development with Claude Code.
 
