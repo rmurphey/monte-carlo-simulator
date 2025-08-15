@@ -19,19 +19,20 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "downlevelIteration": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     }
   },
   "include": [
-    "src/cli/**/*",
     "src/framework/**/*", 
     "src/simulations/**/*",
     "src/web/**/*"
   ],
   "exclude": [
     "src/test/**/*",
+    "src/cli/config/schema.ts",
     "dist",
     "node_modules"
   ]

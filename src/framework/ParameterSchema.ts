@@ -118,7 +118,8 @@ export class ParameterSchema {
     }
 
     // Check for missing required parameters
-    for (const def of this.definitions.values()) {
+    const definitions = this.getDefinitions()
+    for (const def of definitions) {
       if (!(def.key in parameters)) {
         allErrors.push(`Missing required parameter: ${def.label}`)
       }

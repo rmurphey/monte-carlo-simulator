@@ -1,23 +1,19 @@
 /**
- * Chart rendering with Chart.js
+ * Chart rendering with basic DOM/Canvas
  */
 
-import { Chart, registerables } from 'chart.js'
 import type { HistogramData } from './types'
 import { formatNumber, getElementOrThrow } from './utils'
 
-// Register Chart.js components
-Chart.register(...registerables)
-
 export class Charts {
   private container: HTMLElement
-  private charts: Map<string, Chart> = new Map()
+  private charts: Map<string, HTMLElement> = new Map()
 
   constructor(containerId: string) {
     this.container = getElementOrThrow(containerId)
   }
 
-  createHistograms(results: Array<Record<string, any>>) {
+  createHistograms(results: Array<Record<string, unknown>>) {
     this.clear()
     
     if (!results.length) return
@@ -28,15 +24,16 @@ export class Charts {
     })
   }
 
-  private createHistogram(outputKey: string, results: Array<Record<string, any>>) {
-    // Create canvas container
-    const canvasContainer = document.createElement('div')
-    canvasContainer.className = 'chart-container'
+  private createHistogram(outputKey: string, results: Array<Record<string, unknown>>) {
+    // Create simple HTML histogram
+    const histogramContainer = document.createElement('div')
+    histogramContainer.className = 'chart-container'
+    histogramContainer.innerHTML = `
+      <h3>Distribution of ${outputKey}</h3>
+      <div class="histogram" id="histogram-${outputKey}"></div>
+    `
     
-    const canvas = document.createElement('canvas')
-    canvas.id = `chart-${outputKey}`
-    canvasContainer.appendChild(canvas)
-    this.container.appendChild(canvasContainer)
+    this.container.appendChild(histogramContainer)
 
     // Extract values and create histogram data
     const values = results
@@ -44,53 +41,13 @@ export class Charts {
       .filter(v => !isNaN(v))
     
     const histogramData = this.createHistogramData(values)
+    const histogramDiv = histogramContainer.querySelector('.histogram') as HTMLElement
+    
+    if (histogramDiv && histogramData.data.length) {
+      this.renderSimpleHistogram(histogramDiv, histogramData)
+    }
 
-    // Create Chart.js histogram
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: histogramData.labels,
-        datasets: [{
-          label: outputKey,
-          data: histogramData.data,
-          backgroundColor: 'rgba(54, 162, 235, 0.6)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          title: {
-            display: true,
-            text: `Distribution of ${outputKey}`
-          },
-          legend: {
-            display: false
-          }
-        },
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: outputKey
-            }
-          },
-          y: {
-            title: {
-              display: true,
-              text: 'Frequency'
-            }
-          }
-        }
-      }
-    })
-
-    this.charts.set(outputKey, chart)
+    this.charts.set(outputKey, histogramContainer)
   }
 
   private createHistogramData(values: number[]): HistogramData {
@@ -129,29 +86,50 @@ export class Charts {
     return { labels, data: bins }
   }
 
-  updateHistograms(results: Array<Record<string, any>>) {
+  private renderSimpleHistogram(container: HTMLElement, data: HistogramData) {
+    const maxValue = Math.max(...data.data)
+    
+    container.innerHTML = data.labels.map((label, i) => {
+      const count = data.data[i]
+      const percentage = maxValue > 0 ? (count / maxValue) * 100 : 0
+      
+      return `
+        <div class="histogram-bar" style="display: flex; align-items: center; margin-bottom: 4px;">
+          <div class="histogram-label" style="width: 120px; font-size: 12px; text-align: right; margin-right: 8px;">
+            ${label}
+          </div>
+          <div class="histogram-bar-container" style="flex: 1; height: 20px; background: #f0f0f0; position: relative;">
+            <div class="histogram-bar-fill" style="height: 100%; width: ${percentage}%; background: #3b82f6; display: flex; align-items: center; justify-content: flex-end; padding-right: 4px;">
+              <span style="color: white; font-size: 11px; font-weight: bold;">${count}</span>
+            </div>
+          </div>
+        </div>
+      `
+    }).join('')
+  }
+
+  updateHistograms(results: Array<Record<string, unknown>>) {
     if (!results.length) return
 
     const outputKeys = Object.keys(results[0])
     outputKeys.forEach(key => {
-      const chart = this.charts.get(key)
-      if (chart) {
+      const chartContainer = this.charts.get(key)
+      if (chartContainer) {
         const values = results
           .map(r => Number(r[key]))
           .filter(v => !isNaN(v))
         
         const histogramData = this.createHistogramData(values)
-        chart.data.labels = histogramData.labels
-        chart.data.datasets[0].data = histogramData.data
-        chart.update('none') // No animation for smooth updates
+        const histogramDiv = chartContainer.querySelector('.histogram') as HTMLElement
+        if (histogramDiv) {
+          this.renderSimpleHistogram(histogramDiv, histogramData)
+        }
       }
     })
   }
 
-
   clear() {
-    // Destroy existing charts
-    this.charts.forEach(chart => chart.destroy())
+    // Clear all chart elements
     this.charts.clear()
     
     // Clear container

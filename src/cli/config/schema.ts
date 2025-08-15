@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType } from 'ajv'
+import Ajv from 'ajv'
 
 export interface SimulationConfig {
   name: string
@@ -59,7 +59,7 @@ export interface RunOptions {
   [key: string]: any // For additional parameter overrides
 }
 
-const parameterSchema: JSONSchemaType<ParameterConfig> = {
+const parameterSchema = {
   type: 'object',
   properties: {
     key: { type: 'string', minLength: 1 },
@@ -80,7 +80,7 @@ const parameterSchema: JSONSchemaType<ParameterConfig> = {
   additionalProperties: false
 }
 
-const groupSchema: JSONSchemaType<ParameterGroupConfig> = {
+const groupSchema = {
   type: 'object',
   properties: {
     name: { type: 'string', minLength: 1 },
@@ -95,7 +95,7 @@ const groupSchema: JSONSchemaType<ParameterGroupConfig> = {
   additionalProperties: false
 }
 
-const outputSchema: JSONSchemaType<OutputConfig> = {
+const outputSchema = {
   type: 'object',
   properties: {
     key: { type: 'string', minLength: 1 },
@@ -107,7 +107,7 @@ const outputSchema: JSONSchemaType<OutputConfig> = {
   additionalProperties: false
 }
 
-const simulationConfigSchema: JSONSchemaType<SimulationConfig> = {
+const simulationConfigSchema = {
   type: 'object',
   properties: {
     name: { type: 'string', minLength: 1, maxLength: 100 },

@@ -169,4 +169,27 @@ describe('ParameterSchema', () => {
     const scenarioField = uiSchema.ungrouped.find(f => f.key === 'scenario')
     expect(scenarioField?.options).toEqual(['conservative', 'moderate', 'aggressive'])
   })
+
+  it('should use getDefinitions() method for property access', () => {
+    const schema = new ParameterSchema(testDefinitions)
+    
+    // Test that getDefinitions() returns accessible definition objects
+    const definitions = schema.getDefinitions()
+    expect(definitions).toHaveLength(4)
+    
+    // Verify each definition has accessible properties (preventing undefined values bug)
+    definitions.forEach(def => {
+      expect(def.key).toBeDefined()
+      expect(def.default).toBeDefined()
+      expect(def.type).toBeDefined()
+    })
+    
+    // Test that getDefaultParameters uses proper property access
+    const defaults = schema.getDefaultParameters()
+    expect(Object.keys(defaults)).toHaveLength(4)
+    expect(defaults.iterations).toBe(1000)
+    expect(defaults.riskFree).toBe(0.03)
+    expect(defaults.useAdvancedModel).toBe(false)
+    expect(defaults.scenario).toBe('conservative')
+  })
 })
