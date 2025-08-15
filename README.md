@@ -158,7 +158,8 @@ npm run build
 npm run cli --help
 
 # Start web development server with hot reload
-npm run dev:web  # Opens browser at http://localhost:3000
+npm run dev:web  # Runs headless by default
+npm run dev:web:open  # Opens browser at http://localhost:3000
 ```
 
 ### **Web Development with Hot Reload** 🔥
@@ -166,22 +167,26 @@ npm run dev:web  # Opens browser at http://localhost:3000
 For web interface development with instant browser refresh:
 
 ```bash
-# Start Vite development server
+# Start Vite development server (headless)
 npm run dev:web
 
+# Or start with browser for active development
+npm run dev:web:open
+
 # This will:
-# - Open browser at http://localhost:3000
+# - Run at http://localhost:3000 (headless by default)
 # - Watch for file changes in src/web/
-# - Automatically refresh browser on changes
+# - Automatically refresh browser on changes (if opened)
 # - Provide TypeScript error reporting in console
-# - Enable fast development iteration
+# - Enable fast development iteration without stealing focus
 ```
 
 **Development Features:**
 - **Instant Hot Reload**: Changes to HTML, CSS, or TypeScript reflect immediately
 - **TypeScript Integration**: Real-time compilation and error reporting  
 - **Modern Tooling**: Vite-powered development with optimized builds
-- **Port 3000**: Dedicated development port separate from production builds
+- **Headless by Default**: No browser interruption during development
+- **Explicit Browser Opening**: Use `:open` variants when you want browser access
 
 #### Troubleshooting Setup
 **If you encounter issues during installation:**
@@ -498,9 +503,11 @@ npm run test:watch         # Run tests in watch mode
 npm run test:coverage      # Run tests with coverage report
 
 # Web development
-npm run dev:web            # Vite development server with hot reload (port 3000)
+npm run dev:web            # Vite development server headless (port 3000)
+npm run dev:web:open       # Vite development server with browser (port 3000)
 npm run build:web:vite     # Production web build with Vite
-npm run preview:web        # Preview production web build locally
+npm run preview:web        # Preview production web build locally (headless)
+npm run preview:web:open   # Preview production web build with browser
 npm run test:web           # Test Vite development server and web interface
 npm run test:all           # Run both framework and web tests
 
