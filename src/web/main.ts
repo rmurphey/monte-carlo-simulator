@@ -60,23 +60,22 @@ class WebApp {
     if (!dropdown) return
     
     try {
-      // List of available simulations (could be fetched dynamically)
-      const availableSimulations = [
-        { name: 'simple-roi-analysis', display: 'Simple ROI Analysis', description: 'Basic return on investment simulation' },
-        { name: 'marketing-campaign-roi', display: 'Marketing Campaign ROI', description: 'Marketing campaign effectiveness analysis' },
-        { name: 'software-investment-roi', display: 'Software Investment ROI', description: 'Software development investment analysis' },
-        { name: 'ai-cost-impact', display: 'AI Cost Impact', description: 'AI implementation cost-benefit analysis' },
-        { name: 'team-scaling-decision', display: 'Team Scaling Decision', description: 'Team growth investment analysis' },
-        { name: 'technology-investment', display: 'Technology Investment', description: 'Technology adoption ROI analysis' }
-      ]
+      // Fetch simulation manifest
+      const response = await fetch('/examples/simulations/manifest.json')
+      if (!response.ok) {
+        throw new Error('Failed to load simulation manifest')
+      }
+      
+      const availableSimulations = await response.json()
       
       // Clear loading text and add default option
       dropdown.innerHTML = '<option value="">Select a simulation...</option>'
       
       // Add simulation options
-      availableSimulations.forEach(sim => {
+      availableSimulations.forEach((sim: any) => {
         const option = document.createElement('option')
-        option.value = sim.name
+        // Use the filename without .yaml extension as the value
+        option.value = sim.filename.replace('.yaml', '')
         option.textContent = `${sim.display} - ${sim.description}`
         dropdown.appendChild(option)
       })
