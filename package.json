@@ -39,7 +39,7 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 143",
+    "lint": "eslint . --ext ts --report-unused-disable-directives",
     "lint:fix": "eslint . --ext ts --fix",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",

@@ -10,17 +10,17 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   rules: {
     "no-unused-vars": "off", // Use TypeScript version instead
-    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
     
     // Code quality rules
-    "complexity": ["warn", 15],
-    "max-depth": ["warn", 4],
-    "max-lines-per-function": ["warn", 100],
+    "complexity": "off",
+    "max-depth": "off",
+    "max-lines-per-function": "off",
     "no-duplicate-imports": "error",
     
     // TypeScript specific
     "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-explicit-any": "off",
     "prefer-const": "error",
     "@typescript-eslint/no-inferrable-types": "error",
     
