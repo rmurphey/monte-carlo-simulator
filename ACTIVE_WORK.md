@@ -23,14 +23,17 @@ Four strategic plans ready for implementation prioritization:
   - Create pre-commit hook integration for documentation validation
   - Add package.json scripts for automated doc sync checks
   - Implement CLI command discovery and documentation auto-generation
-- **Revisit web view to make sure it works** - Verify interactive web interface functionality
-- **Add simulation selection to web view** - Enable choosing different simulations in the web interface
-  - Add dropdown/selector for available simulations (9 current templates)
-  - Load simulation metadata and parameters dynamically
-  - Update parameter form based on selected simulation
-  - Maintain current functionality for parameter editing and execution
 
 ## Recently Completed ✅
+- **Web Simulation Selector** - Complete simulation selection dropdown for web interface (August 2025)
+  - **Dropdown Interface**: Professional simulation selector with 9+ available simulations
+  - **Dynamic Parameter Loading**: Parameter forms update automatically based on simulation selection
+  - **URL Parameter Support**: Simulations can be loaded directly via URL parameters (`?simulation=simple-roi-analysis`)
+  - **Value Preservation**: Compatible parameter values preserved when switching between simulations
+  - **Simulation Registry**: Robust SimulationLoader class with caching and comprehensive error handling
+  - **Manifest System**: Automatic discovery of available simulations via generated manifest.json
+  - **Complete Implementation**: All phases completed - URL foundation, dropdown UI, dynamic loading, and robust infrastructure
+  - **Result**: Web interface now provides complete access to all simulation templates, matching CLI functionality
 - **Recurring Fix Prevention System** - Implemented comprehensive prevention strategy for repeated issues (August 2025)
   - **Analysis**: Identified 4 recurring fix patterns from commit history (getDefaultParameters, gitignore, ESLint, error handling)
   - **Gitignore Enhancement**: Added comprehensive IDE and build artifact patterns to prevent repository clutter

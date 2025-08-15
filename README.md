@@ -162,31 +162,34 @@ npm run dev:web  # Runs headless by default
 npm run dev:web:open  # Opens browser at http://localhost:3000
 ```
 
-### **Web Development with Hot Reload** 🔥
+### **Web Interface with Simulation Selector** 🌐
 
-For web interface development with instant browser refresh:
+Interactive web interface with full access to all simulation templates:
 
 ```bash
-# Start Vite development server (headless)
+# Start web interface (headless by default)
 npm run dev:web
 
-# Or start with browser for active development
+# Or open in browser for development
 npm run dev:web:open
 
-# This will:
-# - Run at http://localhost:3000 (headless by default)
-# - Watch for file changes in src/web/
-# - Automatically refresh browser on changes (if opened)
-# - Provide TypeScript error reporting in console
-# - Enable fast development iteration without stealing focus
+# Access directly with simulation parameter
+# http://localhost:3000/?simulation=simple-roi-analysis
 ```
 
+**Web Interface Features:**
+- **Simulation Selector**: Dropdown with 9+ available simulation templates
+- **Dynamic Parameter Forms**: Parameters update automatically based on selected simulation  
+- **Value Preservation**: Compatible parameter values preserved when switching simulations
+- **URL Parameter Support**: Direct simulation loading via `?simulation=template-name`
+- **Complete Visualization**: Charts, statistics, and configuration management
+- **Professional UI**: Clean, responsive interface matching existing design system
+
 **Development Features:**
-- **Instant Hot Reload**: Changes to HTML, CSS, or TypeScript reflect immediately
-- **TypeScript Integration**: Real-time compilation and error reporting  
+- **Instant Hot Reload**: Changes to HTML, CSS, or TypeScript reflect immediately  
+- **TypeScript Integration**: Real-time compilation and error reporting
 - **Modern Tooling**: Vite-powered development with optimized builds
-- **Headless by Default**: No browser interruption during development
-- **Explicit Browser Opening**: Use `:open` variants when you want browser access
+- **Headless by Default**: Browser opens only when explicitly requested for development
 
 #### Troubleshooting Setup
 **If you encounter issues during installation:**
