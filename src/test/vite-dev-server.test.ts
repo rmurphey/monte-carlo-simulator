@@ -18,9 +18,10 @@ describe('Vite Development Server', () => {
   beforeAll(async () => {
     // Start Vite development server
     console.log('🚀 Starting Vite development server...')
-    viteProcess = spawn('npx', ['vite', '--open', 'false'], {
+    viteProcess = spawn('npx', ['vite'], {
       stdio: 'pipe',
-      detached: false
+      detached: false,
+      env: { ...process.env, VITE_OPEN_BROWSER: 'false' }
     })
 
     // Capture output to detect actual port
