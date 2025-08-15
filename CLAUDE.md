@@ -18,7 +18,21 @@ This is an open-source project optimized for individual contributors and communi
 - TAKE CARE when editing tests that were previously passing. 
 - PREFER to operate following TDD principles: tests first, code later.
 - ALWAYS create the smallest possible commit that passes tests.
-- NEVER 
+
+## Commit Discipline
+- **COMMIT EVERY 1-3 file changes** that create working functionality
+- **NEVER batch multiple logical changes** into one commit
+- **ASK "Can I commit right now?"** after each working change
+- **COMMIT before moving to next logical step**, even mid-feature
+- **COMMIT project configuration changes to main branch** (CLAUDE.md, package.json, etc.)
+- **COMMIT feature work to feature branches**
+- **Examples of commit-worthy changes:**
+  - Added HTML structure + CSS styling for a component
+  - Implemented a single function or method
+  - Added event handlers for one interaction
+  - Fixed a specific bug or error
+  - Added tests for one specific behavior
+- **If you're unsure, commit** - smaller commits are always better than larger ones
 
 ### OSS Development Workflow
 - **Flexible approach**: Direct commits to main for solo work, PRs for community contributions
