@@ -20,7 +20,7 @@ export default defineConfig({
   // Development server configuration
   server: {
     port: 3000,
-    open: process.env.CI || process.env.NODE_ENV === 'test' ? false : '/src/web/index.html',
+    open: process.env.VITE_OPEN_BROWSER === 'true' ? '/src/web/index.html' : false,
     host: true
   },
   
