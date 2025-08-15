@@ -9,6 +9,17 @@
 ## Development Standards
 This is an open-source project optimized for individual contributors and community collaboration.
 
+- NEVER commit without my approval.
+- ALWAYS use well-known debugging practices vs. just trying things.
+- NEVER say "You're right" or any variation.
+- ALWAYS avoid workarounds that create flakiness or debt.
+- ALWAYS prefer quality open-source solutions over writing your own code.
+- NEVER "fix" an issue by deleting a test
+- TAKE CARE when editing tests that were previously passing. 
+- PREFER to operate following TDD principles: tests first, code later.
+- ALWAYS create the smallest possible commit that passes tests.
+- NEVER 
+
 ### OSS Development Workflow
 - **Flexible approach**: Direct commits to main for solo work, PRs for community contributions
 - **Quality focus**: Clean code, working examples, good documentation, high test coverage, no errors
@@ -70,9 +81,16 @@ The following npm commands can be run without user approval for validation and a
 - `npm run status:full` - Comprehensive git status with unpushed commits
 
 ### OSS Development Commands
-- `/hygiene` - Quick code quality check
-- `/commit` - Commit with good practices
+- `/hygiene` - Quick code quality check using `npm run context:hygiene`
+- `/commit` - Commit with good practices using `npm run context:commit`
 - `/docs` - Update documentation when needed
+
+### Quality Workflow Integration
+Use existing context scripts to prevent recurring issues:
+- **Before commits:** `npm run context:hygiene` catches ESLint, test, and build issues
+- **Before pushes:** `npm run context:push` validates repository readiness
+- **For commits:** `npm run context:commit` provides comprehensive change context
+- **General quality:** `npm run quality:all` runs complete validation suite
 
 ## Quality Guidelines
 - Maintain good code quality without being overly strict
@@ -85,20 +103,44 @@ The following npm commands can be run without user approval for validation and a
 ## Debugging Guidelines
 Follow these cost-effective debugging practices to avoid expensive token waste:
 
-### 🚨 The 5-Minute Rule
-**If you're not making progress in 5 minutes, STOP and reassess your approach.**
+### 🚨 The 1-Minute Rule
+**If you're not making progress in 1 minute of compute time, STOP and reassess your approach.**
 
 ### ✅ Efficient Debugging Pattern
 1. **Find working equivalent** - Locate similar working code in same class/module
 2. **Compare approaches** - What's different between working vs broken code?
 3. **Test fix inline** - Verify solution in test before modifying source
 4. **Use minimal change** - Copy working pattern, don't debug mysteries
+5. **Create minimal test cases** - Issues are easier to debug in isolation
 
 ### ❌ Expensive Anti-Patterns to Avoid
 - Assuming caching issues without evidence
 - Adding debug code that won't execute
 - Trying multiple variations of same approach
 - Debugging property access when issue is data source
+
+### 🔄 Recurring Fix Prevention
+Common patterns that cause repeated fixes:
+
+**Property Access Anti-Patterns:**
+- ❌ Direct iteration: `this.definitions.values()`
+- ✅ Use getter methods: `getDefinitions()`
+- **Test Coverage:** Validate property access patterns work correctly
+
+**Gitignore Management:**
+- ❌ Incremental gitignore fixes
+- ✅ Comprehensive patterns covering IDE and build artifacts
+- **Prevention:** Repository hygiene tests
+
+**ESLint Configuration:**
+- ❌ Allowing ESLint errors to accumulate
+- ✅ Use pre-commit hooks with typecheck validation
+- **Prevention:** `npm run context:hygiene` before commits
+
+**Error Handling:**
+- ❌ Inconsistent error variable usage
+- ✅ Centralized utilities (`handleFallback`, `logWarning`)
+- **Prevention:** ESLint rules enforcing error handling patterns
 
 ### 📚 Reference
 See `archive/efficient-debugging-guidelines.md` for detailed patterns and case studies.

@@ -72,11 +72,20 @@
     "claude:check": "npm run typecheck && npm run lint && npm run test && echo '✅ All quality checks passed'"
   },
   "lint-staged": {
-    "*.ts": [
+    "src/{framework,web}/**/*.ts": [
       "eslint --fix",
       "npm run typecheck"
     ],
+    "src/cli/**/!(config)/**/*.ts": [
+      "eslint --fix"
+    ],
+    "src/test/**/*.ts": [
+      "eslint --fix"
+    ],
     "vite.config.ts": [
+      "eslint --fix"
+    ],
+    "*.config.ts": [
       "eslint --fix"
     ],
     "{examples,simulations}/**/*.{yaml,yml}": [

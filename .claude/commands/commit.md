@@ -6,7 +6,10 @@ description: commit command
 # Commit Command
 
 ## Context
+- ALWAYS start by making sure the tests pass. Abort if not.
 - Context data: !npm run context:commit --silent
+- ALWAYS consider whether your commit could be smaller and more independently meaningful
+- ALWAYS attempt small, incremental, atomic tests with 100% passing tests
 
 ## Your task
 Create structured commits following conventional commit standards for the agent-friendly Monte Carlo simulation framework.
