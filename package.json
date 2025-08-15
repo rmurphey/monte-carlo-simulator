@@ -79,16 +79,19 @@
       "npm run typecheck"
     ],
     "src/cli/**/!(config)/**/*.ts": [
-      "eslint --fix"
+      "eslint --fix --max-warnings 143"
     ],
     "src/test/**/*.ts": [
-      "eslint --fix"
+      "eslint --fix --max-warnings 143"
+    ],
+    "scripts/**/*.ts": [
+      "eslint --fix --max-warnings 143"
     ],
     "vite.config.ts": [
-      "eslint --fix"
+      "eslint --fix --max-warnings 143"
     ],
     "*.config.ts": [
-      "eslint --fix"
+      "eslint --fix --max-warnings 143"
     ],
     "{examples,simulations}/**/*.{yaml,yml}": [
       "bash -c 'for file in \"$@\"; do npm run cli validate \"$file\"; done' _"

@@ -13,7 +13,7 @@ export class ConfigManager {
     this.textarea = element
   }
 
-  updateConfig(parameters: Record<string, any>) {
+  updateConfig(parameters: Record<string, unknown>) {
     const config = JSON.stringify(parameters, null, 2)
     this.textarea.value = config
   }
@@ -30,7 +30,7 @@ export class ConfigManager {
     }
   }
 
-  async pasteFromClipboard(): Promise<Record<string, any> | null> {
+  async pasteFromClipboard(): Promise<Record<string, unknown> | null> {
     try {
       let text: string
       

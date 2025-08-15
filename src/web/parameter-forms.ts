@@ -95,8 +95,8 @@ export class ParameterForm {
     }
   }
 
-  getCurrentValues(): Record<string, any> {
-    const values: Record<string, any> = {}
+  getCurrentValues(): Record<string, unknown> {
+    const values: Record<string, unknown> = {}
     const inputs = this.container.querySelectorAll('.parameter-input') as NodeListOf<HTMLInputElement>
 
     inputs.forEach(input => {
@@ -117,7 +117,7 @@ export class ParameterForm {
     return invalidInputs.length === 0
   }
 
-  setValues(values: Record<string, any>) {
+  setValues(values: Record<string, unknown>) {
     const inputs = this.container.querySelectorAll('.parameter-input') as NodeListOf<HTMLInputElement>
     
     inputs.forEach(input => {

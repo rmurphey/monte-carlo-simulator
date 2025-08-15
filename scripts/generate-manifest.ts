@@ -4,7 +4,7 @@
  * Generate simulation manifest from YAML files
  */
 
-import { readFileSync, writeFileSync, readdirSync } from 'fs'
+import { readFileSync, readdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
 interface SimulationManifest {
@@ -19,7 +19,7 @@ interface SimulationManifest {
 
 function extractMetadataFromYAML(yamlContent: string): Partial<SimulationManifest> {
   const lines = yamlContent.split('\n')
-  const metadata: any = {}
+  const metadata: Record<string, unknown> = {}
   
   for (const line of lines) {
     const trimmed = line.trim()

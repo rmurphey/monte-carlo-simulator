@@ -9,6 +9,13 @@ import { Statistics } from './statistics'
 import { ConfigManager } from './config-manager'
 import { SimulationLoader } from './simulation-loader'
 
+interface ParameterLike {
+  key: string
+  type: string
+  min?: number
+  max?: number
+}
+
 class WebApp {
   private simulation: WebSimulationEngine | null = null
   private parameterForm: ParameterForm
@@ -113,86 +120,7 @@ class WebApp {
       }
       
       // Fallback: Create a simple default simulation for demonstration
-      const defaultConfig = {
-        name: 'Simple ROI Analysis',
-        category: 'Financial Analysis',
-        description: 'Basic return on investment simulation',
-        version: '1.0.0',
-        tags: ['finance', 'roi', 'investment'],
-        parameters: [
-          {
-            key: 'initialInvestment',
-            label: 'Initial Investment ($)',
-            type: 'number' as const,
-            default: 10000,
-            min: 1000,
-            max: 1000000,
-            description: 'Starting investment amount'
-          },
-          {
-            key: 'annualReturn',
-            label: 'Expected Annual Return (%)',
-            type: 'number' as const,
-            default: 7.5,
-            min: -50,
-            max: 100,
-            step: 0.1,
-            description: 'Expected annual percentage return'
-          },
-          {
-            key: 'volatility',
-            label: 'Volatility (%)',
-            type: 'number' as const,
-            default: 15,
-            min: 0,
-            max: 100,
-            step: 0.1,
-            description: 'Standard deviation of returns'
-          },
-          {
-            key: 'years',
-            label: 'Investment Period (Years)',
-            type: 'number' as const,
-            default: 10,
-            min: 1,
-            max: 50,
-            description: 'Number of years to simulate'
-          },
-          {
-            key: 'iterations',
-            label: 'Simulation Iterations',
-            type: 'number' as const,
-            default: 1000,
-            min: 100,
-            max: 10000,
-            description: 'Number of simulation runs'
-          }
-        ],
-        simulation: {
-          logic: `
-          const { initialInvestment, annualReturn, volatility, years, iterations } = params;
-          const results = [];
-          
-          for (let i = 0; i < iterations; i++) {
-            let value = initialInvestment;
-            
-            for (let year = 0; year < years; year++) {
-              const randomReturn = (Math.random() - 0.5) * 2; // -1 to 1
-              const yearReturn = (annualReturn / 100) + (randomReturn * volatility / 100);
-              value *= (1 + yearReturn);
-            }
-            
-            results.push({
-              finalValue: Math.round(value),
-              totalReturn: Math.round(value - initialInvestment),
-              annualizedReturn: Math.round(((Math.pow(value / initialInvestment, 1 / years) - 1) * 100) * 100) / 100
-            });
-          }
-          
-          return results;
-          `
-        }
-      }
+      const defaultConfig = this.getDefaultSimulationConfig()
       
       this.simulation = new WebSimulationEngine(defaultConfig)
       this.parameterForm.generateForm(defaultConfig.parameters)
@@ -240,8 +168,8 @@ class WebApp {
     }
   }
   
-  private preserveCompatibleValues(currentValues: Record<string, any>, newParameters: any[]): Record<string, any> {
-    const compatibleValues: Record<string, any> = {}
+  private preserveCompatibleValues(currentValues: Record<string, unknown>, newParameters: ParameterLike[]): Record<string, unknown> {
+    const compatibleValues: Record<string, unknown> = {}
     
     // Create a map of new parameter keys and their types
     const newParamMap = new Map()
@@ -266,7 +194,7 @@ class WebApp {
     return compatibleValues
   }
   
-  private isTypeCompatible(expectedType: string, value: any, param: any): boolean {
+  private isTypeCompatible(expectedType: string, value: unknown, param: ParameterLike): boolean {
     // Boolean compatibility
     if (expectedType === 'boolean') {
       return typeof value === 'boolean'
@@ -274,7 +202,7 @@ class WebApp {
     
     // Number compatibility
     if (expectedType === 'number') {
-      const numValue = typeof value === 'string' ? parseFloat(value) : value
+      const numValue = typeof value === 'string' ? parseFloat(value) : (value as number)
       if (isNaN(numValue)) return false
       
       // Check range constraints
@@ -370,6 +298,89 @@ class WebApp {
     }
   }
   
+  private getDefaultSimulationConfig() {
+    return {
+      name: 'Simple ROI Analysis',
+      category: 'Financial Analysis',
+      description: 'Basic return on investment simulation',
+      version: '1.0.0',
+      tags: ['finance', 'roi', 'investment'],
+      parameters: [
+        {
+          key: 'initialInvestment',
+          label: 'Initial Investment ($)',
+          type: 'number' as const,
+          default: 10000,
+          min: 1000,
+          max: 1000000,
+          description: 'Starting investment amount'
+        },
+        {
+          key: 'annualReturn',
+          label: 'Expected Annual Return (%)',
+          type: 'number' as const,
+          default: 7.5,
+          min: -50,
+          max: 100,
+          step: 0.1,
+          description: 'Expected annual percentage return'
+        },
+        {
+          key: 'volatility',
+          label: 'Volatility (%)',
+          type: 'number' as const,
+          default: 15,
+          min: 0,
+          max: 100,
+          step: 0.1,
+          description: 'Standard deviation of returns'
+        },
+        {
+          key: 'years',
+          label: 'Investment Period (Years)',
+          type: 'number' as const,
+          default: 10,
+          min: 1,
+          max: 50,
+          description: 'Number of years to simulate'
+        },
+        {
+          key: 'iterations',
+          label: 'Simulation Iterations',
+          type: 'number' as const,
+          default: 1000,
+          min: 100,
+          max: 10000,
+          description: 'Number of simulation runs'
+        }
+      ],
+      simulation: {
+        logic: `
+        const { initialInvestment, annualReturn, volatility, years, iterations } = params;
+        const results = [];
+        
+        for (let i = 0; i < iterations; i++) {
+          let value = initialInvestment;
+          
+          for (let year = 0; year < years; year++) {
+            const randomReturn = (Math.random() - 0.5) * 2; // -1 to 1
+            const yearReturn = (annualReturn / 100) + (randomReturn * volatility / 100);
+            value *= (1 + yearReturn);
+          }
+          
+          results.push({
+            finalValue: Math.round(value),
+            totalReturn: Math.round(value - initialInvestment),
+            annualizedReturn: Math.round(((Math.pow(value / initialInvestment, 1 / years) - 1) * 100) * 100) / 100
+          });
+        }
+        
+        return results;
+        `
+      }
+    }
+  }
+
   private showStatus(message: string, type: 'info' | 'success' | 'error') {
     const container = document.getElementById('status-container')
     if (!container) return

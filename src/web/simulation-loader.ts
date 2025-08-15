@@ -147,20 +147,9 @@ export class SimulationLoader {
       if (indent === 0) {
         inSimulationSection = false
         
-        if (trimmed.startsWith('name:')) {
-          simulation.name = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-        } else if (trimmed.startsWith('category:')) {
-          simulation.category = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-        } else if (trimmed.startsWith('description:')) {
-          simulation.description = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-        } else if (trimmed.startsWith('version:')) {
-          simulation.version = trimmed.split(':')[1].trim().replace(/['"]/g, '')
-        } else if (trimmed.startsWith('tags:')) {
-          const tagsText = trimmed.split(':')[1].trim()
-          if (tagsText.startsWith('[') && tagsText.endsWith(']')) {
-            simulation.tags = tagsText.slice(1, -1).split(',').map(t => t.trim().replace(/['"]/g, ''))
-          }
-        } else if (trimmed === 'parameters:') {
+        this.parseSimulationProperty(simulation, trimmed)
+        
+        if (trimmed === 'parameters:') {
           currentSection = 'parameters'
         } else if (trimmed === 'outputs:') {
           currentSection = 'outputs'
@@ -259,6 +248,23 @@ export class SimulationLoader {
   /**
    * Clear all caches (useful for development/testing)
    */
+  private parseSimulationProperty(simulation: any, trimmed: string) {
+    if (trimmed.startsWith('name:')) {
+      simulation.name = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+    } else if (trimmed.startsWith('category:')) {
+      simulation.category = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+    } else if (trimmed.startsWith('description:')) {
+      simulation.description = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+    } else if (trimmed.startsWith('version:')) {
+      simulation.version = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+    } else if (trimmed.startsWith('tags:')) {
+      const tagsText = trimmed.split(':')[1].trim()
+      if (tagsText.startsWith('[') && tagsText.endsWith(']')) {
+        simulation.tags = tagsText.slice(1, -1).split(',').map(t => t.trim().replace(/['"]/g, ''))
+      }
+    }
+  }
+
   clearCache() {
     this.manifestCache = null
     this.simulationCache.clear()
