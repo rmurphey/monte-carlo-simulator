@@ -217,19 +217,24 @@ class WebApp {
     
     const yamlText = await response.text()
     
-    // Parse YAML (simple parsing for now, assuming valid structure)
-    // In a full implementation, we'd use a proper YAML parser
+    // Enhanced YAML parser to handle actual simulation file format
     const lines = yamlText.split('\n')
     const simulation: any = {
       name: '',
+      category: '',
       description: '',
       version: '1.0.0',
       tags: [],
-      parameters: []
+      parameters: [],
+      outputs: []
     }
     
     let currentSection = ''
     let currentParameter: any = null
+    let currentOutput: any = null
+    let simulationLogic = ''
+    let inSimulationSection = false
+    let logicIndent = 0
     
     for (const line of lines) {
       const trimmed = line.trim()
@@ -237,15 +242,54 @@ class WebApp {
       
       const indent = line.length - line.trimStart().length
       
+      // Handle simulation logic section
+      if (inSimulationSection && trimmed.startsWith('logic:')) {
+        const logicStart = line.indexOf('|')
+        if (logicStart !== -1) {
+          // Multi-line logic with | indicator
+          continue
+        } else {
+          // Single line logic
+          simulationLogic = trimmed.split(':')[1].trim()
+        }
+        continue
+      }
+      
+      if (inSimulationSection && indent > logicIndent) {
+        // Accumulate logic lines
+        simulationLogic += line.substring(logicIndent) + '\n'
+        continue
+      }
+      
+      // Handle top-level properties
       if (indent === 0) {
+        inSimulationSection = false
+        
         if (trimmed.startsWith('name:')) {
           simulation.name = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+        } else if (trimmed.startsWith('category:')) {
+          simulation.category = trimmed.split(':')[1].trim().replace(/['"]/g, '')
         } else if (trimmed.startsWith('description:')) {
           simulation.description = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+        } else if (trimmed.startsWith('version:')) {
+          simulation.version = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+        } else if (trimmed.startsWith('tags:')) {
+          const tagsText = trimmed.split(':')[1].trim()
+          if (tagsText.startsWith('[') && tagsText.endsWith(']')) {
+            simulation.tags = tagsText.slice(1, -1).split(',').map(t => t.trim().replace(/['"]/g, ''))
+          }
         } else if (trimmed === 'parameters:') {
           currentSection = 'parameters'
+        } else if (trimmed === 'outputs:') {
+          currentSection = 'outputs'
+        } else if (trimmed === 'simulation:') {
+          currentSection = 'simulation'
+          inSimulationSection = true
+          logicIndent = 4 // Expect logic to be indented 4 spaces
         }
-      } else if (currentSection === 'parameters' && indent === 2) {
+      } 
+      // Handle parameters section
+      else if (currentSection === 'parameters' && indent === 2) {
         if (trimmed.startsWith('- key:')) {
           if (currentParameter) {
             simulation.parameters.push(currentParameter)
@@ -257,7 +301,7 @@ class WebApp {
             default: 0
           }
         }
-      } else if (currentParameter && indent === 4) {
+      } else if (currentParameter && indent === 4 && currentSection === 'parameters') {
         if (trimmed.startsWith('label:')) {
           currentParameter.label = trimmed.split(':')[1].trim().replace(/['"]/g, '')
         } else if (trimmed.startsWith('type:')) {
@@ -279,22 +323,43 @@ class WebApp {
           currentParameter.description = trimmed.split(':')[1].trim().replace(/['"]/g, '')
         }
       }
+      // Handle outputs section
+      else if (currentSection === 'outputs' && indent === 2) {
+        if (trimmed.startsWith('- key:')) {
+          if (currentOutput) {
+            simulation.outputs.push(currentOutput)
+          }
+          currentOutput = {
+            key: trimmed.split(':')[1].trim().replace(/['"]/g, ''),
+            label: '',
+            description: ''
+          }
+        }
+      } else if (currentOutput && indent === 4 && currentSection === 'outputs') {
+        if (trimmed.startsWith('label:')) {
+          currentOutput.label = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+        } else if (trimmed.startsWith('description:')) {
+          currentOutput.description = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+        }
+      }
     }
     
-    // Add the last parameter
+    // Add the last parameter and output
     if (currentParameter) {
       simulation.parameters.push(currentParameter)
     }
+    if (currentOutput) {
+      simulation.outputs.push(currentOutput)
+    }
     
-    // Add simulation logic (simplified - just return basic structure)
+    // Add simulation logic
     simulation.simulation = {
-      logic: `
-      // Placeholder simulation logic for ${simulation.name}
+      logic: simulationLogic.trim() || `
+      // Default simulation logic for ${simulation.name}
       const results = [];
       const iterations = params.iterations || 1000;
       
       for (let i = 0; i < iterations; i++) {
-        // Basic random result generation
         const result = {
           value: Math.random() * 1000,
           profit: (Math.random() - 0.5) * 500
