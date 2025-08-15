@@ -25,25 +25,47 @@ The current web interface (`src/web/`) hard-codes a single "Simple ROI Analysis"
 
 ## Implementation Plan
 
+### Phase 0: URL Parameter Foundation (30-60 minutes)
+**Goal**: Prove simulation selection via URL parameters before building UI
+
+**Tasks**:
+- Add URL parameter parsing (`?simulation=simple-roi-analysis`)
+- Create simulation loader that fetches YAML files from `/examples/simulations/`
+- Update `loadDefaultSimulation()` to use URL parameter or fall back to default
+- Test with multiple simulation templates to verify YAML parsing works
+- Add error handling for invalid/missing simulation names
+
+**Files to Modify**:
+- `src/web/main.ts` - Add URL parsing and simulation loading
+- Test with existing YAML files in `examples/simulations/`
+
+**Success Criteria**:
+- `?simulation=simple-roi-analysis` loads correct simulation
+- `?simulation=marketing-campaign-roi` loads different parameters
+- Invalid simulation names fall back to default gracefully
+- All parameter types render correctly in existing form
+- Proves technical foundation before building selector UI
+
 ### Phase 1: Simulation Selector UI (1-2 hours)
-**Goal**: Add dropdown for simulation selection
+**Goal**: Add dropdown for simulation selection (after URL proof-of-concept)
 
 **Tasks**:
 - Add simulation selector dropdown component above parameter form in sidebar
 - Style dropdown to match existing design system
 - Add loading states and error handling for dropdown
 - Display simulation metadata (name, category, description) in dropdown options
+- Populate dropdown from same simulation loader used in Phase 0
 
 **Files to Modify**:
 - `src/web/index.html` - Add dropdown container
-- `src/web/main.ts` - Add simulation loading logic
+- `src/web/main.ts` - Add dropdown logic (reusing Phase 0 loader)
 - CSS styling for dropdown in `index.html`
 
 **Success Criteria**:
 - Dropdown appears in sidebar with professional styling
 - Shows "Loading simulations..." state
 - Displays simulation names and descriptions
-- Handles selection changes
+- Handles selection changes and updates URL parameters
 
 ### Phase 2: Dynamic Parameter Loading (2-3 hours)
 **Goal**: Load simulation parameters dynamically based on selection

@@ -95,8 +95,8 @@ export class ParameterForm {
     }
   }
 
-  getCurrentValues(): Record<string, any> {
-    const values: Record<string, any> = {}
+  getCurrentValues(): Record<string, unknown> {
+    const values: Record<string, unknown> = {}
     const inputs = this.container.querySelectorAll('.parameter-input') as NodeListOf<HTMLInputElement>
 
     inputs.forEach(input => {
@@ -115,6 +115,21 @@ export class ParameterForm {
   isValid(): boolean {
     const invalidInputs = this.container.querySelectorAll('.parameter-input.invalid')
     return invalidInputs.length === 0
+  }
+
+  setValues(values: Record<string, unknown>) {
+    const inputs = this.container.querySelectorAll('.parameter-input') as NodeListOf<HTMLInputElement>
+    
+    inputs.forEach(input => {
+      const value = values[input.name]
+      if (value !== undefined) {
+        if (input.type === 'checkbox') {
+          input.checked = Boolean(value)
+        } else {
+          input.value = String(value)
+        }
+      }
+    })
   }
 
   clear() {

@@ -1,0 +1,121 @@
+[
+  {
+    "name": "AI Cost Impact on Engineering Organizations",
+    "filename": "ai-cost-impact.yaml",
+    "display": "AI Cost Impact on Engineering Organizations",
+    "description": "Models the impact of non-linear AI cost increases on engineering teams, productivity, and organizational adaptation strategies",
+    "category": "Technology & Operations",
+    "version": "1.0.0"
+  },
+  {
+    "name": "Manual Quality Assurance ROI Analysis",
+    "filename": "manual-qa-roi.yaml",
+    "display": "Manual Quality Assurance ROI Analysis",
+    "description": "Analyze the cost-benefit of manual QA testing vs automated alternatives, modeling bug prevention value and testing overhead",
+    "category": "Quality Assurance",
+    "version": "1.0.0",
+    "tags": [
+      "qa",
+      "quality",
+      "testing",
+      "software",
+      "risk"
+    ]
+  },
+  {
+    "name": "Marketing Campaign ROI Analysis",
+    "filename": "marketing-campaign-roi.yaml",
+    "display": "Marketing Campaign ROI Analysis",
+    "description": "Multi-channel marketing ROI analysis with customer acquisition modeling, lifetime value optimization, and ARR-based budget allocation",
+    "category": "Marketing & Growth",
+    "version": "2.0.0",
+    "tags": [
+      "marketing",
+      "roi",
+      "customer-acquisition",
+      "digital-marketing",
+      "campaign-optimization"
+    ]
+  },
+  {
+    "name": "Outbound Sales ROI Analysis",
+    "filename": "outbound-sales-roi.yaml",
+    "display": "Outbound Sales ROI Analysis",
+    "description": "Comprehensive ROI analysis for outbound sales activities including prospecting efficiency, conversion rates, sales team productivity, and revenue impact",
+    "category": "Sales & Revenue",
+    "version": "1.0.0"
+  },
+  {
+    "name": "QA Strategy Comparison - Manual vs Automated",
+    "filename": "qa-strategy-comparison.yaml",
+    "display": "QA Strategy Comparison - Manual vs Automated",
+    "description": "Compare manual QA, automated testing, and hybrid approaches to find optimal quality assurance strategy",
+    "category": "Quality Assurance",
+    "version": "1.0.0",
+    "tags": [
+      "qa",
+      "automation",
+      "testing",
+      "efficiency",
+      "strategy"
+    ]
+  },
+  {
+    "name": "Simple ROI Analysis",
+    "filename": "simple-roi-analysis.yaml",
+    "display": "Simple ROI Analysis",
+    "description": "Basic return on investment calculation with Monte Carlo uncertainty modeling",
+    "category": "Finance",
+    "version": "1.0.0",
+    "tags": [
+      "finance",
+      "roi",
+      "investment"
+    ]
+  },
+  {
+    "name": "Software Investment ROI Analysis",
+    "filename": "software-investment-roi.yaml",
+    "display": "Software Investment ROI Analysis",
+    "description": "Comprehensive ROI analysis for software investments including productivity gains, cost savings, automation benefits, and risk-adjusted returns",
+    "category": "Technology Investment",
+    "version": "1.0.0",
+    "tags": [
+      "software-investment",
+      "roi",
+      "productivity",
+      "automation",
+      "cost-savings",
+      "technology"
+    ]
+  },
+  {
+    "name": "Team Scaling Decision Analysis",
+    "filename": "team-scaling-decision.yaml",
+    "display": "Team Scaling Decision Analysis",
+    "description": "Strategic analysis of team scaling decisions considering coordination overhead and productivity",
+    "category": "Business",
+    "version": "1.0.0",
+    "tags": [
+      "hiring",
+      "scaling",
+      "team",
+      "productivity",
+      "strategy"
+    ]
+  },
+  {
+    "name": "Technology Investment Decision",
+    "filename": "technology-investment.yaml",
+    "display": "Technology Investment Decision",
+    "description": "Analyze technology investment decisions considering productivity gains, costs, and adoption risks",
+    "category": "Technology",
+    "version": "1.0.0",
+    "tags": [
+      "technology",
+      "investment",
+      "productivity",
+      "automation"
+    ]
+  }
+]

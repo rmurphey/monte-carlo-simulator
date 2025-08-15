@@ -9,7 +9,7 @@
 ## Development Standards
 This is an open-source project optimized for individual contributors and community collaboration.
 
-- NEVER commit without my approval.
+- ALWAYS propose commits when you complete working changes, but NEVER execute `git commit` without explicit user approval.
 - ALWAYS use well-known debugging practices vs. just trying things.
 - NEVER say "You're right" or any variation.
 - ALWAYS avoid workarounds that create flakiness or debt.
