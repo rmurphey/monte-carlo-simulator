@@ -63,6 +63,35 @@ npm run cli list
 - `/docs/` - Agent specifications and validation documentation
 - `/src/validation/` - BulletproofValidator system
 
+## 🌐 Web Interface Alternative
+
+### Interactive Simulation Selector ✅ **IMPLEMENTED**
+For visual parameter exploration with instant feedback:
+
+```bash
+# Start web interface (headless by default)
+npm run dev:web
+
+# Or open in browser for interactive development  
+npm run dev:web:open
+
+# Access at: http://localhost:3000
+# Direct simulation loading: http://localhost:3000/?simulation=simple-roi-analysis
+```
+
+**Web Interface Features:**
+- **Simulation Dropdown**: Choose from 9+ available simulation templates
+- **Dynamic Parameter Forms**: Parameters auto-update based on selected simulation
+- **Value Preservation**: Compatible parameters preserved when switching simulations
+- **Real-time Validation**: Instant parameter validation feedback
+- **Complete Visualizations**: Charts, statistics, and configuration export
+
+**Agent Use Cases:**
+- **Parameter Exploration**: Visual sliders and inputs for quick testing
+- **Simulation Comparison**: Switch between templates to compare approaches  
+- **Configuration Export**: Generate parameter configurations for CLI use
+- **Non-technical Stakeholders**: Share interactive interface for business review
+
 ## 🚀 NPX Quick Start Guide
 
 ### For Agents: Zero-Setup Analysis

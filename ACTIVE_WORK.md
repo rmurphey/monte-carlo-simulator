@@ -19,17 +19,21 @@ Four strategic plans ready for implementation prioritization:
   - Re-enable `complexity` rule and refactor complex functions into smaller components
   - Re-enable `max-lines-per-function` and break large functions into focused utilities
   - Re-enable `max-depth` and flatten nested conditional logic
-  - Restore max-warnings limits once code quality is improved
 - **Automate documentation maintenance** - Enhance existing docs testing with git-based automation
   - Create pre-commit hook integration for documentation validation
   - Add package.json scripts for automated doc sync checks
   - Implement CLI command discovery and documentation auto-generation
 
 ## Recently Completed ✅
+- **Lint-Staged Process Improvements** - Restored pre-commit validation to match CI standards (August 2025)
+  - **Scripts Directory Coverage**: Added `scripts/**/*.ts` pattern to ensure all TypeScript files are linted
+  - **Global Warning Enforcement**: Implemented `eslint . --ext ts --max-warnings 143` on web/framework changes
+  - **Eliminated Local vs CI Gaps**: Pre-commit hooks now match GitHub Actions validation exactly
+  - **Prevented "Passes Locally, Fails CI" Scenarios**: Unified validation standards across all environments
+  - **Result**: Consistent code quality validation prevents frustrating CI failures after local success
 - **ESLint Configuration Relaxation** - Simplified code quality standards to focus on functionality over strict compliance (August 2025)
   - Disabled complexity, function length, and nesting depth rules that were blocking development
   - Converted no-explicit-any from error to off to allow rapid prototyping
-  - Removed max-warnings limits from lint scripts and pre-commit hooks
   - Changed unused variables from error to warning for better development flow
   - Result: Development workflow unblocked while maintaining essential code quality checks
 - **Web Simulation Selector** - Complete simulation selection dropdown for web interface (August 2025)
