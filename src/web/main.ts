@@ -103,6 +103,12 @@ class WebApp {
           this.parameterForm.generateForm(simulationConfig.parameters)
           this.updateConfiguration()
           this.showStatus(`Loaded simulation: ${simulationConfig.name}`, 'success')
+          
+          // Update dropdown selection to match loaded simulation
+          const dropdown = document.getElementById('simulation-select') as HTMLSelectElement
+          if (dropdown) {
+            dropdown.value = simulationName
+          }
           return
         } catch (error) {
           console.warn(`Failed to load simulation '${simulationName}':`, error)
