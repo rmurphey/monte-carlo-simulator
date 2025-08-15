@@ -109,6 +109,41 @@
             margin: 0;
         }
         
+        /* Simulation Selector */
+        .simulation-selector {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .simulation-selector h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .simulation-dropdown {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+            color: #374151;
+            cursor: pointer;
+        }
+        
+        .simulation-dropdown:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+        
+        .simulation-dropdown option {
+            padding: 8px;
+        }
+        
         /* Buttons */
         .btn {
             display: inline-block;
@@ -239,6 +274,14 @@
         <div class="layout">
             <!-- Sidebar: Parameters and Controls -->
             <div class="sidebar">
+                <!-- Simulation Selector -->
+                <div class="simulation-selector">
+                    <h3>Select Simulation</h3>
+                    <select id="simulation-select" class="simulation-dropdown">
+                        <option value="">Loading simulations...</option>
+                    </select>
+                </div>
+                
                 <h2>Simulation Parameters</h2>
                 <div id="parameter-form-container"></div>
                 
