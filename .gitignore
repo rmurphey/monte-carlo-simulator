@@ -11,6 +11,12 @@ target/
 .idea/
 *.swp
 *.swo
+*~
+.vim*
+
+# Editor temporary files
+.#*
+#*#
 
 # OS
 .DS_Store
@@ -25,6 +31,10 @@ build/
 dist/
 *.tsbuildinfo
 .eslintcache
+*.js.map
+*.d.ts.map
+.nyc_output/
+.turbo/
 
 # User workspace (only root-level simulations directory, not examples/simulations)
 /simulations/*
