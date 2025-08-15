@@ -14,7 +14,7 @@ describe('Vite Development Server', () => {
   let viteProcess: ChildProcess
   let browser: Browser
   let page: Page
-  const DEV_SERVER_URL = 'http://localhost:3000'
+  let DEV_SERVER_URL = 'http://localhost:3000' // Will be updated if port changes
   const STARTUP_TIMEOUT = 15000
 
   beforeAll(async () => {
@@ -25,6 +25,21 @@ describe('Vite Development Server', () => {
       detached: false
     })
 
+    // Capture output to detect actual port
+    let actualPort = '3000'
+    viteProcess.stdout?.on('data', (data) => {
+      const output = data.toString()
+      const portMatch = output.match(/Local:\s+http:\/\/localhost:(\d+)\//)
+      if (portMatch) {
+        actualPort = portMatch[1]
+        DEV_SERVER_URL = `http://localhost:${actualPort}`
+        console.log(`📡 Detected server at ${DEV_SERVER_URL}`)
+      }
+    })
+
+    // Wait a moment for port detection
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    
     // Wait for server to be ready
     await waitForServer(DEV_SERVER_URL, STARTUP_TIMEOUT)
 

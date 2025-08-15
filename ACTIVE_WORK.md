@@ -6,7 +6,7 @@
 - **Templates**: 13 working simulation templates, all schema-validated
 - **NPM Published**: Available via `npx monte-carlo-simulator`
 - **Distribution**: Clean npm package, no build artifacts in git
-- **Date**: 2025-08-13
+- **Date**: 2025-08-15
 
 ## Current Priorities
 
@@ -36,10 +36,16 @@ Four strategic plans ready for implementation prioritization:
   - Solution: Used proven getDefinitions() pattern instead of debugging property access
   - Lesson: Compare working vs broken code first, don't assume caching issues
   - Documented expensive debugging anti-patterns in `archive/debugging-lessons-parameter-schema.md`
+- **Debugging Cost Optimization Guidelines** - Embedded efficient debugging practices in project configuration (August 2025)
+  - Added debugging guidelines to CLAUDE.md for automatic loading in every session
+  - 5-minute rule, comparison-driven debugging, and anti-pattern warnings
+  - Created detailed reference documents in `archive/efficient-debugging-guidelines.md`
+  - Prevents future expensive debugging sessions through systematic approaches
 - **Context Scripts Token Optimization** - Created comprehensive context script system to reduce token usage (August 2025)
   - Added `scripts/command-context.sh` with 8 context functions covering all major Claude commands
   - Token savings of 70-85% per command execution by consolidating repetitive bash calls
   - Created npm scripts: `context:docs`, `context:todo`, `context:archive`, `context:commit`, `context:next`, `context:hygiene`, `context:push`, `context:build`
+  - **Completed migration**: Updated all command files to use context scripts instead of individual bash commands
   - Maintains full functionality while improving execution speed and efficiency
   - Documented in CLAUDE.md for easy reference and usage
 - **Type System Refactoring** - Eliminated code duplication with shared type definitions (August 2025)
