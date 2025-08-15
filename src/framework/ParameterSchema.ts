@@ -132,9 +132,14 @@ export class ParameterSchema {
 
   getDefaultParameters(): Record<string, unknown> {
     const defaults: Record<string, unknown> = {}
-    for (const def of this.definitions.values()) {
+    
+    // Use getDefinitions() method to ensure consistent object access
+    const definitions = this.getDefinitions()
+    
+    for (const def of definitions) {
       defaults[def.key] = def.default
     }
+    
     return defaults
   }
 

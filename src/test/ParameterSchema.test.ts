@@ -102,6 +102,7 @@ describe('ParameterSchema', () => {
     const schema = new ParameterSchema(testDefinitions)
     
     const defaults = schema.getDefaultParameters()
+    
     expect(defaults).toEqual({
       iterations: 1000,
       riskFree: 0.03,
