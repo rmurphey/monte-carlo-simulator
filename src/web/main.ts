@@ -45,6 +45,13 @@ class WebApp {
     this.parameterForm.setOnChangeCallback(() => {
       this.updateConfiguration()
     })
+    
+    // Simulation selector changes
+    const simulationSelect = document.getElementById('simulation-select') as HTMLSelectElement
+    simulationSelect?.addEventListener('change', (event) => {
+      const target = event.target as HTMLSelectElement
+      this.loadSimulation(target.value)
+    })
   }
   
   private async loadDefaultSimulation() {
@@ -261,6 +268,26 @@ class WebApp {
     }
     
     return simulation
+  }
+  
+  private async loadSimulation(simulationName: string) {
+    if (!simulationName) {
+      // If empty selection, load default
+      await this.loadDefaultSimulation()
+      return
+    }
+    
+    try {
+      this.showStatus(`Loading ${simulationName}...`, 'info')
+      const simulationConfig = await this.loadSimulationFromYAML(simulationName)
+      this.simulation = new WebSimulationEngine(simulationConfig)
+      this.parameterForm.generateForm(simulationConfig.parameters)
+      this.updateConfiguration()
+      this.showStatus(`Loaded simulation: ${simulationConfig.name}`, 'success')
+    } catch (error) {
+      console.warn(`Failed to load simulation '${simulationName}':`, error)
+      this.showStatus(`Failed to load '${simulationName}'`, 'error')
+    }
   }
   
   private async runSimulation() {
