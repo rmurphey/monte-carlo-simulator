@@ -73,7 +73,8 @@
   },
   "lint-staged": {
     "*.ts": [
-      "eslint --fix"
+      "eslint --fix",
+      "npm run typecheck"
     ],
     "{examples,simulations}/**/*.{yaml,yml}": [
       "bash -c 'for file in \"$@\"; do npm run cli validate \"$file\"; done' _"
