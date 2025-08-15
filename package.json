@@ -27,7 +27,7 @@
     "dev": "tsx watch src/cli/index.ts",
     "build": "tsc",
     "build:web": "tsc --project tsconfig.web.json && cp src/web/index.html dist/web/",
-    "dev:web": "vite",
+    "dev:web": "vite --open false",
     "build:web:vite": "vite build",
     "preview:web": "vite preview",
     "test": "vitest --run --exclude=src/test/vite-integration.test.ts",
