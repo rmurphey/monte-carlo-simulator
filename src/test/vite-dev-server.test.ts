@@ -13,7 +13,7 @@ describe('Vite Development Server', () => {
   let browser: Browser
   let page: Page
   let DEV_SERVER_URL = 'http://localhost:3000' // Will be updated if port changes
-  const STARTUP_TIMEOUT = 15000
+  const STARTUP_TIMEOUT = process.env.CI ? 30000 : 15000
 
   beforeAll(async () => {
     // Start Vite development server
