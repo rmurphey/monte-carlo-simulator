@@ -42,11 +42,35 @@ This is an open-source project optimized for individual contributors and communi
 
 ## Custom Commands
 Use the following commands for structured development:
-- `/hygiene` - Code quality check
+
+### 📋 **Core Development Commands**
+- `/hygiene` - Code quality check using `npm run context:hygiene`
 - `/todo` - Update ACTIVE_WORK.md "Current Priorities" and "Recently Completed" sections
-- `/commit` - Structured commits
+- `/commit` - Structured commits using `npm run context:commit`
 - `/learn` - Knowledge capture
-- `/docs` - Documentation updates
+- `/docs` - Documentation updates using `npm run context:docs`
+
+### 🐛 **Debugging Commands** (Based on Efficient Debugging Guidelines)
+- `/simple-test-case` - Create minimal test cases for debugging using `npm run context:simple-test-case`
+  - Follows "test fix inline first" pattern from debugging lessons
+  - Creates focused test case to isolate issues
+  - Uses working vs broken comparison approach
+- `/read-the-whole-error` - Systematic error message analysis using `npm run context:read-the-whole-error`
+  - Prevents assumption-driven debugging
+  - Provides complete error analysis checklist
+  - Identifies actual vs assumed error causes
+- `/find-working-equivalent` - Locate similar working code for comparison using `npm run context:find-working-equivalent`
+  - Core principle of comparison-driven debugging
+  - Searches codebase for working patterns
+  - Sets up side-by-side comparison workflow
+- `/minimal-change-test` - Test fixes inline before source modification using `npm run context:minimal-change-test`
+  - Prevents expensive debugging iterations
+  - Provides inline testing template
+  - Enforces minimal change principle
+- `/stop-and-reassess` - Break out of expensive debugging loops using `npm run context:stop-and-reassess`
+  - Enforces 5-minute rule from debugging guidelines
+  - Triggers when debugging exceeds time/token thresholds
+  - Provides systematic debugging checklist and circuit breaker
 
 ## Documentation Requirements
 All feature implementations MUST include documentation updates in the same commit:
@@ -75,6 +99,8 @@ npm run cli run simulation-name --list-params
 
 ### Context Scripts (Token Optimization)
 Use these scripts instead of individual bash commands to save tokens:
+
+#### **Core Development Context**
 - `npm run context:docs` - Documentation command context (status, files, recent changes)
 - `npm run context:todo` - Todo command context (priorities, completions) 
 - `npm run context:archive` - Archive command context (completed work, plans)
@@ -83,6 +109,13 @@ Use these scripts instead of individual bash commands to save tokens:
 - `npm run context:hygiene` - Code quality context (lint, tests, typecheck)
 - `npm run context:push` - Push readiness context (branch status, validation)
 - `npm run context:build` - Build status context (dist, compilation, tests)
+
+#### **Debugging Context** (Based on Efficient Debugging Guidelines)
+- `npm run context:simple-test-case` - Minimal test case creation context with debugging guidelines
+- `npm run context:read-the-whole-error` - Error analysis context with anti-pattern warnings
+- `npm run context:find-working-equivalent` - Working code comparison context with codebase structure
+- `npm run context:minimal-change-test` - Inline testing context with change principles
+- `npm run context:stop-and-reassess` - Debugging circuit breaker with efficiency targets
 
 ### Pre-approved Commands
 The following npm commands can be run without user approval for validation and analysis:
@@ -95,9 +128,17 @@ The following npm commands can be run without user approval for validation and a
 - `npm run status:full` - Comprehensive git status with unpushed commits
 
 ### OSS Development Commands
+#### **Core Commands**
 - `/hygiene` - Quick code quality check using `npm run context:hygiene`
 - `/commit` - Commit with good practices using `npm run context:commit`
-- `/docs` - Update documentation when needed
+- `/docs` - Update documentation when needed using `npm run context:docs`
+
+#### **Debugging Commands** (Prevention-focused approach)
+- `/simple-test-case` - Create minimal debugging test cases
+- `/read-the-whole-error` - Analyze complete error messages systematically
+- `/find-working-equivalent` - Use comparison-driven debugging
+- `/minimal-change-test` - Test fixes inline before source changes
+- `/stop-and-reassess` - Circuit breaker for expensive debugging loops
 
 ### Quality Workflow Integration
 Use existing context scripts to prevent recurring issues:
