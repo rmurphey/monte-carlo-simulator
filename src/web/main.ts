@@ -22,6 +22,7 @@ class WebApp {
     this.configManager = new ConfigManager('config-textarea')
     
     this.setupEventListeners()
+    this.loadAvailableSimulations()
     this.loadDefaultSimulation()
   }
   
@@ -52,6 +53,38 @@ class WebApp {
       const target = event.target as HTMLSelectElement
       this.loadSimulation(target.value)
     })
+  }
+  
+  private async loadAvailableSimulations() {
+    const dropdown = document.getElementById('simulation-select') as HTMLSelectElement
+    if (!dropdown) return
+    
+    try {
+      // List of available simulations (could be fetched dynamically)
+      const availableSimulations = [
+        { name: 'simple-roi-analysis', display: 'Simple ROI Analysis', description: 'Basic return on investment simulation' },
+        { name: 'marketing-campaign-roi', display: 'Marketing Campaign ROI', description: 'Marketing campaign effectiveness analysis' },
+        { name: 'software-investment-roi', display: 'Software Investment ROI', description: 'Software development investment analysis' },
+        { name: 'ai-cost-impact', display: 'AI Cost Impact', description: 'AI implementation cost-benefit analysis' },
+        { name: 'team-scaling-decision', display: 'Team Scaling Decision', description: 'Team growth investment analysis' },
+        { name: 'technology-investment', display: 'Technology Investment', description: 'Technology adoption ROI analysis' }
+      ]
+      
+      // Clear loading text and add default option
+      dropdown.innerHTML = '<option value="">Select a simulation...</option>'
+      
+      // Add simulation options
+      availableSimulations.forEach(sim => {
+        const option = document.createElement('option')
+        option.value = sim.name
+        option.textContent = `${sim.display} - ${sim.description}`
+        dropdown.appendChild(option)
+      })
+      
+    } catch (error) {
+      console.warn('Failed to load available simulations:', error)
+      dropdown.innerHTML = '<option value="">Error loading simulations</option>'
+    }
   }
   
   private async loadDefaultSimulation() {
