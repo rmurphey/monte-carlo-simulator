@@ -117,6 +117,21 @@ export class ParameterForm {
     return invalidInputs.length === 0
   }
 
+  setValues(values: Record<string, any>) {
+    const inputs = this.container.querySelectorAll('.parameter-input') as NodeListOf<HTMLInputElement>
+    
+    inputs.forEach(input => {
+      const value = values[input.name]
+      if (value !== undefined) {
+        if (input.type === 'checkbox') {
+          input.checked = Boolean(value)
+        } else {
+          input.value = String(value)
+        }
+      }
+    })
+  }
+
   clear() {
     this.container.innerHTML = ''
   }

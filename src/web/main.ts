@@ -383,15 +383,82 @@ class WebApp {
     
     try {
       this.showStatus(`Loading ${simulationName}...`, 'info')
+      
+      // Preserve current parameter values before switching
+      const currentValues = this.parameterForm.getCurrentValues()
+      
       const simulationConfig = await this.loadSimulationFromYAML(simulationName)
       this.simulation = new WebSimulationEngine(simulationConfig)
       this.parameterForm.generateForm(simulationConfig.parameters)
+      
+      // Restore compatible parameter values
+      const compatibleValues = this.preserveCompatibleValues(currentValues, simulationConfig.parameters)
+      this.parameterForm.setValues(compatibleValues)
+      
       this.updateConfiguration()
       this.showStatus(`Loaded simulation: ${simulationConfig.name}`, 'success')
+      
+      // Update URL parameter to reflect current selection
+      const url = new URL(window.location.href)
+      url.searchParams.set('simulation', simulationName)
+      window.history.replaceState({}, '', url.toString())
+      
     } catch (error) {
       console.warn(`Failed to load simulation '${simulationName}':`, error)
       this.showStatus(`Failed to load '${simulationName}'`, 'error')
     }
+  }
+  
+  private preserveCompatibleValues(currentValues: Record<string, any>, newParameters: any[]): Record<string, any> {
+    const compatibleValues: Record<string, any> = {}
+    
+    // Create a map of new parameter keys and their types
+    const newParamMap = new Map()
+    newParameters.forEach(param => {
+      newParamMap.set(param.key, param)
+    })
+    
+    // Preserve values for parameters that exist in both old and new schemas
+    // with compatible types
+    Object.entries(currentValues).forEach(([key, value]) => {
+      const newParam = newParamMap.get(key)
+      if (newParam) {
+        // Check type compatibility
+        const expectedType = newParam.type
+        
+        if (this.isTypeCompatible(expectedType, value, newParam)) {
+          compatibleValues[key] = value
+        }
+      }
+    })
+    
+    return compatibleValues
+  }
+  
+  private isTypeCompatible(expectedType: string, value: any, param: any): boolean {
+    // Boolean compatibility
+    if (expectedType === 'boolean') {
+      return typeof value === 'boolean'
+    }
+    
+    // Number compatibility
+    if (expectedType === 'number') {
+      const numValue = typeof value === 'string' ? parseFloat(value) : value
+      if (isNaN(numValue)) return false
+      
+      // Check range constraints
+      if (param.min !== undefined && numValue < param.min) return false
+      if (param.max !== undefined && numValue > param.max) return false
+      
+      return true
+    }
+    
+    // String compatibility (most permissive)
+    if (expectedType === 'string') {
+      return value !== null && value !== undefined
+    }
+    
+    return false
   }
   
   private async runSimulation() {
