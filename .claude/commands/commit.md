@@ -6,10 +6,7 @@ description: commit command
 # Commit Command
 
 ## Context
-- Project status: !git status --porcelain
-- Staged changes: !git diff --cached --stat
-- Recent commits: !git log --oneline -5
-- Files modified: !git diff --name-only HEAD
+- Context data: !npm run context:commit --silent
 
 ## Your task
 Create structured commits following conventional commit standards for the agent-friendly Monte Carlo simulation framework.

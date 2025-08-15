@@ -6,9 +6,7 @@ description: docs command
 # Docs Command
 
 ## Context
-- Project status: !git status --porcelain
-- Documentation files: !find . -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" | head -10
-- Recent changes: !git log --oneline --name-only -3 | grep "\.md$" | head -5
+- Context data: !npm run context:docs --silent
 - Specifically consider README.md at the root, and all content in docs/
 
 ## Your task

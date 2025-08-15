@@ -6,9 +6,7 @@ description: next command
 # Next Command
 
 ## Context
-- Project status: !git status --porcelain
-- Current work phase: !grep -A 5 "Current Status" ACTIVE_WORK.md
-- Immediate priorities: !grep -A 10 "Immediate (This Session)" ACTIVE_WORK.md
+- Context data: !npm run context:next --silent
 
 ## Your task
 Analyze ACTIVE_WORK.md, README.md, and any other sources of roadmap information, and recommend the next logical task for the agent-friendly Monte Carlo simulation framework.

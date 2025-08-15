@@ -6,7 +6,7 @@ description: hygiene command
 # Hygiene Command
 
 ## Context
-- Project status: !git status --porcelain
+- Context data: !npm run context:hygiene --silent
 
 ## Your task
 Review hygiene of the repository:

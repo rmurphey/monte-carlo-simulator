@@ -6,8 +6,7 @@ description: todo command
 # Todo Command
 
 ## Context
-- Project status: !git status --porcelain
-- Current todos: !cat ACTIVE_WORK.md | grep -A 20 "Current Priorities"
+- Context data: !npm run context:todo --silent
 
 ## Your task
 Manage todos in ACTIVE_WORK.md for the agent-friendly Monte Carlo simulation framework.
