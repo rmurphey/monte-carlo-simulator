@@ -31,6 +31,11 @@ Four strategic plans ready for implementation prioritization:
   - Maintain current functionality for parameter editing and execution
 
 ## Recently Completed ✅
+- **ParameterSchema Bug Fix** - Fixed persistent getDefaultParameters() test failure (August 2025)
+  - Root cause: Direct Map.values() iteration vs Array.from(Map.values()) inconsistency  
+  - Solution: Used proven getDefinitions() pattern instead of debugging property access
+  - Lesson: Compare working vs broken code first, don't assume caching issues
+  - Documented expensive debugging anti-patterns in `archive/debugging-lessons-parameter-schema.md`
 - **Context Scripts Token Optimization** - Created comprehensive context script system to reduce token usage (August 2025)
   - Added `scripts/command-context.sh` with 8 context functions covering all major Claude commands
   - Token savings of 70-85% per command execution by consolidating repetitive bash calls
