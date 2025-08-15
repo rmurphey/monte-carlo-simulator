@@ -51,7 +51,26 @@ class WebApp {
     try {
       this.showStatus('Loading simulation...', 'info')
       
-      // Create a simple default simulation for demonstration
+      // Check URL parameters for simulation selection
+      const urlParams = new URLSearchParams(window.location.search)
+      const simulationName = urlParams.get('simulation')
+      
+      if (simulationName) {
+        // Try to load simulation from YAML file
+        try {
+          const simulationConfig = await this.loadSimulationFromYAML(simulationName)
+          this.simulation = new WebSimulationEngine(simulationConfig)
+          this.parameterForm.generateForm(simulationConfig.parameters)
+          this.updateConfiguration()
+          this.showStatus(`Loaded simulation: ${simulationConfig.name}`, 'success')
+          return
+        } catch (error) {
+          console.warn(`Failed to load simulation '${simulationName}':`, error)
+          this.showStatus(`Failed to load '${simulationName}', using default`, 'error')
+        }
+      }
+      
+      // Fallback: Create a simple default simulation for demonstration
       const defaultConfig = {
         name: 'Simple ROI Analysis',
         category: 'Financial Analysis',
@@ -141,6 +160,107 @@ class WebApp {
     } catch (error) {
       this.showStatus(`Error loading simulation: ${error}`, 'error')
     }
+  }
+
+  private async loadSimulationFromYAML(simulationName: string) {
+    // Try to fetch the YAML file
+    const response = await fetch(`/examples/simulations/${simulationName}.yaml`)
+    if (!response.ok) {
+      throw new Error(`Simulation file not found: ${simulationName}.yaml`)
+    }
+    
+    const yamlText = await response.text()
+    
+    // Parse YAML (simple parsing for now, assuming valid structure)
+    // In a full implementation, we'd use a proper YAML parser
+    const lines = yamlText.split('\n')
+    const simulation: any = {
+      name: '',
+      description: '',
+      version: '1.0.0',
+      tags: [],
+      parameters: []
+    }
+    
+    let currentSection = ''
+    let currentParameter: any = null
+    
+    for (const line of lines) {
+      const trimmed = line.trim()
+      if (!trimmed || trimmed.startsWith('#')) continue
+      
+      const indent = line.length - line.trimStart().length
+      
+      if (indent === 0) {
+        if (trimmed.startsWith('name:')) {
+          simulation.name = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+        } else if (trimmed.startsWith('description:')) {
+          simulation.description = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+        } else if (trimmed === 'parameters:') {
+          currentSection = 'parameters'
+        }
+      } else if (currentSection === 'parameters' && indent === 2) {
+        if (trimmed.startsWith('- key:')) {
+          if (currentParameter) {
+            simulation.parameters.push(currentParameter)
+          }
+          currentParameter = {
+            key: trimmed.split(':')[1].trim().replace(/['"]/g, ''),
+            label: '',
+            type: 'number',
+            default: 0
+          }
+        }
+      } else if (currentParameter && indent === 4) {
+        if (trimmed.startsWith('label:')) {
+          currentParameter.label = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+        } else if (trimmed.startsWith('type:')) {
+          currentParameter.type = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+        } else if (trimmed.startsWith('default:')) {
+          const defaultValue = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+          currentParameter.default = currentParameter.type === 'number' ? 
+            parseFloat(defaultValue) : 
+            currentParameter.type === 'boolean' ? 
+              defaultValue === 'true' : 
+              defaultValue
+        } else if (trimmed.startsWith('min:')) {
+          currentParameter.min = parseFloat(trimmed.split(':')[1].trim())
+        } else if (trimmed.startsWith('max:')) {
+          currentParameter.max = parseFloat(trimmed.split(':')[1].trim())
+        } else if (trimmed.startsWith('step:')) {
+          currentParameter.step = parseFloat(trimmed.split(':')[1].trim())
+        } else if (trimmed.startsWith('description:')) {
+          currentParameter.description = trimmed.split(':')[1].trim().replace(/['"]/g, '')
+        }
+      }
+    }
+    
+    // Add the last parameter
+    if (currentParameter) {
+      simulation.parameters.push(currentParameter)
+    }
+    
+    // Add simulation logic (simplified - just return basic structure)
+    simulation.simulation = {
+      logic: `
+      // Placeholder simulation logic for ${simulation.name}
+      const results = [];
+      const iterations = params.iterations || 1000;
+      
+      for (let i = 0; i < iterations; i++) {
+        // Basic random result generation
+        const result = {
+          value: Math.random() * 1000,
+          profit: (Math.random() - 0.5) * 500
+        };
+        results.push(result);
+      }
+      
+      return results;
+      `
+    }
+    
+    return simulation
   }
   
   private async runSimulation() {
