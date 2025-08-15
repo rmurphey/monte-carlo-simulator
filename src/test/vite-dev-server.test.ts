@@ -18,7 +18,7 @@ describe('Vite Development Server', () => {
   beforeAll(async () => {
     // Start Vite development server
     console.log('🚀 Starting Vite development server...')
-    viteProcess = spawn('npm', ['run', 'dev:web'], {
+    viteProcess = spawn('npx', ['vite', '--open', 'false'], {
       stdio: 'pipe',
       detached: false
     })
