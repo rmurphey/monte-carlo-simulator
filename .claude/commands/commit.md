@@ -6,7 +6,8 @@ description: commit command
 # Commit Command
 
 ## Context
-- ALWAYS start by making sure the tests pass. Abort if not.
+- Ensure that the test server is running in the background; start it if not.
+- Ensure that the test server shows all tests passing.
 - Context data: !npm run context:commit --silent
 - ALWAYS consider whether your commit could be smaller and more independently meaningful
 - ALWAYS attempt small, incremental, atomic tests with 100% passing tests
