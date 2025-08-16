@@ -275,6 +275,156 @@ stop_and_reassess_context() {
     git status --porcelain
 }
 
+# /atomic-commit command context
+atomic_commit_context() {
+    echo "=== ATOMIC COMMIT VALIDATION ==="
+    git status --porcelain
+    
+    echo -e "\n=== STAGED CHANGES COUNT ==="
+    git diff --cached --name-only | wc -l | xargs echo "Files staged:"
+    
+    echo -e "\n=== COMMIT DISCIPLINE REMINDER ==="
+    echo "✅ COMMIT EVERY 1-3 file changes that create working functionality"
+    echo "✅ NEVER batch multiple logical changes into one commit"
+    echo "✅ ASK 'Can I commit right now?' after each working change"
+    echo "✅ If you're unsure, commit - smaller commits are always better"
+    
+    echo -e "\n=== STAGED FILES ==="
+    git diff --cached --name-only | head -10
+    
+    echo -e "\n=== CHANGE SIZE ==="
+    git diff --cached --stat | tail -1
+    
+    echo -e "\n=== COMMIT-WORTHY EXAMPLES ==="
+    echo "• Added HTML structure + CSS styling for a component"
+    echo "• Implemented a single function or method"  
+    echo "• Added event handlers for one interaction"
+    echo "• Fixed a specific bug or error"
+    echo "• Added tests for one specific behavior"
+}
+
+# /prefer-oss command context
+prefer_oss_context() {
+    echo "=== OPEN SOURCE SOLUTION CHECK ==="
+    git status --porcelain
+    
+    echo -e "\n=== OSS PREFERENCE PRINCIPLE ==="
+    echo "✅ ALWAYS prefer quality open-source solutions over writing your own code"
+    echo "❌ Don't reinvent wheels that OSS already solves well"
+    
+    echo -e "\n=== OSS EVALUATION CHECKLIST ==="
+    echo "1. 🔍 Search for existing OSS solutions"
+    echo "2. 📊 Evaluate maturity, maintenance, and community"
+    echo "3. 🧪 Test with small proof-of-concept"
+    echo "4. 📋 Compare implementation effort vs integration effort"
+    echo "5. 🎯 Choose OSS unless custom provides significant advantages"
+    
+    echo -e "\n=== COMMON OSS CATEGORIES ==="
+    echo "• Validation: ajv, joi, yup"
+    echo "• CLI: commander, yargs, oclif"
+    echo "• Testing: vitest, jest, playwright"
+    echo "• Utilities: lodash, ramda"
+    echo "• UI: react, vue, lit"
+    
+    echo -e "\n=== CURRENT DEPENDENCIES ==="
+    grep -A 10 '"dependencies"' package.json | head -15 || echo "No package.json found"
+}
+
+# /test-first command context  
+test_first_context() {
+    echo "=== TDD WORKFLOW VALIDATION ==="
+    git status --porcelain
+    
+    echo -e "\n=== TDD PRINCIPLE ==="
+    echo "✅ PREFER to operate following TDD principles: tests first, code later"
+    echo "❌ Don't implement without tests"
+    echo "❌ Don't add tests as afterthought"
+    
+    echo -e "\n=== TDD WORKFLOW ==="
+    echo "1. 🧪 Write failing test that describes desired behavior"
+    echo "2. 🔴 Verify test fails for the right reason"
+    echo "3. ✅ Write minimal code to make test pass"
+    echo "4. 🔄 Refactor with test safety net"
+    echo "5. ♻️  Repeat for next small behavior"
+    
+    echo -e "\n=== RECENT TEST FILES ==="
+    find src/test -name "*.test.ts" -type f | head -5
+    
+    echo -e "\n=== TEST STATUS ==="
+    npm run test 2>&1 | tail -5 || echo "Tests failed"
+    
+    echo -e "\n=== STAGING REMINDER ==="
+    echo "• Stage test files first"
+    echo "• Then implement minimum code to pass"
+    echo "• Commit working test + minimal implementation"
+}
+
+# /no-flaky-workarounds command context
+no_flaky_workarounds_context() {
+    echo "=== WORKAROUND PREVENTION CHECK ==="
+    git status --porcelain
+    
+    echo -e "\n=== FLAKINESS PREVENTION ==="
+    echo "✅ ALWAYS avoid workarounds that create flakiness or debt"
+    echo "❌ Don't use quick fixes that introduce unreliability"
+    echo "❌ Don't defer proper solutions with band-aids"
+    
+    echo -e "\n=== WORKAROUND WARNING SIGNS ==="
+    echo "🚨 setTimeout() for race conditions"
+    echo "🚨 try/catch without understanding error"
+    echo "🚨 'This works locally' solutions"  
+    echo "🚨 Disabling linting rules instead of fixing issues"
+    echo "🚨 Hardcoded values to bypass validation"
+    echo "🚨 Retries without addressing root cause"
+    
+    echo -e "\n=== PROPER SOLUTION APPROACH ==="
+    echo "1. 🔍 Understand root cause completely"
+    echo "2. 🎯 Address the actual problem, not symptoms"
+    echo "3. 🧪 Test solution thoroughly"
+    echo "4. 📋 Document why this approach is correct"
+    echo "5. 🔄 Prefer systematic solutions over quick fixes"
+    
+    echo -e "\n=== CURRENT CHANGES REVIEW ==="
+    git diff --cached --name-only | head -10
+}
+
+# /edit-not-create command context (renamed to work-with-existing)
+edit_not_create_context() {
+    echo "=== CODE PATTERN CONSISTENCY ==="
+    git status --porcelain
+    
+    echo -e "\n=== SMART FILE DECISION PRINCIPLE ==="
+    echo "✅ Work with existing code patterns and architecture"
+    echo "✅ Consider existing files first, but maintain good modularity"
+    echo "✅ Create new files when they improve organization"
+    echo "❌ Don't duplicate existing functionality"
+    
+    echo -e "\n=== FILE DECISION CHECKLIST ==="
+    echo "1. 🔍 Understand existing patterns and architecture first"
+    echo "2. 📋 Check if functionality fits in existing file without bloating"
+    echo "3. 🎯 Consider modularity - would new file improve organization?"
+    echo "4. 📊 Follow established patterns for similar functionality"
+    echo "5. ✅ Create new file if it improves modularity and follows patterns"
+    
+    echo -e "\n=== GOOD REASONS FOR NEW FILES ==="
+    echo "• Separation of concerns - distinct responsibility"
+    echo "• Modularity - keeps existing files focused"
+    echo "• Following patterns - matches existing architecture"
+    echo "• Testing - isolatable functionality"
+    echo "• Reusability - component used in multiple places"
+    
+    echo -e "\n=== CURRENT NEW FILES ==="
+    git status --porcelain | grep "^??" | head -10 || echo "No new files"
+    
+    echo -e "\n=== EXISTING STRUCTURE ==="
+    echo "src/framework/ - Core simulation engine modules"
+    echo "src/cli/ - Command-line interface components"  
+    echo "src/web/ - Web interface modules"
+    echo "src/test/ - Test files (often 1:1 with source)"
+    echo "docs/ - Documentation files"
+    echo "examples/ - Example simulation files"
+}
+
 # Main execution
 case "$1" in
     "docs")
@@ -316,10 +466,26 @@ case "$1" in
     "stop-and-reassess")
         stop_and_reassess_context
         ;;
+    "atomic-commit")
+        atomic_commit_context
+        ;;
+    "prefer-oss")
+        prefer_oss_context
+        ;;
+    "test-first")
+        test_first_context
+        ;;
+    "no-flaky-workarounds")
+        no_flaky_workarounds_context
+        ;;
+    "edit-not-create")
+        edit_not_create_context
+        ;;
     *)
-        echo "Usage: $0 {docs|todo|archive|commit|next|hygiene|push|build|simple-test-case|read-the-whole-error|find-working-equivalent|minimal-change-test|stop-and-reassess}"
+        echo "Usage: $0 {docs|todo|archive|commit|next|hygiene|push|build|simple-test-case|read-the-whole-error|find-working-equivalent|minimal-change-test|stop-and-reassess|atomic-commit|prefer-oss|test-first|no-flaky-workarounds|edit-not-create}"
         echo "Provides context for Claude commands to save tokens"
         echo "Debugging commands: simple-test-case, read-the-whole-error, find-working-equivalent, minimal-change-test, stop-and-reassess"
+        echo "Development commands: atomic-commit, prefer-oss, test-first, no-flaky-workarounds, edit-not-create"
         exit 1
         ;;
 esac

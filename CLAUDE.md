@@ -50,27 +50,56 @@ Use the following commands for structured development:
 - `/learn` - Knowledge capture
 - `/docs` - Documentation updates using `npm run context:docs`
 
+### 🏗️ **Development Discipline Commands** (Based on CLAUDE.md Guidelines)
+- `/atomic-commit` - Enforce 1-3 file change discipline using `npm run context:atomic-commit`
+  - Validates "COMMIT EVERY 1-3 file changes that create working functionality"
+  - Prevents batching multiple logical changes
+  - Promotes smallest possible commits that pass tests
+- `/prefer-oss` - Prioritize open-source solutions using `npm run context:prefer-oss`
+  - Enforces "ALWAYS prefer quality open-source solutions over writing your own code"
+  - Provides OSS evaluation checklist and common categories
+  - Prevents unnecessary custom implementations
+- `/test-first` - TDD principles enforcement using `npm run context:test-first`
+  - Implements "PREFER to operate following TDD principles: tests first, code later"
+  - Provides systematic TDD workflow guidance
+  - Ensures comprehensive test coverage before implementation
+- `/no-flaky-workarounds` - Prevent technical debt using `npm run context:no-flaky-workarounds`
+  - Enforces "ALWAYS avoid workarounds that create flakiness or debt"
+  - Identifies workaround warning signs and promotes proper solutions
+  - Prevents quick fixes that introduce unreliability
+- `/edit-not-create` - Smart file creation decisions using `npm run context:edit-not-create`
+  - Balances working with existing files and maintaining modularity
+  - Provides file decision checklist considering architecture patterns
+  - Promotes good separation of concerns
+
 ### 🐛 **Debugging Commands** (Based on Efficient Debugging Guidelines)
-- `/simple-test-case` - Create minimal test cases for debugging using `npm run context:simple-test-case`
+**Note**: These are actual Claude Code slash commands that use the efficient context scripts.
+
+- `/simple-test-case` - Create minimal test cases for debugging isolation
+  - Uses `npm run context:simple-test-case` for debugging context
   - Follows "test fix inline first" pattern from debugging lessons
   - Creates focused test case to isolate issues
   - Uses working vs broken comparison approach
-- `/read-the-whole-error` - Systematic error message analysis using `npm run context:read-the-whole-error`
+- `/read-the-whole-error` - Systematic error message analysis to prevent assumptions
+  - Uses `npm run context:read-the-whole-error` for error analysis context  
   - Prevents assumption-driven debugging
   - Provides complete error analysis checklist
   - Identifies actual vs assumed error causes
-- `/find-working-equivalent` - Locate similar working code for comparison using `npm run context:find-working-equivalent`
+- `/find-working-equivalent` - Comparison-driven debugging with codebase search
+  - Uses `npm run context:find-working-equivalent` for working code context
   - Core principle of comparison-driven debugging
   - Searches codebase for working patterns
   - Sets up side-by-side comparison workflow
-- `/minimal-change-test` - Test fixes inline before source modification using `npm run context:minimal-change-test`
+- `/minimal-change-test` - Test fixes inline before source code modification
+  - Uses `npm run context:minimal-change-test` for inline testing context
   - Prevents expensive debugging iterations
   - Provides inline testing template
   - Enforces minimal change principle
-- `/stop-and-reassess` - Break out of expensive debugging loops using `npm run context:stop-and-reassess`
+- `/stop-and-reassess` - Circuit breaker for expensive debugging loops
+  - Uses `npm run context:stop-and-reassess` for debugging circuit breaker
   - Enforces 5-minute rule from debugging guidelines
   - Triggers when debugging exceeds time/token thresholds
-  - Provides systematic debugging checklist and circuit breaker
+  - Provides systematic debugging checklist and emergency stop
 
 ## Documentation Requirements
 All feature implementations MUST include documentation updates in the same commit:
@@ -110,6 +139,13 @@ Use these scripts instead of individual bash commands to save tokens:
 - `npm run context:push` - Push readiness context (branch status, validation)
 - `npm run context:build` - Build status context (dist, compilation, tests)
 
+#### **Development Discipline Context** (Based on CLAUDE.md Guidelines)
+- `npm run context:atomic-commit` - Atomic commit validation with file count and change size
+- `npm run context:prefer-oss` - OSS solution evaluation with dependency analysis
+- `npm run context:test-first` - TDD workflow guidance with test file discovery
+- `npm run context:no-flaky-workarounds` - Workaround pattern detection with quality standards
+- `npm run context:edit-not-create` - Smart file decision context with architecture patterns
+
 #### **Debugging Context** (Based on Efficient Debugging Guidelines)
 - `npm run context:simple-test-case` - Minimal test case creation context with debugging guidelines
 - `npm run context:read-the-whole-error` - Error analysis context with anti-pattern warnings
@@ -133,12 +169,19 @@ The following npm commands can be run without user approval for validation and a
 - `/commit` - Commit with good practices using `npm run context:commit`
 - `/docs` - Update documentation when needed using `npm run context:docs`
 
-#### **Debugging Commands** (Prevention-focused approach)
-- `/simple-test-case` - Create minimal debugging test cases
+#### **Development Discipline Commands** (CLAUDE.md guideline enforcement)
+- `/atomic-commit` - Enforce 1-3 file change discipline
+- `/prefer-oss` - Prioritize open-source solutions
+- `/test-first` - TDD principles enforcement
+- `/no-flaky-workarounds` - Prevent technical debt and flakiness
+- `/edit-not-create` - Smart file creation decisions with modularity balance
+
+#### **Debugging Commands** (Prevention-focused Claude Code slash commands)
+- `/simple-test-case` - Create minimal debugging test cases with context
 - `/read-the-whole-error` - Analyze complete error messages systematically
-- `/find-working-equivalent` - Use comparison-driven debugging
+- `/find-working-equivalent` - Use comparison-driven debugging with codebase search
 - `/minimal-change-test` - Test fixes inline before source changes
-- `/stop-and-reassess` - Circuit breaker for expensive debugging loops
+- `/stop-and-reassess` - Circuit breaker for expensive debugging loops (5-minute rule)
 
 ### Quality Workflow Integration
 Use existing context scripts to prevent recurring issues:
